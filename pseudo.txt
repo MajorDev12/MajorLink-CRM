@@ -1,0 +1,4 @@
+populate areas in select tag with active
+validate subareaInput, if empty(error)ifchoosearea(error) and sanitize
+if choose area, show available subareas for area in list
+if list button, and clicked, display modal

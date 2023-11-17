@@ -1,0 +1,11 @@
+.main-content .form{
+    background-color: var(--light);
+    margin: 2%;
+    padding: 20px;
+}
+.main-content .form .col-md-6{
+    margin-top: 5%;
+}
+.main-content .form .col-md-6 .form-label{
+    font-weight: 900;
+}
