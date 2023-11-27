@@ -6,6 +6,7 @@ if (isset($_POST["areaInput"])) {
     //db info
     require_once  '../database/pdo.php';
     require_once  '../modals/addArea_mod.php';
+    require_once  '../modals/validate_mod.php';
 
     $connect  = connectToDatabase($host, $dbname, $username, $password);
     //get input data

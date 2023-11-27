@@ -2,6 +2,7 @@
 require_once  '../database/pdo.php';
 require_once  '../controllers/addPlan_contr.php';
 require_once  '../modals/addPlan_mod.php';
+require_once  '../modals/validate_mod.php';
 
 $connect = connectToDatabase($host, $dbname, $username, $password);
 ?>
@@ -32,7 +33,7 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
           </li>
           <li><i class='bx bx-chevron-right'></i></li>
           <li>
-            <a class="active" href="#">Home</a>
+            <a class="active" href="#">Add Plan</a>
           </li>
         </ul>
       </div>
@@ -110,28 +111,6 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
               </div>
             </div>
           </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
           <div class="col-md-7">
@@ -232,7 +211,7 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                   loader.style.display = "none";
                   displayMessage("error", "saved Successfuly", false);
                   document.getElementById("addPlanform").reset();
-                  // location.reload();
+                  location.reload();
                 } else {
                   displayMessage("error", "Error fetching Data", true);
                 }

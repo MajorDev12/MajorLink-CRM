@@ -8,6 +8,7 @@ if (isset($_POST['planName']) && isset($_POST['planVolume']) && isset($_POST['pl
 
     require_once  '../database/pdo.php';
     require_once  '../modals/addPlan_mod.php';
+    require_once  '../modals/validate_mod.php';
 
 
     $connect  = connectToDatabase($host, $dbname, $username, $password);
@@ -46,14 +47,12 @@ if (isset($_POST['planName']) && isset($_POST['planVolume']) && isset($_POST['pl
 
     // If there are no errors, insert data
     if (empty($errors)) {
-        insertPlanData($planName, $planVolume, $planPrice, $connect);
+        $successinsert = insertPlanData($planName, $planVolume, $planPrice, $connect);
         $success = '<div class="alert alert-success">Data Saved Successfuly</div>';
     } else {
         // If there are errors, construct an error message
         $success = '<div class="alert alert-danger">' . implode('<br>', $errors) . '</div>';
     }
-
-    $successinsert = insertPlanData($planName, $planVolume, $planPrice, $connect);
 
     // For demonstration purposes, let's assume you want to return the same data as JSON
     $response = [

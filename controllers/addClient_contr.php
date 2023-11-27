@@ -5,8 +5,9 @@
 $errors = array();
 
 if (isset($_POST["Fname"])) {
-    sleep(2);
+    sleep(1);
     require_once  '../database/pdo.php';
+    require_once  '../modals/addClient_mod.php';
     require_once  '../modals/addClient_mod.php';
 
 
@@ -14,10 +15,28 @@ if (isset($_POST["Fname"])) {
 
     $success = '';
 
+
+
     $Fname = $_POST["Fname"];
     $Lname = $_POST["Lname"];
-    $email = $_POST["Email"];
-    $phoneNumber = $_POST["phoneNumber"];
+    $primaryEmail = $_POST["primaryEmail"];
+    $secondaryEmail = $_POST["secondaryEmail"];
+    $primaryNumber = $_POST["primaryNumber"];
+    $secondaryNumber = $_POST["secondaryNumber"];
+    $longitude = $_POST["longitude"];
+    $latitude = $_POST["latitude"];
+    $area = $_POST["area"];
+    $subArea = $_POST["subArea"];
+    $Plan = $_POST["Plan"];
+    $PlanAmount = $_POST["PlanAmount"];
+    $CreatedDate = $_POST["JoinedDate"];
+    $InstallationFees = $_POST["InstallationFees"];
+    $Paymentdate = $_POST["Paymentdate"];
+    $PaymentStatus = $_POST["PaymentStatus"];
+
+
+
+
 
 
     if (empty($Fname)) {
@@ -28,6 +47,8 @@ if (isset($_POST["Fname"])) {
         }
     }
 
+
+
     if (empty($Lname)) {
         $errors[] = 'Last Name is Required';
     } else {
@@ -36,31 +57,113 @@ if (isset($_POST["Fname"])) {
         }
     }
 
-    if (empty($email)) {
+
+
+    if (empty($primaryEmail)) {
         $errors[] = 'Email Cannot be empty';
     } else {
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $errors[] = 'eMail is invalid';
+        if (!filter_var($primaryEmail, FILTER_VALIDATE_EMAIL)) {
+            $errors[] = 'primaryeMail is invalid';
         }
     }
 
 
-    if (empty($phoneNumber)) {
-        $errors[] = 'phoneNumber cannot be empty';
+    if ($secondaryEmail) {
+        if (!filter_var($secondaryEmail, FILTER_VALIDATE_EMAIL)) {
+            $errors[] = 'secondaryEmail is invalid';
+        }
     }
+
+
+    if (empty($primaryNumber)) {
+        $errors[] = 'primaryNumber cannot be empty';
+    } else {
+        if (!is_numeric($primaryNumber)) {
+            $errors[] = 'Only Number expected in primaryNumber';
+        }
+    }
+
+
+
+    if ($secondaryNumber) {
+        // Check if it's not a number
+        if (!is_numeric($secondaryNumber)) {
+            $errors[] = 'Only Number expected in secondaryNumber';
+        }
+    }
+
+    if (!$CreatedDate) {
+        $errors[] = 'Please Choose the joined Date';
+    }
+
+    // Set subArea to null if it's not a number
+    $subArea = is_numeric($subArea) ? $subArea : null;
+
+    // Set area to null if it's not a number
+    $area = is_numeric($area) ? $area : null;
+
+    // Set Plan to null if it's not a number
+    $Plan = is_numeric($Plan) ? $Plan : null;
+
+
+
+
+
+    // Check if Plan is set
+    if ($Plan && $PlanAmount !== null) {
+        // Check if other fields are empty when Plan is set
+        if (empty($InstallationFees) || empty($Paymentdate) || empty($PaymentStatus)) {
+            $errors[] = 'Related Fields are required when Plan is set.';
+        }
+    }
+
+
+    // generate a random 6-digit password
+    $randomPassword = generateRandomPassword(6);
+    // hash the password
+    $PasswordHash = password_hash($randomPassword, PASSWORD_BCRYPT);
+
+
+    $paymentDate = new DateTime($Paymentdate);
+    $expireDate = clone $paymentDate;
+    $expireDate->add(new DateInterval('P1M')); // Adding 1 month to the payment date
+    $expireDate = $expireDate->format('Y-m-d');
+
+
+    if (!$Paymentdate) {
+        $expireDate = null;
+    }
+
+
+    if ($PaymentStatus === "Paid") {
+        $activeStatus = true;
+    }
+    if ($PaymentStatus === "Pending") {
+        $activeStatus = false;
+    }
+
+
+
+
+    $defaultProfileImageURL = 'default-profile-image.png';
+
+    $ProfilePictureURL = (!empty($ProfilePictureURL)) ? $ProfilePictureURL : $defaultProfileImageURL;
+
 
     // If there are no errors, insert data
     if (empty($errors)) {
-        insertData($Fname, $Lname, $email, $phoneNumber, $connect);
-        $success = '<div class="alert alert-success">Data Saved Successfuly</div>';
+        // Insert into Clients table
+        $clientId =  insertClientData($Fname, $Lname, $primaryEmail, $secondaryEmail, $primaryNumber, $secondaryNumber, $PasswordHash, $area, $subArea, $Plan, $latitude, $longitude, $CreatedDate, $ProfilePictureURL, $activeStatus, $expireDate, $connect);
+
+        // Insert into Payments table
+        if ($Plan !== null) {
+            insertPaymentData($clientId, $Plan, $PlanAmount, $PaymentStatus,  $Paymentdate, $InstallationFees, $connect);
+        }
+        $success = '<div class="alert alert-success">Client Added Successfuly</div>';
     } else {
         // If there are errors, construct an error message
         $success = '<div class="alert alert-danger">' . implode('<br>', $errors) . '</div>';
     }
-
-
-
-
 
 
     $output = array('success'  =>   $success);

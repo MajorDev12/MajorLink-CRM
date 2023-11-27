@@ -10,10 +10,7 @@ if (isset($_POST["areaId"]) && isset($_POST["subArea"])) {
     require_once  '../database/pdo.php';
     require_once  '../modals/addSubarea_mod.php';
     require_once  '../modals/getSubarea_mod.php';
-    $host = "localhost";
-    $dbname = "majorlink";
-    $username = "root";
-    $password = "123456";
+
     $connect  = connectToDatabase($host, $dbname, $username, $password);
 
     //get input data

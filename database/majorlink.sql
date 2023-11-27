@@ -41,27 +41,40 @@ CREATE TABLE SubAreas (
     FOREIGN KEY (AreaID) REFERENCES Areas(AreaID)
 );
 
+CREATE TABLE Plans (
+    PlanID INT PRIMARY KEY AUTO_INCREMENT,
+    Name VARCHAR(255) NOT NULL,
+    Volume VARCHAR(255) NOT NULL,
+    Price INT(255) NOT NULL
+    -- other plan-related attributes
+);
+
 
 
 
 CREATE TABLE Clients (
     ClientID INT PRIMARY KEY AUTO_INCREMENT,
-    FirstName VARCHAR(255) NOT NULL,
-    LastName VARCHAR(255) NOT NULL,
-    Email VARCHAR(255),
-    Phone VARCHAR(20),
-    SecondaryPhone VARCHAR(20),
-    PasswordHash VARCHAR(255) NOT NULL, -- Store hashed passwords securely
+    FirstName VARCHAR(255),
+    LastName VARCHAR(255),
+    PrimaryEmail VARCHAR(255),
+    SecondaryEmail VARCHAR(255),
+    PrimaryNumber VARCHAR(20),
+    SecondaryNumber VARCHAR(20),
+    PasswordHash VARCHAR(255), -- Store hashed passwords securely
     AreaID INT,
     SubAreaID INT,
+    PlanID INT,
     Latitude DECIMAL(10, 6),
     Longitude DECIMAL(10, 6),
     LastLogin DATETIME,
     CreatedDate DATETIME,
-    ProfilePictureURL VARCHAR(255), -- Assuming a link to the profile picture
+    ProfilePictureURL VARCHAR(255), 
+    ActiveStatus TINYINT(1), 
+    ExpireDate DATE,
     -- other client-related attributes
-    FOREIGN KEY (AreaID) REFERENCES Areas(AreaID),
-    FOREIGN KEY (SubAreaID) REFERENCES SubAreas(SubAreaID)
+    FOREIGN KEY (AreaID) REFERENCES areas(AreaID),
+    FOREIGN KEY (SubAreaID) REFERENCES subareas(SubAreaID),
+    FOREIGN KEY (PlanID) REFERENCES plans(PlanID)
 );
 
 
@@ -76,19 +89,9 @@ CREATE TABLE PaymentOptions (
 CREATE TABLE Products (
     ProductID INT PRIMARY KEY AUTO_INCREMENT,
     ProductName VARCHAR(255) NOT NULL,
-    Description TEXT,
-    Price DECIMAL(10, 2) NOT NULL
+    Price DECIMAL(10, 2) NOT NULL,
+    Description TEXT
     -- other product-related attributes
-);
-
-
-
-CREATE TABLE Plans (
-    PlanID INT PRIMARY KEY AUTO_INCREMENT,
-    PlanName VARCHAR(255) NOT NULL,
-    planVolume VARCHAR(255) NOT NULL,
-    Price INT(255) NOT NULL
-    -- other plan-related attributes
 );
 
 
@@ -145,12 +148,15 @@ CREATE TABLE Sales (
 CREATE TABLE Payments (
     PaymentID INT PRIMARY KEY AUTO_INCREMENT,
     ClientID INT,
+    PlanID INT,
     PaymentAmount DECIMAL(10, 2) NOT NULL,
     PaymentStatus VARCHAR(50),
     PaymentDate DATE,
     PaymentOptionID INT,
+    InstallationFees INT,
     -- other payment-related attributes
     FOREIGN KEY (ClientID) REFERENCES Clients(ClientID),
+    FOREIGN KEY (PlanID) REFERENCES plans(PlanID),
     FOREIGN KEY (PaymentOptionID) REFERENCES PaymentOptions(PaymentOptionID)
 );
 

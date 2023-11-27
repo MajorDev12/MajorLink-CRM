@@ -152,10 +152,11 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
             return;
           }
 
-          if (!/^[a-zA-Z0-9]+$/.test(areaInput.value)) {
+          if (!/^[a-zA-Z0-9 ]+$/.test(areaInput.value)) {
             displayMessage("error", "Only letters and numbers allowed", true);
             return;
           }
+
           // Show loader while waiting for the server response
           loader.style.display = "flex";
 
@@ -189,55 +190,6 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
               }
             }
           }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-          //   // Make a Fetch API request to addarea_contr.php
-          //   fetch("../controllers/addarea_contr.php", {
-          //       method: "POST",
-          //       body: formData
-          //     })
-          //     .then(response => {
-          //       // Hide the loader after receiving the response
-          //       loader.style.display = "none";
-
-          //       if (response.ok) {
-          //         // Successful response, handle accordingly
-          //         return response.json();
-          //       } else {
-          //         // Handle errors, show an error message
-          //         return response.json().then((data) => {
-          //           throw new Error(data.error);
-          //         });
-          //       }
-          //     })
-          //     .then(data => {
-          //       // Handle the JSON data
-          //       if (data.success) {
-          //         // Reset the form or show a success message
-          //         displayMessage("success", "Saved Successfully", false);
-          //         location.reload();
-          //       } else {
-          //         // Handle errors, show an error message
-          //         throw new Error("Saved Error");
-          //       }
-          //     })
-          //     .catch(error => {
-          //       displayMessage("error", "An error occurred", true);
-          //       // location.reload();
-          //     });
         })
 
 
@@ -292,7 +244,7 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
           }
 
           // Check if updatedAreaName contains only letters and numbers
-          if (!/^[a-zA-Z0-9]+$/.test(updatedAreaName.value)) {
+          if (!/^[a-zA-Z0-9 ]+$/.test(updatedAreaName.value)) {
             displayMessage("modalerror", "Only letters and numbers allowed", true);
             return;
           }

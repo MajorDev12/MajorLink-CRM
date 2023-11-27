@@ -1,22 +1,57 @@
 <?php
 
-function insertData($Fname, $Lname, $email, $phoneNumber, $connect)
+
+function generateRandomPassword($length = 6)
 {
-  //put insert data code here 
-  $data = array(
-    ':Fname'    =>    $Fname,
-    ':Lname'    =>    $Lname,
-    ':email'    =>    $email,
-    ':phoneNumber'    =>    $phoneNumber
-  );
+  $characters = '0123456789';
+  $password = '';
 
-  $query = "
-		INSERT INTO clients 
-		(FirstName, LastName, Email, Phone) 
-		VALUES (:Fname, :Lname, :email, :phoneNumber)
-		";
+  for ($i = 0; $i < $length; $i++) {
+    $password .= $characters[rand(0, strlen($characters) - 1)];
+  }
 
+  return $password;
+}
+
+
+
+function insertClientData($Fname, $Lname, $primaryEmail, $secondaryEmail, $primaryNumber, $secondaryNumber, $PasswordHash, $area, $subArea, $Plan, $latitude, $longitude, $CreatedDate, $ProfilePictureURL, $activeStatus, $expireDate, $connect)
+{
+  $query = "INSERT INTO clients (FirstName, LastName, PrimaryEmail, SecondaryEmail, PrimaryNumber, SecondaryNumber, PasswordHash, AreaID, SubAreaID, PlanID, Latitude, Longitude, CreatedDate, ProfilePictureURL, ActiveStatus, ExpireDate)
+       VALUES (:Fname, :Lname, :primaryEmail, :secondaryEmail, :primaryNumber, :secondaryNumber, :PasswordHash, :area, :subArea, :Plan, :latitude, :longitude, :CreatedDate, :ProfilePictureURL, :activeStatus, :expireDate)";
   $statement = $connect->prepare($query);
+  $statement->bindParam(':Fname', $Fname);
+  $statement->bindParam(':Lname', $Lname);
+  $statement->bindParam(':primaryEmail', $primaryEmail);
+  $statement->bindParam(':secondaryEmail', $secondaryEmail);
+  $statement->bindParam(':primaryNumber', $primaryNumber);
+  $statement->bindParam(':secondaryNumber', $secondaryNumber);
+  $statement->bindParam(':PasswordHash', $PasswordHash);
+  $statement->bindParam(':area', $area, PDO::PARAM_INT);
+  $statement->bindParam(':subArea', $subArea, PDO::PARAM_INT);
+  $statement->bindParam(':Plan', $Plan);
+  $statement->bindParam(':latitude', $latitude);
+  $statement->bindParam(':longitude', $longitude);
+  $statement->bindParam(':CreatedDate', $CreatedDate);
+  $statement->bindParam(':ProfilePictureURL', $ProfilePictureURL);
+  $statement->bindParam(':activeStatus', $activeStatus);
+  $statement->bindParam(':expireDate', $expireDate);
+  $statement->execute();
 
-  $statement->execute($data);
+  return $connect->lastInsertId(); // Return the last inserted ID (ClientID)
+}
+
+
+
+function insertPaymentData($clientId, $Plan, $PlanAmount, $PaymentStatus,  $Paymentdate, $InstallationFees, $connect)
+{
+  $query = "INSERT INTO Payments (ClientID, PlanID, PaymentAmount, PaymentStatus, PaymentDate, InstallationFees) VALUES (:clientId, :Plan, :PlanAmount, :PaymentStatus, :Paymentdate, :InstallationFees)";
+  $statement = $connect->prepare($query);
+  $statement->bindParam(':clientId', $clientId);
+  $statement->bindParam(':Plan', $Plan);
+  $statement->bindParam(':PlanAmount', $PlanAmount);
+  $statement->bindParam(':PaymentStatus', $PaymentStatus);
+  $statement->bindParam(':Paymentdate', $Paymentdate);
+  $statement->bindParam(':InstallationFees', $InstallationFees);
+  $statement->execute();
 }

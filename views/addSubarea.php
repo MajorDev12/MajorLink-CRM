@@ -35,7 +35,7 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                     </li>
                     <li><i class='bx bx-chevron-right'></i></li>
                     <li>
-                        <a class="active" href="#">Home</a>
+                        <a class="active" href="#">Add Sub Area</a>
                     </li>
                 </ul>
             </div>
@@ -77,24 +77,26 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
 
 
 
-                <div class="row g-3">
-                    <div class="col-md-4">
-                        <select class="form-select" id="areaSelect">
-                            <option selected disabled>Choose Area...</option>
-                            <?php
-                            $areas = getData($connect);
-                            foreach ($areas as $area) {
-                                echo '<option id="areaName" class="area" aria-current="true" data-area-name="' . $area['AreaName'] . '" data-area-id="' . $area['AreaID'] . '">' . $area['AreaName'] . '</option>';
-                            }
-                            ?>
-                        </select>
+                <form id="subareaForm">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <select class="form-select" id="areaSelect">
+                                <option selected disabled>Choose Area...</option>
+                                <?php
+                                $areas = getData($connect);
+                                foreach ($areas as $area) {
+                                    echo '<option id="areaName" class="area" aria-current="true" data-area-name="' . $area['AreaName'] . '" data-area-id="' . $area['AreaID'] . '">' . $area['AreaName'] . '</option>';
+                                }
+                                ?>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <input type="text" class="form-control" id="subAreaInput" placeholder="Enter Sub Area">
+                            <p id="message"></p>
+                            <button type="button" id="addSubareabtn" class="btn btn-primary mt-4" onclick="addSubArea()">Add</button>
+                        </div>
                     </div>
-                    <div class="col-md-6">
-                        <input type="text" class="form-control" id="subAreaInput" placeholder="Enter Sub Area">
-                        <p id="message"></p>
-                        <button type="button" class="btn btn-primary mt-4" onclick="addSubArea()">Add</button>
-                    </div>
-                </div>
+                </form>
 
                 <div class="col-md-12 mt-5">
                     <div class="list-group" id="subAreaList">
@@ -224,20 +226,23 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                     var subAreaInput = document.getElementById('subAreaInput');
                     var subAreaList = document.getElementById('subAreaList');
                     var message = document.getElementById('message');
+                    var addSubareabtn = document.getElementById('addSubareabtn');
 
+                    addSubareabtn.disabled = true;
                     var selectedOption = areaSelect.options[areaSelect.selectedIndex];
                     var areaId = selectedOption.getAttribute('data-area-id');
                     var subArea = subAreaInput.value.trim();
 
-
                     if (!subArea) {
                         displayMessage("message", "Cannot be empty", true);
+                        addSubareabtn.disabled = false;
                         return;
                     }
 
                     // Check if updatedAreaName contains only letters and numbers
-                    if (!/^[a-zA-Z0-9]+$/.test(subArea)) {
+                    if (!/^[a-zA-Z0-9 ]+$/.test(subArea)) {
                         displayMessage("message", "Only letters and numbers allowed", true);
+                        addSubareabtn.disabled = false;
                         return;
                     }
 
@@ -261,23 +266,30 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                                     if (responseData.success) {
                                         updateSubAreaList(responseData.subareas);
                                         displayMessage("message", "Saved Successfuly", false);
+                                        document.getElementById('subareaForm').reset();
+                                        addSubareabtn.disabled = false;
                                     } else {
                                         console.log("Error: " + responseData.error);
                                         displayMessage("message", "Something went wrong", true);
+                                        addSubareabtn.disabled = false;
                                     }
                                 } catch (error) {
                                     console.error('Error parsing JSON response:', error);
                                     displayMessage("message", "Network Error", true);
+                                    addSubareabtn.disabled = false;
                                 }
                             } else {
                                 console.error('Request failed with status: ' + xhr.status);
                                 displayMessage("message", `Request failed with status: ${xhr.status}`, true);
+                                addSubareabtn.disabled = false;
                             }
                         };
 
                         xhr.send(sendData);
                     } else {
                         displayMessage("message", "Choose an area First", true);
+                        document.getElementById('subareaForm').reset();
+                        addSubareabtn.disabled = false;
                     }
                 }
 
@@ -405,121 +417,3 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                     document.getElementById('overlay').style.display = 'none';
                 }
             </script>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            <!-- 
-
-
-
-var currentAreaId = null;
-
-areaButtons.forEach(function(button) {
-    button.addEventListener('click', function() {
-        areaName = button.getAttribute('data-area-name');
-        currentAreaId = button.getAttribute('data-area-id');
-        modalAreaName.innerText = currentAreaId;
-        console.log("Current Area ID: " + currentAreaId);
-        // Add a callback function to refresh the page when the modal is hidden
-        showModal();
-    });
-});
-
-
-closeModal.addEventListener('click', function() {
-    hideModal();
-})
-
-
-
-
-
-
-var updateButton = document.getElementById('update');
-
-updateButton.addEventListener('click', function(e) {
-    e.preventDefault();
-    var updatedAreaName = document.getElementById('updatedName');
-    console.log("id " + subAreaID);
-    console.log("name " + areaName.value);
-    if (!updatedAreaName.value.trim()) {
-        displayMessage("modalmessage", "Cannot be empty", true);
-        return;
-    }
-
-    // Check if updatedAreaName contains only letters and numbers
-    if (!/^[a-zA-Z0-9]+$/.test(updatedAreaName.value.trim())) {
-        displayMessage("modalmessage", "Only letters and numbers allowed", true);
-        return;
-    }
-    // Check if a valid areaId is available
-    if (subAreaID !== null) {
-        console.log("have id");
-        // Create a new FormData object and append the data
-        var sendData = new FormData();
-        sendData.append('currentAreaId', currentAreaId);
-        sendData.append('updatedName', updatedAreaName.value);
-        console.log(currentAreaId);
-        // Add SubAreaID to FormData
-        var subAreaButton = document.querySelector('.subareas[data-subarea-id="' + currentAreaId + '"]');
-        var subAreaID = subAreaButton.getAttribute('data-subarea-id');
-        sendData.append('subAreaID', subAreaID);
-
-        document.getElementById('loader').style.display = 'flex';
-
-        // Create a new XMLHttpRequest object
-        var ajax_request = new XMLHttpRequest();
-
-        // Set up the request with method, URL, and asynchronous flag
-        ajax_request.open('POST', '../controllers/updateSubarea_contr.php', true);
-
-        // Set up the callback function for when the request completes
-        ajax_request.onload = function() {
-            if (ajax_request.status >= 200 && ajax_request.status < 400) {
-                // Parse the response as JSON
-                try {
-                    document.getElementById('loader').style.display = 'none';
-                    var responseData = JSON.parse(ajax_request.responseText);
-                    if (responseData.success) {
-                        // If the update is successful, refresh the area list
-                        updateAreaList(responseData.areas);
-                        displayMessage("modalmessage", "successfuly saved", false);
-                        hideModal();
-                    } else {
-                        // If the delete fails, display the error message
-                        displayError(responseData.error);
-                        displayMessage("modalmessage", `failed: ${responseData.error}`, true);
-                        // location.reload();
-                    }
-                } catch (error) {
-                    console.error('Error parsing JSON response:', error);
-                }
-
-            } else {
-                // Handle errors
-                console.error('Request failed with status: ' + ajax_request.status);
-            }
-        };
-
-        // Send the request with the FormData
-        ajax_request.send(sendData);
-
-        // Reset the currentAreaId after the update is complete
-        currentAreaId = null;
-    } else {
-        displayMessage("modalmessage", "Invalid id", true);
-        console.log("have id: " + currentAreaId);
-    }
-}); -->
