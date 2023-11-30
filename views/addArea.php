@@ -46,7 +46,9 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
     <!-- content-container -->
     <div class="main-content">
       <div id="loader">
-        <p>Loading...</p>
+        <div class="spinner-grow text-Primary" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
       </div>
 
 

@@ -50,6 +50,17 @@ CREATE TABLE Plans (
 );
 
 
+CREATE TABLE ClientAccounts (
+    AccountID INT PRIMARY KEY AUTO_INCREMENT,
+    ClientID INT,
+    Balance DECIMAL(10, 2) DEFAULT 0.00,
+    TotalDeposits DECIMAL(10, 2) DEFAULT 0.00,
+    TotalWithdrawals DECIMAL(10, 2) DEFAULT 0.00,
+    LastTransactionDate DATE,
+    FOREIGN KEY (ClientID) REFERENCES Clients(ClientID) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+
 
 
 CREATE TABLE Clients (

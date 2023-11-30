@@ -9,7 +9,7 @@ function changeStatus($clientId, $activeStatus, $connect)
         $statement->execute();
         return true;
     } catch (Exception $e) {
-        false;
-        return "Error: " . $e->getMessage();
+        echo "Error: " . $e->getMessage();
+        return false;
     }
 }

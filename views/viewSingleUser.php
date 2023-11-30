@@ -221,6 +221,19 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                 <span class="text">Download PDF</span>
             </a>
         </div>
+
+        <!-- toast -->
+        <div id="toast">
+            <div class="toast-header">
+                <img src="../img/user.png" alt="" width="30px">
+                <small id="toast-time">3 secs Ago</small>
+            </div>
+            <div class="toast-body">
+                <h3>Created Successfully Custom Toast Example</h3>
+            </div>
+        </div>
+        <!-- toast -->
+
         <div id="loader">Loading</div>
         <!-- content-container -->
         <div class="main-content">
@@ -375,7 +388,7 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                                 <form action="" enctype="multipart/form-data" id="editForm" method="post" onsubmit="submitForm(event)">
                                     <input type="hidden" name="id" id="id" value="<?= $clientData['ClientID']; ?>">
                                     <div class="upload">
-                                        <img id="editprofilePicture" src="../img/<?= $clientData['ProfilePictureURL']; ?>" class="img-fluid rounded-start" alt="..." width="200px" height="100px">
+                                        <img id="editprofilePicture" src="../img/<?= $clientData['ProfilePictureURL']; ?>" class="img-fluid rounded-start" alt="..." width="200px" height="200px">
 
                                         <div class="rightRound" id="upload">
                                             <input type="file" name="fileImage" id="fileImage" accept=".jpg, .jpeg, .png">
@@ -451,12 +464,15 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                                             document.getElementById("cancel").style.display = "none";
                                             document.getElementById("confirm").style.display = "none";
                                             document.getElementById("upload").style.display = "block";
+                                            localStorage.setItem('updateClientProfileToast', 'true');
                                             location.reload();
-
                                         })
                                         .catch(error => {
                                             console.error("Error:", error);
                                         });
+
+
+
                                 });
                             </script>
 
@@ -813,24 +829,21 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                                 if (data.paymentSuccess) {
                                     // Handle the response from the server
                                     displayMessage("suberror", "Successfuly updated", false);
-                                    location.reload();
+                                    // Set a flag in local storage to indicate that the toast should be displayed after reload
+                                    localStorage.setItem('UpdateClientPlanToast', 'true');
                                     setTimeout(() => {
                                         loader.style.display = "none";
                                     }, 2000);
+                                    location.reload();
+
                                 }
                             })
                             .catch(error => {
                                 console.error('Error:', error);
                             });
+
+
                     }
-
-
-
-
-
-
-
-
                 }
             </script>
 
@@ -870,9 +883,9 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                 <a href="" class="btn btn-primary">View Transactions</a>
                 <div class="card mx-auto" style="width: 18rem;">
                     <div class="card-body shadow-sm p-3 mb-5 rounded text-center">
-                        <h5 class="card-title">0.Kshs</h5>
-                        <p class="card-text text-center">Account Balance</p>
-                        <a href="#" class="btn btn-primary">Refund</a>
+                        <h1 class="card-title text-primary fw-bolder">0.Kshs</h1>
+                        <h4 class="card-text text-center">Account Balance</h4>
+                        <!-- <a href="#" class="btn btn-primary">Refund</a> -->
                     </div>
                 </div>
 
@@ -1276,4 +1289,36 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                         targetElement.innerText = '';
                     }, 1000);
                 }
+
+
+
+                //toast function
+                function checkAndShowToastAfterReload() {
+                    // Check if the flag is set to show the toast after reload
+                    if (localStorage.getItem('updateClientProfileToast') === 'true') {
+                        showToast('Congratulations!, Updated Successfuly!', 3000);
+                        localStorage.removeItem('updateClientProfileToast');
+                    }
+
+                    if (localStorage.getItem('UpdateClientPlanToast') === 'true') {
+                        showToast('Updated Successfuly!', 3000);
+                        localStorage.removeItem('UpdateClientPlanToast');
+                    }
+
+                    if (localStorage.getItem('updateClientProfileToast') === 'true') {
+                        showToast('Updated Successfuly!', 3000);
+
+                        // Reset the flag after showing the toast
+                        localStorage.removeItem('updateClientProfileToast');
+                    }
+                }
+
+
+
+                // Call the function after the page loads
+                window.onload = function() {
+                    setTimeout(() => {
+                        checkAndShowToastAfterReload();
+                    }, 3000);
+                };
             </script>

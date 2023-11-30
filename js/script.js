@@ -149,3 +149,33 @@ var myChart = new Chart(ctx, {
 		}
 	}
 });
+
+
+
+
+
+
+
+function showToast(message, duration) {
+	var toast = document.getElementById('toast');
+	toast.querySelector('.toast-body').innerText = message;
+
+	// Show the toast
+	toast.classList.add('show');
+
+	// Hide the toast after the specified duration
+	setTimeout(function() {
+		hideToast();
+	}, duration);
+}
+
+function hideToast() {
+	var toast = document.getElementById('toast');
+	toast.classList.remove('show');
+}
+
+
+
+
+
+

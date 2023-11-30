@@ -8,7 +8,7 @@ if (isset($_POST["Fname"])) {
     sleep(1);
     require_once  '../database/pdo.php';
     require_once  '../modals/addClient_mod.php';
-    require_once  '../modals/addClient_mod.php';
+    require_once  '../modals/updateBalance_mod.php';
 
 
     $connect  = connectToDatabase($host, $dbname, $username, $password);
@@ -34,7 +34,7 @@ if (isset($_POST["Fname"])) {
     $Paymentdate = $_POST["Paymentdate"];
     $PaymentStatus = $_POST["PaymentStatus"];
 
-
+    $balance = 0;
 
 
 
@@ -154,7 +154,7 @@ if (isset($_POST["Fname"])) {
     if (empty($errors)) {
         // Insert into Clients table
         $clientId =  insertClientData($Fname, $Lname, $primaryEmail, $secondaryEmail, $primaryNumber, $secondaryNumber, $PasswordHash, $area, $subArea, $Plan, $latitude, $longitude, $CreatedDate, $ProfilePictureURL, $activeStatus, $expireDate, $connect);
-
+        $balanceSet = setAccount($clientId, $balance, $connect);
         // Insert into Payments table
         if ($Plan !== null) {
             insertPaymentData($clientId, $Plan, $PlanAmount, $PaymentStatus,  $Paymentdate, $InstallationFees, $connect);

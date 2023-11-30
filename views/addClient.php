@@ -48,9 +48,24 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
       </a>
     </div>
 
-    <!-- content-container -->
 
-    <div id="loader">Loading...</div>
+    <!-- toast -->
+    <div id="toast">
+      <div class="toast-header">
+        <img src="../img/user.png" alt="" width="30px">
+        <small id="toast-time">3 secs Ago</small>
+      </div>
+      <div class="toast-body">
+        <h3>Created Successfully Custom Toast Example</h3>
+      </div>
+    </div>
+    <!-- toast -->
+    <!-- content-container -->
+    <div id="loader">
+      <div class="spinner-grow text-Primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
     <div class="main-content">
       <!-- Your HTML form goes here -->
       <div class="content">
@@ -233,19 +248,18 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
             if (ajax_request.readyState == 4 && ajax_request.status == 200) {
               document.getElementById('submit').disabled = false;
               document.getElementById('loader').style.display = 'none';
-
               var response = JSON.parse(ajax_request.responseText);
 
               if (response.success != '') {
                 document.getElementById('sample_form').reset();
-
                 document.getElementById('message').innerHTML = response.success;
-
                 setTimeout(function() {
 
                   document.getElementById('message').innerHTML = '';
 
                 }, 7000);
+                localStorage.setItem('AddNewClientToast', 'true');
+                location.reload();
 
 
               } else {
@@ -343,37 +357,29 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
             alert("Error getting location.");
           }
         }
+
+
+
+
+
+
+        //toast function
+        function checkAndShowToastAfterReload() {
+
+          if (localStorage.getItem('AddNewClientToast') === 'true') {
+            showToast('Congratulations! you\'ve Just Added a New Customer.', 9000);
+
+            // Reset the flag after showing the toast
+            localStorage.removeItem('AddNewClientToast');
+          }
+        }
+
+
+
+        // Call the function after the page loads
+        window.onload = function() {
+          setTimeout(() => {
+            checkAndShowToastAfterReload();
+          }, 3000);
+        };
       </script>
-
-
-
-
-
-
-
-
-
-
-      <!-- Payment -->
-      <!-- <div class="col-md-6 mt-4 mb-2 text-light bg-primary w-100">Products</div>
-          <div class="col-md-6">
-            <label for="Product" class="form-label">Name of Product</label>
-            <select name="Product" id="Product" class="form-select">
-              <option selected>Choose...</option>
-              <?php //$products = getProductData($connect);
-              // foreach ($products as $product) {
-              //   echo '<option value="' . $product['ProductID'] . '" data-name="' . $product['ProductName'] . '">' . $product['ProductName'] . '</option>';
-              // }
-              ?>
-            </select>
-          </div>
-
-          <div class="col-md-6">
-            <label for="ProductQuantity" class="form-label">Number of Products</label>
-            <select name="ProductQuantity" id="ProductQuantity" class="form-select">
-              <option selected>Choose...</option>
-              <option>1</option>
-              <option>2</option>
-              <option>3</option>
-            </select>
-          </div> -->

@@ -4,8 +4,10 @@ $errors = array();
 if (isset($_POST["ClientId"])) {
     sleep(2);
     require_once  '../database/pdo.php';
+    require_once  '../modals/updateBalance_mod.php';
     require_once  '../modals/addPayment_mod.php';
     require_once  '../modals/updateStatus_mod.php';
+
 
     $connect  = connectToDatabase($host, $dbname, $username, $password);
 
@@ -13,11 +15,14 @@ if (isset($_POST["ClientId"])) {
     $clientId = $_POST["ClientId"];
     $PlanID = $_POST['PlanId'];
     $PlanAmount = $_POST['Amount'];
+    $balance = $_POST['balance'];
     $paymentMethodID = $_POST['PaymentMethod'];
     $Paymentdate = $_POST['paymentDate'];
     $paymentStatus = $_POST['PaymentStatus'];
     $InstallationFees = $_POST['InstallationFees'];
     $paymentReference = $_POST['paymentReference'];
+
+
 
 
 
@@ -40,6 +45,7 @@ if (isset($_POST["ClientId"])) {
     $expireDate = $expireDateObject->format('Y-m-d');
 
     // Check if paymentStatus is either "Paid" or "Pending"
+    $activeStatus = 0;
     if ($paymentStatus === "Paid") {
         $activeStatus = true;
     }
@@ -48,15 +54,20 @@ if (isset($_POST["ClientId"])) {
     }
 
 
-
-
-
     // If there are no errors, insert data
     if (empty($errors)) {
+        // Check if balance is greater than 0
+        if ($balance > 0) {
+            // Update balance
+            $balanceUpdated = updateBalance($clientId, $balance, $connect);
+        }
 
-        $paymentSuccess = insertPaymentData($clientId, $PlanID, $PlanAmount, $paymentStatus,  $paymentDate, $InstallationFees, $connect);
+        // Insert payment data, update plan, and change status
+        $paymentSuccess = insertPaymentData($clientId, $PlanID, $PlanAmount, $paymentStatus, $paymentDate, $InstallationFees, $connect);
         $updatedPlan = updatePlan($clientId, $PlanID, $expireDate, $connect);
         $statusChanged = changeStatus($clientId, $activeStatus, $connect);
+
+
         $success = '<div class="alert alert-success">Client Added Successfuly</div>';
     } else {
         // If there are errors, construct an error message

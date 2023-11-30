@@ -4,7 +4,7 @@
 function getClientsNames($connect)
 {
     // Replace this with your database query to fetch FirstName, LastName, and ID from the clients table
-    $sql = "SELECT ClientID, FirstName, LastName FROM clients";
+    $sql = "SELECT ClientID, FirstName, LastName, PlanID FROM clients";
 
     $statement = $connect->prepare($sql);
 
