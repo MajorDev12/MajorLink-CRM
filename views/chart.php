@@ -1,3 +1,4 @@
+<?php require_once "../controllers/session_Config.php"; ?>
 <div class="content">
     <h1>chart.js</h1>
     <div class="chart-container">

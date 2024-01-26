@@ -1,3 +1,5 @@
+<?php require_once "../controllers/session_Config.php"; ?>
+
 <?php
 require_once  '../database/pdo.php';
 require_once  '../controllers/addarea_contr.php';
@@ -25,7 +27,7 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
     <div class="head-title">
 
       <div class="left">
-        <h1>Dashboard</h1>
+        <h1>hi, <?php echo $_SESSION['Username']; ?></h1>
         <ul class="breadcrumb">
           <li>
             <a href="index.php">Dashboard</a>

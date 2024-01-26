@@ -1,3 +1,4 @@
+<?php require_once "../controllers/session_Config.php"; ?>
 <div class="content">
     <h3 class="mb-5">Auto Invoice</h3>
     <label for="">Choose Invoice Type</label>

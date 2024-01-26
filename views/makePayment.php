@@ -1,3 +1,4 @@
+<?php require_once "../controllers/session_Config.php"; ?>
 <?php
 require_once  '../database/pdo.php';
 // require_once  '../controllers/addarea_contr.php';
@@ -34,7 +35,7 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                     </li>
                     <li><i class='bx bx-chevron-right'></i></li>
                     <li>
-                        <a class="active" href="#">Home</a>
+                        <a class="active" href="#">Make Payment</a>
                     </li>
                 </ul>
             </div>
@@ -278,7 +279,11 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                         ContinuePayment();
                     });
 
-
+                    //check if advance is set  - check if records of advancePayment is set
+                    //                         - get all fromDate of the advancePayments and check:
+                    //                         - if 
+                    //if advance is set cancel
+                    //redirect to advance page
 
 
                     if (Amount > planPrice) {
@@ -335,6 +340,16 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                                     setTimeout(() => {
                                         loader.style.display = "none";
                                     }, 2000);
+                                }
+                                if (data.advancePaid) {
+                                    closeModal();
+                                    loader.style.display = "none";
+                                    displayMessage("errorMsg", "the customer has subscribed to an advance Payment", false);
+                                    localStorage.setItem('ClientHasAdvancePaymentToast', 'true');
+                                    setTimeout(() => {
+                                        location.reload();
+                                    }, 3000);
+
                                 }
                             })
                             .catch(error => {
@@ -453,11 +468,41 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                 function checkAndShowToastAfterReload() {
 
                     if (localStorage.getItem('AddNewClientPaymentToast') === 'true') {
-                        showToast('Congratulations! you\'ve Just Added a New Payment', 9000);
+                        showToast('Congratulations! you\'ve Just Added a New Payment, Business I Booming', 9000);
 
                         // Reset the flag after showing the toast
                         localStorage.removeItem('AddNewClientPaymentToast');
                     }
+                    if (localStorage.getItem('ClientHasAdvancePaymentToast') === 'true') {
+                        var counter = 9; // Set the initial counter value
+
+                        // Show the toast with the initial counter value
+                        showToast('It seems the customer has made an advance payment. Please use our Advance Payment portal for further transactions. Redirecting in:' + counter + ' seconds.', 9000);
+
+                        // Update the counter every second
+                        var counterInterval = setInterval(function() {
+                            counter--;
+
+                            // Update the toast with the updated counter value
+                            showToast('It seems the customer has made an advance payment. Please use the Advance Payment portal for further transactions. I Am Redirecting in:' + counter + ' seconds.', 9000);
+
+                            if (counter <= 0) {
+                                // Reset the flag after showing the toast
+                                localStorage.removeItem('ClientHasAdvancePaymentToast');
+
+                                // Stop the counter interval
+                                clearInterval(counterInterval);
+
+                                // Redirect the user after the specified time (10 seconds)
+                                setTimeout(function() {
+                                    // Replace 'your_redirect_url' with the actual URL you want to redirect to
+                                    window.location.href = 'advancePayment.php';
+                                }, 0); // Use 0 milliseconds to execute the redirect as soon as possible
+                            }
+                        }, 1000); // Update the counter every second
+                    }
+
+
 
 
                 }

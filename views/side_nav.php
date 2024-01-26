@@ -1,3 +1,4 @@
+<?php require_once "../controllers/session_Config.php"; ?>
 <section id="sidebar">
   <a href="#" class="brand">
     <i class='bx bxs-smile'></i>
@@ -115,9 +116,9 @@
       </div>
       <ul class="sub-menu">
         <li><a class="link_name" href="#">Management</a></li>
-        <li><a href="#" data-target="invoice">Settings</a></li>
+        <li><a href="Settings.php" data-target="Settings">Settings</a></li>
         <li><a href="#" data-target="invoice">System Logs</a></li>
-        <li><a href="#" data-target="email">Plugins</a></li>
+        <li><a href="plugins.php" data-target="email">Plugins</a></li>
       </ul>
     </li>
 

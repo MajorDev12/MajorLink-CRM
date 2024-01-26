@@ -1,3 +1,4 @@
+<?php require_once "../controllers/session_Config.php"; ?>
 <?php require_once "header.php"; ?>
 
 

@@ -1,3 +1,13 @@
+<?php require_once "../controllers/session_Config.php"; ?>
+<?php require_once  '../database/pdo.php'; ?>
+<?php require_once  '../modals/setup_mod.php'; ?>
+
+
+<?php
+$connect = connectToDatabase($host, $dbname, $username, $password);
+?>
+
+
 <?php require_once "header.php"; ?>
 
 
@@ -18,7 +28,8 @@
 		<div class="head-title">
 
 			<div class="left">
-				<h1>Dashboard</h1>
+				<h1>Welcome, <?php echo $_SESSION['Username']; ?></h1>
+
 				<ul class="breadcrumb">
 					<li>
 						<a href="#">Dashboard</a>
@@ -71,14 +82,20 @@
 					<li>
 						<i class='bx bxs-dollar-circle'></i>
 						<span class="text">
-							<h3>$2543</h3>
+							<h3> <?php
+									$settings = get_Settings($connect);
+									echo $settings[0]["CurrencySymbol"];
+									?> 2543</h3>
 							<p>Total Sales</p>
 						</span>
 					</li>
 					<li>
 						<i class='bx bxs-calendar-check'></i>
 						<span class="text">
-							<h3>$1020</h3>
+							<h3><?php
+								$settings = get_Settings($connect);
+								echo $settings[0]["CurrencySymbol"];
+								?> 1020</h3>
 							<p>Sales This Month</p>
 						</span>
 					</li>
@@ -182,13 +199,19 @@
 				<!-- Revenue Reports -->
 				<div class="content">
 					<h4>Income Summary for All Areas</h4>
-					<p>Total Income This Geoghraphy: $ 0.00</p>
+					<p>Total Income This Geoghraphy: <?php
+														$settings = get_Settings($connect);
+														echo $settings[0]["CurrencySymbol"];
+														?> 0.00</p>
 					<canvas id="allarea" class="canvasChart"></canvas>
 				</div>
 
 				<div class="content mt-5">
 					<h4>Sales Last Three Months</h4>
-					<p>Total Income This Three Months: $ 0.00</p>
+					<p>Total Income This Three Months: <?php
+														$settings = get_Settings($connect);
+														echo $settings[0]["CurrencySymbol"];
+														?> 0.00</p>
 					<canvas id="threemonth" class="canvasChart"></canvas>
 				</div>
 			</div>

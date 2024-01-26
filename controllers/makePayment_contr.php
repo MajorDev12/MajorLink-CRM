@@ -5,6 +5,7 @@ if (isset($_POST["ClientId"])) {
     sleep(2);
     require_once  '../database/pdo.php';
     require_once  '../modals/updateBalance_mod.php';
+    require_once  '../modals/checkAdvanceIsSet_mod.php';
     require_once  '../modals/addPayment_mod.php';
     require_once  '../modals/updateStatus_mod.php';
 
@@ -22,7 +23,18 @@ if (isset($_POST["ClientId"])) {
     $InstallationFees = $_POST['InstallationFees'];
     $paymentReference = $_POST['paymentReference'];
 
+    $advancePaid = hasMadeAdvancePayment($clientId, $connect);
 
+    if ($advancePaid) {
+        // Code for clients who have made an advance payment
+        // If the request method is not POST, return an error response
+        $response = [
+            'advancePaid' => true
+        ];
+
+        echo json_encode($response);
+        return;
+    }
 
 
 
@@ -81,6 +93,7 @@ if (isset($_POST["ClientId"])) {
         'paymentSuccess' => $paymentSuccess ? true : false,
         'updatedPlan' => $updatedPlan ? true : false,
         'statusChanged' => $statusChanged ? true : false,
+        'advancePaid' => false,
         'success' => $success
     ];
 

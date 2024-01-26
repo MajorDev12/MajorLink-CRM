@@ -1,4 +1,4 @@
-#content nav {
+#content .top-nav {
 	height: 56px;
 	background: var(--light);
 	padding: 0 24px;
@@ -9,9 +9,9 @@
 	position: sticky;
 	top: 0;
 	left: 0;
-	z-index: 1000;
+	z-index: 200;
 }
-#content nav::before {
+#content .top-nav::before {
 	content: '';
 	position: absolute;
 	width: 40px;
@@ -21,60 +21,48 @@
 	border-radius: 50%;
 	box-shadow: -20px -20px 0 var(--light);
 }
-#content nav a {
+#content .top-nav a {
 	color: var(--dark);
 }
-#content nav .bx.bx-menu {
+#content .top-nav .bx.bx-menu {
 	cursor: pointer;
 	color: var(--dark);
 }
-#content nav .nav-link {
+#content .top-nav .nav-link {
 	font-size: 16px;
 	transition: .3s ease;
 }
-#content nav .nav-link:hover {
+#content .top-nav .nav-link:hover {
 	color: var(--blue);
 }
-#content nav form {
+/* #content nav {
 	max-width: 400px;
 	width: 100%;
 	margin-right: auto;
-}
-#content nav form .form-input {
-	display: flex;
-	align-items: center;
-	height: 36px;
-}
-#content nav form .form-input input {
-	flex-grow: 1;
-	padding: 0 16px;
-	height: 100%;
-	border: none;
-	background: var(--grey);
-	border-radius: 36px 0 0 36px;
-	outline: none;
-	width: 100%;
-	color: var(--dark);
-}
-#content nav form .form-input button {
-	width: 36px;
-	height: 100%;
+} */
+#content .top-nav .date {
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	background: var(--blue);
-	color: var(--light);
-	font-size: 18px;
-	border: none;
-	outline: none;
-	border-radius: 0 36px 36px 0;
-	cursor: pointer;
+	height: 36px;
+	/* background-color: aquamarine; */
+	position: relative;
+	right: -20%;
 }
-#content nav .notification {
+#content .top-nav .nav-items{
+	width: 15%;
+	position: relative;
+	right: -60%;
+	display: flex;
+	justify-content: space-between;
+	/* background-color: blueviolet; */
+}
+#content .top-nav .notification {
 	font-size: 20px;
 	position: relative;
+	right: -25%;
 }
-#content nav .notification .num {
+#content .top-nav .notification .num {
 	position: absolute;
 	top: -6px;
 	right: -6px;
@@ -90,13 +78,13 @@
 	justify-content: center;
 	align-items: center;
 }
-#content nav .profile img {
+#content .top-nav .profile img {
 	width: 36px;
 	height: 36px;
 	object-fit: cover;
 	border-radius: 50%;
 }
-#content nav .switch-mode {
+#content .top-nav .switch-mode {
 	display: block;
 	min-width: 50px;
 	height: 25px;
@@ -105,7 +93,7 @@
 	cursor: pointer;
 	position: relative;
 }
-#content nav .switch-mode::before {
+#content .top-nav .switch-mode::before {
 	content: '';
 	position: absolute;
 	top: 2px;
@@ -116,6 +104,6 @@
 	border-radius: 50%;
 	transition: all .3s ease;
 }
-#content nav #switch-mode:checked + .switch-mode::before {
+#content .top-nav #switch-mode:checked + .switch-mode::before {
 	left: calc(100% - (25px - 4px) - 2px);
 }

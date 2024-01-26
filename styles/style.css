@@ -149,7 +149,25 @@ label {
 	z-index: 111;
 }
 
-
+#loading {
+	position: fixed;
+	width: 100%;
+	height: 100%;
+	top: 0;
+	left: 0;
+	display: none;
+	justify-content: center;
+	align-items: center;
+	text-align: center;
+	background-color: var(--light);
+	z-index: 300;
+}
+.removeLoader {
+	/* Styles to hide or remove the loading div */
+	opacity: 0;
+	visibility: hidden;
+	transition: opacity 0.3s ease-out, visibility 0.3s ease-out;
+}
 
 /* Add this to your CSS for styling */
 .modal {

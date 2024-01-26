@@ -1,3 +1,5 @@
+<?php require_once "../controllers/session_Config.php";
+?>
 <?php
 require_once  '../database/pdo.php';
 require_once  '../controllers/addarea_contr.php';
@@ -12,7 +14,7 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
 ?>
 <?php require_once "header.php"; ?>
 
-
+<?php require_once "style.config.php"; ?>
 <!-- SIDEBAR -->
 <?php require_once "side_nav.php"; ?>
 <!-- SIDEBAR -->
@@ -284,7 +286,6 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
 
             var formData = new FormData();
             formData.append("areaId", areaId);
-            console.log("it starts")
             // Fetch sub-areas based on the selected area
             fetch('../controllers/listSubarea_contr.php', {
                 method: 'POST',

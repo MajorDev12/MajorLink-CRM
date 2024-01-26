@@ -1,3 +1,4 @@
+<?php require_once "../controllers/session_Config.php"; ?>
 <?php
 require_once  '../database/pdo.php';
 require_once  '../controllers/viewSingleUser_contr.php';
@@ -234,7 +235,7 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
         </div>
         <!-- toast -->
 
-        <div id="loader">Loading</div>
+        <div id="loader">Loading...</div>
         <!-- content-container -->
         <div class="main-content">
 
@@ -280,14 +281,17 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                                             <h4 class="col-md-4 text-start">Phone Number: </h4>
                                             <p class="col-md-6"><?php echo $clientData['PrimaryNumber']; ?></p>
                                         </div>
-                                        <div class="row">
-                                            <h4 class="col-md-4 text-start">Joined Date: </h4>
-                                            <p class="col-md-6"><?php echo $clientData['CreatedDate']; ?></p>
-                                        </div>
+
                                         <div class="row">
                                             <h4 class="col-md-4 text-start">Current Plan: </h4>
                                             <p class="col-md-6"><?php echo  empty($clientData['Plan']) ? '---' : $clientData['Plan']; ?></p>
                                         </div>
+
+                                        <div class="row">
+                                            <h4 class="col-md-4 text-start">Active Status: </h4>
+                                            <p class="col-md-6"><?php echo $clientData['ActiveStatus'] == 1 ? 'Active' : 'Inactive'; ?></p>
+                                        </div>
+
                                     </div>
                                 </div>
                             </div>
@@ -307,48 +311,93 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                             <div class="row  row-cols-1 row-cols-md-2 g-4">
                                 <div class="col">
                                     <div class="row">
+                                        <h4 class="col-md-6 text-start">Joined Date: </h4>
+                                        <p class="col-md-6"><?php echo $clientData['CreatedDate']; ?></p>
+                                    </div>
+                                    <div class="row">
                                         <h4 class="col-md-6 text-start">Secondary Email: </h4>
-                                        <?php echo empty($clientData['SecondaryEmail']) ? '---' : $clientData['SecondaryEmail']; ?>
+                                        <p class="col-md-6"><?php echo empty($clientData['SecondaryEmail']) ? '---' : $clientData['SecondaryEmail']; ?></p>
                                     </div>
                                     <div class="row">
                                         <h4 class="col-md-6 text-start">Secondary Number: </h4>
                                         <p class="col-md-6"><?php echo empty($clientData['SecondaryNumber']) ? '---' : $clientData['SecondaryNumber']; ?></p>
                                     </div>
                                     <div class="row">
-                                        <h4 class="col-md-6 text-start">Payment status: </h4>
-                                        <p class="col-md-6"><?php echo empty($clientData['Plan']) ? '---' : $clientData['Plan']; ?></p>
-                                    </div>
-                                    <div class="row">
-                                        <h4 class="col-md-6 text-start">Active Status: </h4>
-                                        <p class="col-md-6"><?php echo $clientData['ActiveStatus'] == 1 ? 'Active' : 'Inactive'; ?></p>
-                                    </div>
-                                    <div class="row">
-                                        <h4 class="col-md-6 text-start">Expire Date: </h4>
-                                        <p class="col-md-6"><?php echo empty($clientData['ExpireDate']) ? '---' : $clientData['ExpireDate']; ?></p>
+                                        <h4 class="col-md-6 text-start">Installation Fees: </h4>
+                                        <p class="col-md-6"><?php echo empty($clientData['InstallationFees']) ? '---' : $clientData['InstallationFees']; ?></p>
                                     </div>
 
                                 </div>
                                 <div class="col">
 
                                     <div class="row">
-                                        <h4 class="col-md-6 text-start">Area: </h4>
+                                        <h4 class="col-md-4 text-start">Area: </h4>
                                         <p class="col-md-6"><?php echo empty($clientData['Area']) ? '---' : $clientData['Area']; ?></p>
                                     </div>
                                     <div class="row">
-                                        <h4 class="col-md-6 text-start">Sub Area: </h4>
+                                        <h4 class="col-md-4 text-start">Sub Area: </h4>
                                         <p class="col-md-6"><?php echo empty($clientData['SubArea']) ? '---' : $clientData['SubArea']; ?></p>
                                     </div>
                                     <div class="row">
-                                        <h4 class="col-md-6 text-start">Longitude: </h4>
+                                        <h4 class="col-md-4 text-start">Longitude: </h4>
                                         <p class="col-md-6"><?php echo empty($clientData['Longitude']) ? '---' : $clientData['Longitude']; ?></p>
                                     </div>
                                     <div class="row">
-                                        <h4 class="col-md-6 text-start">Latitude: </h4>
+                                        <h4 class="col-md-4 text-start">Latitude: </h4>
                                         <p class="col-md-6"><?php echo empty($clientData['Latitude']) ? '---' : $clientData['Latitude']; ?></p>
                                     </div>
 
 
                                 </div>
+
+                            </div>
+
+                            <div class="h4 pb-2 mt-4 mb-2 border-bottom">
+                                <h4>Payments</h4>
+                            </div>
+                            <div class="row  row-cols-1 row-cols-md-2 g-4 mt-4">
+                                <div class="col">
+                                    <div class="row">
+                                        <h4 class="col-md-6 text-start">Payment Date: </h4>
+                                        <p class="col-md-6"><?php echo empty($clientData['PaymentStatus']) ? '---' : $clientData['PaymentStatus']; ?></p>
+                                    </div>
+                                    <div class="row">
+                                        <h4 class="col-md-6 text-start">Payment Plan: </h4>
+                                        <p class="col-md-6"><?php echo empty($clientData['Plan']) ? '---' : $clientData['Plan']; ?></p>
+                                    </div>
+                                    <div class="row">
+                                        <h4 class="col-md-6 text-start">Payment Amount: </h4>
+                                        <p class="col-md-6"><?php echo empty($clientData['PaymentStatus']) ? '---' : $clientData['PaymentStatus']; ?></p>
+                                    </div>
+
+                                    <div class="row">
+                                        <h4 class="col-md-6 text-start">Expire Date: </h4>
+                                        <p class="col-md-6"><?php echo empty($clientData['ExpireDate']) ? '---' : $clientData['ExpireDate']; ?></p>
+                                    </div>
+
+                                </div>
+
+                                <div class="col">
+                                    <div class="row">
+                                        <h4 class="col-md-6 text-start">Payment Date: </h4>
+                                        <p class="col-md-6"><?php echo empty($clientData['PaymentStatus']) ? '---' : $clientData['PaymentStatus']; ?></p>
+                                    </div>
+                                    <div class="row">
+                                        <h4 class="col-md-6 text-start">Advance Plan: </h4>
+                                        <p class="col-md-6"><?php echo empty($clientData['Plan']) ? '---' : $clientData['Plan']; ?></p>
+                                    </div>
+                                    <div class="row">
+                                        <h4 class="col-md-6 text-start">Starts From: </h4>
+                                        <p class="col-md-6"><?php echo empty($clientData['PaymentStatus']) ? '---' : $clientData['PaymentStatus']; ?></p>
+                                    </div>
+
+                                    <div class="row">
+                                        <h4 class="col-md-6 text-start">Expire Date: </h4>
+                                        <p class="col-md-6"><?php echo empty($clientData['ExpireDate']) ? '---' : $clientData['ExpireDate']; ?></p>
+                                    </div>
+
+                                </div>
+
 
                             </div>
 

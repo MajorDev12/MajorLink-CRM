@@ -1,3 +1,4 @@
+<?php require_once "../controllers/session_Config.php"; ?>
 <?php
 require_once  '../database/pdo.php';
 require_once  '../controllers/addPlan_contr.php';
@@ -157,7 +158,6 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
           event.preventDefault();
 
           document.getElementById("addbtn").disabled = true;
-          console.log("addplan function called");
           var planName = document.getElementById("planName").value.trim();
           var planVolume = document.getElementById("planVolume").value.trim();
           var planPrice = document.getElementById("planPrice").value.trim();

@@ -48,14 +48,18 @@ if (isset($_POST["clientId"])) {
     }
 
 
-
+    if ($activeStatus) {
+        $last_paymentDate = $paymentDate;
+    } else {
+        $last_paymentDate = null;
+    }
 
 
     // If there are no errors, insert data
     if (empty($errors)) {
 
-        $paymentSuccess = insertPaymentData($clientId, $PlanID, $PlanAmount, $paymentStatus,  $paymentDate, $InstallationFees, $connect);
-        $updatedPlan = updatePlan($clientId, $PlanID, $expireDate, $connect);
+        $paymentSuccess = insertPaymentData($clientId, $PlanID, $PlanAmount, $paymentStatus, $paymentDate, $InstallationFees, $connect);
+        $updatedPlan = updatePlan($clientId, $PlanID, $expireDate, $last_paymentDate, $connect);
         $statusChanged = changeStatus($clientId, $activeStatus, $connect);
         $success = '<div class="alert alert-success">Client Added Successfuly</div>';
     } else {

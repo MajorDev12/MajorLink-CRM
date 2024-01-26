@@ -1,3 +1,4 @@
+<?php require_once "../controllers/session_Config.php"; ?>
 <style>
     .container {
         width: 100%;

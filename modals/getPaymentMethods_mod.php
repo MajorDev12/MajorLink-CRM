@@ -3,7 +3,7 @@
 function getPaymentMethods($connect)
 {
 
-    $sql = "SELECT PaymentOptionID, PaymentOptionName FROM paymentoptions";
+    $sql = "SELECT * FROM paymentoptions";
 
     $statement = $connect->prepare($sql);
 

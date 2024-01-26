@@ -1,21 +1,21 @@
 <?php
 
 
-function generateRandomPassword($length = 6)
-{
-  $characters = '0123456789';
-  $password = '';
+// function generateRandomPassword($length = 6)
+// {
+//   $characters = '0123456789';
+//   $password = '';
 
-  for ($i = 0; $i < $length; $i++) {
-    $password .= $characters[rand(0, strlen($characters) - 1)];
-  }
+//   for ($i = 0; $i < $length; $i++) {
+//     $password .= $characters[rand(0, strlen($characters) - 1)];
+//   }
 
-  return $password;
-}
+//   return $password;
+// }
 
 
 
-function insertClientData($Fname, $Lname, $primaryEmail, $secondaryEmail, $primaryNumber, $secondaryNumber, $PasswordHash, $area, $subArea, $Plan, $latitude, $longitude, $CreatedDate, $ProfilePictureURL, $activeStatus, $expireDate, $connect)
+function insertClientData($Fname, $Lname, $primaryEmail, $secondaryEmail, $primaryNumber, $secondaryNumber, $PasswordHash, $area, $subArea, $Plan, $latitude, $longitude, $CreatedDate, $ProfilePictureURL, $activeStatus, $last_paymentDate, $expireDate, $connect)
 {
   $query = "INSERT INTO clients (FirstName, LastName, PrimaryEmail, SecondaryEmail, PrimaryNumber, SecondaryNumber, PasswordHash, AreaID, SubAreaID, PlanID, Latitude, Longitude, CreatedDate, ProfilePictureURL, ActiveStatus, ExpireDate)
        VALUES (:Fname, :Lname, :primaryEmail, :secondaryEmail, :primaryNumber, :secondaryNumber, :PasswordHash, :area, :subArea, :Plan, :latitude, :longitude, :CreatedDate, :ProfilePictureURL, :activeStatus, :expireDate)";

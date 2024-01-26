@@ -119,9 +119,13 @@ if (isset($_POST["Fname"])) {
 
 
     // generate a random 6-digit password
-    $randomPassword = generateRandomPassword(6);
+    $randomPassword = '123456';
+
+    $options = [
+        'cost' => 12
+    ];
     // hash the password
-    $PasswordHash = password_hash($randomPassword, PASSWORD_BCRYPT);
+    $PasswordHash = password_hash($randomPassword, PASSWORD_BCRYPT, $options);
 
 
     $paymentDate = new DateTime($Paymentdate);
@@ -142,7 +146,11 @@ if (isset($_POST["Fname"])) {
         $activeStatus = false;
     }
 
-
+    if ($activeStatus) {
+        $last_paymentDate = $Paymentdate;
+    } else {
+        $last_paymentDate = null;
+    }
 
 
     $defaultProfileImageURL = 'default-profile-image.png';
@@ -153,7 +161,7 @@ if (isset($_POST["Fname"])) {
     // If there are no errors, insert data
     if (empty($errors)) {
         // Insert into Clients table
-        $clientId =  insertClientData($Fname, $Lname, $primaryEmail, $secondaryEmail, $primaryNumber, $secondaryNumber, $PasswordHash, $area, $subArea, $Plan, $latitude, $longitude, $CreatedDate, $ProfilePictureURL, $activeStatus, $expireDate, $connect);
+        $clientId =  insertClientData($Fname, $Lname, $primaryEmail, $secondaryEmail, $primaryNumber, $secondaryNumber, $PasswordHash, $area, $subArea, $Plan, $latitude, $longitude, $CreatedDate, $ProfilePictureURL, $activeStatus, $last_paymentDate, $expireDate, $connect);
         $balanceSet = setAccount($clientId, $balance, $connect);
         // Insert into Payments table
         if ($Plan !== null) {

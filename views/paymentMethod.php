@@ -1,3 +1,4 @@
+<?php require_once "../controllers/session_Config.php"; ?>
 <?php
 require_once  '../database/pdo.php';
 require_once  '../controllers/addPaymentMethod_contr.php';

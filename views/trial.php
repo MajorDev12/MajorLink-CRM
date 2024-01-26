@@ -1,131 +1,64 @@
-<!DOCTYPE html>
-<html lang="en">
+<?php
+require_once "../views/header.php";
+require_once  '../database/pdo.php';
+// JSON data
+$jsonData = json_decode(file_get_contents("../assets/countryData.json"), true);
+$connect = connectToDatabase($host, $dbname, $username, $password);
 
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="stylesheet" href="styles.css">
-	<title>Custom Toast Example</title>
-	<style>
-		body {
-			font-family: 'Courier New', Courier, monospace;
-		}
+function get_setup($connect)
+{
+	$query = "SELECT * FROM companysettings";
+	$statement = $connect->prepare($query);
+	$statement->execute();
+	$result = $statement->fetchAll(PDO::FETCH_ASSOC);
+	// Check if the 'Country' is null or not
+	if ($result[0]["Country"] === null) {
+		return true;
+	} else {
+		return false;
+	}
+}
 
-		#toast {
-			position: fixed;
-			bottom: 0;
-			right: 0;
-			margin: 2%;
-			margin-bottom: 3%;
-			background-color: #F9F9F9;
-			height: auto;
-			max-width: 350px;
-			overflow: hidden;
-			font-size: 0.875rem;
-			border-radius: 0.25rem;
-			box-shadow: 0 0.5rem 1rem #eee;
-			border: 1px solid grey;
-			opacity: 0;
-			transition: opacity 0.5s ease-in-out;
-			padding: 10px;
-		}
+$country = get_setup($connect);
 
-		.toast-header {
-			display: flex;
-			flex-direction: row;
-			justify-content: space-between;
-			align-items: center;
-			border-bottom: 1px solid grey;
-			padding-bottom: 10px;
-		}
+var_dump($country);
+?>
 
-		.toast-body {
-			width: 100%;
-			padding-top: 20px;
-		}
+<script>
+	// PHP to JS: Pass JSON data to JavaScript
+	// const jsonData = <?php //echo json_encode($jsonData); 
+						?>;
 
-		#toast.show {
-			opacity: 1;
-		}
-	</style>
-</head>
+	// const removedEmptyCurrency = jsonData.filter(country => country.currencies.name === undefined);
 
-<body>
-
-	<button type="button" class="btn btn-primary" id="liveToastBtn">Show live toast</button>
-	<button type="button" class="btn btn-primary" id="deadToastBtn">Show dead toast</button>
-
-	<div id="toast">
-		<div class="toast-header">
-			<img src="../img/user.png" alt="" width="30px">
-			<h4 id="toast-time">3 seconds Ago</h4>
-		</div>
-		<div class="toast-body">
-			<h4>Created Successfully Custom Toast Example</h4>
-		</div>
-	</div>
-
-	<script>
-		document.getElementById('liveToastBtn').addEventListener('click', function() {
-			// Set a flag in local storage to indicate that the toast should be displayed after reload
-			localStorage.setItem('livetoast', 'true');
-
-			// Reload the page
-			location.reload();
-		});
-
-		document.getElementById('deadToastBtn').addEventListener('click', function() {
-			// Set a flag in local storage to indicate that the toast should be displayed after reload
-			localStorage.setItem('deadtoast', 'true');
-			// Reload the page
-			location.reload();
-		});
+	// // Extract only the required data (name, code, currencies, region, flags, phoneCode)
+	// const filteredData = removedOceania.map(country => ({
+	// 	name: country.name.common,
+	// 	code: country.cca2,
+	// 	currencies: country.currencies,
+	// 	timezones: country.region + '/' + country.capital,
+	// 	flags: country.flags.png,
+	// 	phoneCode: (country.idd && country.idd.suffixes) ? country.idd.suffixes.map(suffix => country.idd.root + suffix) : []
+	// }));
 
 
 
-		function shooo() {
-			// Check if the flag is set to show the toast after reload
-			if (localStorage.getItem('livetoast') === 'true') {
-				showToast('Congratulations!, You have Just Added A new Costomer ', 3000); // 3000 milliseconds (3 seconds) duration
-
-				// Reset the flag after showing the toast
-				localStorage.removeItem('livetoast');
-			}
-
-			if (localStorage.getItem('deadtoast') === 'true') {
-				showToast('Congratulations!', 3000); // 3000 milliseconds (3 seconds) duration
-
-				// Reset the flag after showing the toast
-				localStorage.removeItem('deadtoast');
-			}
-		}
 
 
-		window.onload = function() {
-			setTimeout(() => {
-				shooo();
-			}, 3000);
-		};
+
+	// Rearrange the data alphabetically by name
+	// const sortedData = filteredData.sort((a, b) => a.name.localeCompare(b.name));
+
+	// const modifiedData = sortedData.map(country => {
+	// 	// Change "Americas" to "America"
+	// 	country.timezones = country.timezones.replace(/Americas/g, 'America');
+	// 	return country;
+	// });
 
 
-		function showToast(message, duration) {
-			var toast = document.getElementById('toast');
-			toast.querySelector('.toast-body').innerText = message;
+	// // Convert the sorted data to JSON format
+	// const sortedJson = JSON.stringify(modifiedData, null, 2);
 
-			// Show the toast
-			toast.classList.add('show');
-
-			// Hide the toast after the specified duration
-			setTimeout(function() {
-				hideToast();
-			}, duration);
-		}
-
-		function hideToast() {
-			var toast = document.getElementById('toast');
-			toast.classList.remove('show');
-		}
-	</script>
-</body>
-
-</html>
+	// // Display the result
+	// console.log(sortedJson);
+</script>

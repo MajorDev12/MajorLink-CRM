@@ -1,5 +1,9 @@
 <?php
+$clientID = 'Ae4orbdIICDrUSBdOqXB0HbAwz41DvXZwYt9UXlCOska-hYHUEw2YkXEblL0N4VNgBmtAt9G8H7Gq1Mt';
 
+// echo json_encode(['clientID' => $clientID]);
+
+// define("clientid", "Ae4orbdIICDrUSBdOqXB0HbAwz41DvXZwYt9UXlCOska-hYHUEw2YkXEblL0N4VNgBmtAt9G8H7Gq1Mt");
 function getClientDataById($connect, $clientID)
 {
     $query = "SELECT 
@@ -10,6 +14,7 @@ function getClientDataById($connect, $clientID)
                 clients.SecondaryEmail,
                 clients.PrimaryNumber,
                 clients.SecondaryNumber,
+                clients.PasswordHash,
                 clients.Latitude,
                 clients.Longitude,
                 clients.CreatedDate,
@@ -18,12 +23,20 @@ function getClientDataById($connect, $clientID)
                 areas.AreaName AS Area,
                 subareas.SubAreaName AS SubArea,
                 clients.ExpireDate,
+                clients.LastPayment AS LastPayment,
+                clients.PreferedPaymentMethod AS PreferedPaymentMethod,
+                clients.PaymentDate AS startDate,
                 plans.Volume AS Plan,
-                clients.ActiveStatus
+                plans.Name AS PlanName,
+                plans.Price AS PlanPrice,
+                clients.ActiveStatus AS ActiveStatus,
+                payments.PaymentStatus,
+                payments.PaymentDate AS paymentDate
             FROM clients
             LEFT JOIN areas ON clients.AreaID = areas.AreaID
             LEFT JOIN subareas ON clients.SubAreaID = subareas.SubAreaID
             LEFT JOIN plans ON clients.PlanID = plans.PlanID
+            LEFT JOIN payments ON clients.ClientID = payments.ClientID 
             WHERE clients.ClientID = :clientID";
 
     $statement = $connect->prepare($query);
