@@ -54,6 +54,7 @@ if (isset($_POST["ClientId"])) {
 
     // Format the dates for insertion into the database
     $paymentDate = $paymentDateObject->format('Y-m-d');
+    $last_paymentDate = $paymentDateObject->format('Y-m-d');
     $expireDate = $expireDateObject->format('Y-m-d');
 
     // Check if paymentStatus is either "Paid" or "Pending"
@@ -75,8 +76,8 @@ if (isset($_POST["ClientId"])) {
         }
 
         // Insert payment data, update plan, and change status
-        $paymentSuccess = insertPaymentData($clientId, $PlanID, $PlanAmount, $paymentStatus, $paymentDate, $InstallationFees, $connect);
-        $updatedPlan = updatePlan($clientId, $PlanID, $expireDate, $connect);
+        $paymentSuccess = insertPaymentData($clientId, $PlanID, $PlanAmount, $paymentStatus, $paymentDate, $paymentMethodID, $InstallationFees, $connect);
+        $updatedPlan = updatePlan($clientId, $PlanID, $expireDate, $last_paymentDate, $connect);
         $statusChanged = changeStatus($clientId, $activeStatus, $connect);
 
 

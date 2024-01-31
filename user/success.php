@@ -1,4 +1,14 @@
 <?php
+session_start();
+
+// Check if the user is not logged in
+if (!isset($_SESSION['clientID']) || !isset($_SESSION['FirstName'])) {
+    // Redirect to the login page
+    header("location: ../views/login.php");
+    exit();
+}
+?>
+<?php
 // Include configuration file  
 require_once  '../modals/config.php';
 
@@ -16,6 +26,7 @@ $status = 'error';
 // Check whether stripe checkout session is not empty 
 if (!empty($_GET['session_id'])) {
     $session_id = $_GET['session_id'];
+    $ClientID = $_SESSION['clientID'];
 
     // Fetch transaction data from the database if already exists 
     $result = getStripeSessionId($connect, $session_id);
@@ -58,13 +69,20 @@ if (!empty($_GET['session_id'])) {
             } catch (\Stripe\Exception\ApiErrorException $e) {
                 $api_error = $e->getMessage();
             }
-
+            var_dump($paymentIntent);
+            echo "<br />";
+            echo "<br />";
+            var_dump($customer_details);
+            echo "<br />";
+            echo "<br />";
+            var_dump($checkout_session);
+            exit();
             if (empty($api_error) && $paymentIntent) {
                 // Check whether the payment was successful 
                 if (!empty($paymentIntent) && $paymentIntent->status == 'succeeded') {
                     // Transaction details  
                     $transactionID = $paymentIntent->id;
-                    $paidAmount = $paymentIntent->amount;
+                    $paidAmount = $paymentIntent->amount_received;
                     $paidAmount = ($paidAmount / 100);
                     $paidCurrency = $paymentIntent->currency;
                     $payment_status = $paymentIntent->status;
@@ -79,11 +97,10 @@ if (!empty($_GET['session_id'])) {
                     $result = getStripeTransactionId($connect, $transactionID);
 
                     if (!empty($result)) {
-                        $payment_id = $result['transactionID'];
+                        $payment_id = $result['TransactionID'];
                     } else {
                         // Insert transaction data into the database 
-                        $ClientID = 1;
-                        $result = setStripeTransaction($connect, $ClientID, $customer_name, $customer_email, $paidAmount, $paidCurrency, $payment_id, $payment_status, $session_id);
+                        setStripeTransaction($connect, $ClientID, $customer_name, $customer_email, $paidAmount, $paidCurrency, $payment_id, $transactionID, $payment_status, $session_id);
                     }
 
                     $status = 'success';
@@ -101,7 +118,7 @@ if (!empty($_GET['session_id'])) {
 }
 ?>
 
-<?php if (!empty($payment_id)) { ?>
+<?php if (!empty($transactionID)) { ?>
     <h1 class="<?php echo $status; ?>"><?php echo $statusMsg; ?></h1>
 
     <h4>Payment Information</h4>

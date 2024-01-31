@@ -1,5 +1,4 @@
 <?php
-require_once "session_Config.php";
 require_once  '../database/pdo.php';
 require_once "../modals/validate_mod.php";
 require_once "../modals/setup_mod.php";

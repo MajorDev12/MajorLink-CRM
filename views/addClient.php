@@ -8,6 +8,7 @@ require_once  '../controllers/addProduct_contr.php';
 require_once  '../modals/addProduct_mod.php';
 require_once  '../modals/addArea_mod.php';
 require_once  '../modals/addPlan_mod.php';
+require_once  '../modals/getPaymentMethods_mod.php';
 require_once  '../modals/validate_mod.php';
 
 $connect = connectToDatabase($host, $dbname, $username, $password);
@@ -174,16 +175,36 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
             <label for="othersCharges" class="form-label">Installation fees</label>
             <input type="text" name="InstallationFees" id="InstallationFees" class="form-control" value="">
           </div>
+
           <div class="col-md-6">
             <label for="Paymentdate" class="form-label">Payment Date</label>
             <input type="date" name="Paymentdate" id="Paymentdate" class="form-control" value="">
           </div>
+
           <div class="col-md-6">
             <label for="PaymentStatus" class="form-label">Payment Status</label>
             <select id="PaymentStatus" name="PaymentStatus" class="form-select">
               <option selected>Pending </option>
               <option>Paid</option>
               <option>Canceled</option>
+            </select>
+          </div>
+
+
+          <div class="col-md-6">
+            <label for="PaymentOptionID" class="form-label">Payment Method</label>
+            <select id="PaymentOptionID" name="PaymentOptionID" class="form-select">
+              <option value="" selected>Choose...</option>
+              <?php
+              $methods = getPaymentMethods($connect);
+
+              foreach ($methods as $method) {
+                echo '<option value="' . $method['PaymentOptionID'] . '">' . $method['PaymentOptionName'] . '</option>';
+              }
+
+              // echo var_dump($methods);
+              // exit();
+              ?>
             </select>
           </div>
 
@@ -233,6 +254,7 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
           form_data.append('InstallationFees', document.getElementById('InstallationFees').value);
           form_data.append('Paymentdate', document.getElementById('Paymentdate').value);
           form_data.append('PaymentStatus', document.getElementById('PaymentStatus').value);
+          form_data.append('PaymentOptionID', document.getElementById('PaymentOptionID').value);
           form_data.append('JoinedDate', document.getElementById('JoinedDate').value);
 
 

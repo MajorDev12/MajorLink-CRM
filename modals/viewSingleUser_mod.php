@@ -26,6 +26,7 @@ function getClientDataById($connect, $clientID)
                 clients.LastPayment AS LastPayment,
                 clients.PreferedPaymentMethod AS PreferedPaymentMethod,
                 clients.PaymentDate AS startDate,
+                plans.PlanID AS PlanID,
                 plans.Volume AS Plan,
                 plans.Name AS PlanName,
                 plans.Price AS PlanPrice,

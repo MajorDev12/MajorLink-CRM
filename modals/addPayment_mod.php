@@ -1,17 +1,18 @@
 <?php
 
 
-function insertPaymentData($clientId, $PlanID, $PlanAmount, $paymentStatus,  $paymentDate, $InstallationFees, $connect)
+function insertPaymentData($clientId, $PlanID, $PlanAmount, $paymentStatus, $paymentDate, $paymentMethodID, $InstallationFees, $connect)
 {
     try {
-        $query = "INSERT INTO Payments (ClientID, PlanID, PaymentAmount, PaymentStatus, PaymentDate, InstallationFees) VALUES (:clientId, :PlanID, :PlanAmount, :paymentStatus, :paymentDate, :InstallationFees)";
+        $query = "INSERT INTO Payments (ClientID, PlanID, PaymentAmount, PaymentStatus, PaymentDate, PaymentOptionID, InstallationFees) VALUES (:clientId, :PlanID, :PlanAmount, :paymentStatus, :paymentDate, :paymentMethodID, :InstallationFees)";
         $statement = $connect->prepare($query);
         $statement->bindParam(':clientId', $clientId);
         $statement->bindParam(':PlanID', $PlanID);
         $statement->bindParam(':PlanAmount', $PlanAmount);
         $statement->bindParam(':paymentStatus', $paymentStatus);
-        $statement->bindParam(':paymentDate', $paymentDate);  // Fix the case here
-        $statement->bindParam(':InstallationFees', $InstallationFees);  // Fix the case here
+        $statement->bindParam(':paymentDate', $paymentDate);
+        $statement->bindParam(':paymentMethodID', $paymentMethodID);
+        $statement->bindParam(':InstallationFees', $InstallationFees);
         $statement->execute();
         return true;
     } catch (Exception $e) {

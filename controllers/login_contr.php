@@ -58,30 +58,6 @@ if ($postData) {
             exit();
         }
 
-        $hashedPassword = '123456';
-
-        $options = [
-            'cost' => 12
-        ];
-        // hash the password
-        $PasswordHash = password_hash($hashedPassword, PASSWORD_BCRYPT, $options);
-
-        $isTest = isTest($email, $PasswordHash, $connect);
-
-        if ($isTest) {
-            session_start();
-            $_SESSION['testID'] = $isTest['ClientID'];
-            $_SESSION['FirstName'] = $isTest['FirstName'];
-
-
-            $response = [
-                'success' => true,
-                'role' => 'test_client',
-                'message' => 'welcome client'
-            ];
-            echo json_encode($response);
-            exit();
-        }
 
         $response = [
             'success' => true,

@@ -27,10 +27,13 @@ if (isset($_POST["Fname"])) {
     $latitude = $_POST["latitude"];
     $area = $_POST["area"];
     $subArea = $_POST["subArea"];
+
     $Plan = $_POST["Plan"];
     $PlanAmount = $_POST["PlanAmount"];
     $CreatedDate = $_POST["JoinedDate"];
+
     $InstallationFees = $_POST["InstallationFees"];
+    $paymentMethodID = $_POST['PaymentOptionID'];
     $Paymentdate = $_POST["Paymentdate"];
     $PaymentStatus = $_POST["PaymentStatus"];
 
@@ -161,11 +164,11 @@ if (isset($_POST["Fname"])) {
     // If there are no errors, insert data
     if (empty($errors)) {
         // Insert into Clients table
-        $clientId =  insertClientData($Fname, $Lname, $primaryEmail, $secondaryEmail, $primaryNumber, $secondaryNumber, $PasswordHash, $area, $subArea, $Plan, $latitude, $longitude, $CreatedDate, $ProfilePictureURL, $activeStatus, $last_paymentDate, $expireDate, $connect);
+        $clientId =  insertClientData($Fname, $Lname, $primaryEmail, $secondaryEmail, $primaryNumber, $secondaryNumber, $PasswordHash, $area, $subArea, $Plan, $latitude, $longitude, $CreatedDate, $ProfilePictureURL, $activeStatus, $last_paymentDate, $paymentMethodID, $expireDate, $connect);
         $balanceSet = setAccount($clientId, $balance, $connect);
         // Insert into Payments table
         if ($Plan !== null) {
-            insertPaymentData($clientId, $Plan, $PlanAmount, $PaymentStatus,  $Paymentdate, $InstallationFees, $connect);
+            insertPaymentData($clientId, $Plan, $PlanAmount, $PaymentStatus,  $Paymentdate, $paymentMethodID, $InstallationFees, $connect);
         }
         $success = '<div class="alert alert-success">Client Added Successfuly</div>';
     } else {

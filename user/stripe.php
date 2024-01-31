@@ -101,20 +101,21 @@ $clientData = getClientDataById($connect, $clientID);
                                 <input type="hidden" id="PlanName" name="PlanName" value="<?= $clientData['PlanName']; ?>">
                                 <input type="text" class="form-control" readonly id="Plan" name="Plan" value="<?= $clientData['PlanName'] . ' ' . ' - ' . $clientData['Plan'] ?>">
                                 <input type="hidden" name="planVolume" value="<?= $clientData['Plan']; ?>">
+                                <input type="hidden" id="PlanID" name="PlanID" value="<?= $clientData['PlanID']; ?>">
                             </div>
 
 
                             <div class="form-group col-md-4">
                                 <label for="PlanAmount" class="form-label">Amount</label>
                                 <div class="input-group">
-                                    <span class="input-group-text">
+                                    <span class="input-group-text" id="currency">
                                         <?php
                                         $settings = get_Settings($connect);
                                         echo $settings[0]["CurrencySymbol"];
                                         ?>
                                     </span>
 
-                                    <input type="text" name="PlanAmount" id="PlanAmount" class="form-control" value="<?= $clientData['PlanPrice'] ?>" aria-label="Amount (to the nearest dollar)">
+                                    <input type="text" name="PlanAmount" id="PlanAmount" class="form-control" aria-label="Amount (to the nearest dollar)" placeholder="<?= $clientData['PlanPrice']; ?>">
                                 </div>
                             </div>
 
@@ -131,7 +132,6 @@ $clientData = getClientDataById($connect, $clientID);
                         </div>
 
                         <div class="form-group col-md-8 mt-4 text-center">
-                            <!-- <div id="paymentButton"></div> -->
                             <button type="button" id="paymentButton" class="btn p-2 border-none" style="width: 100%;">Pay</button>
                         </div>
 
@@ -145,14 +145,11 @@ $clientData = getClientDataById($connect, $clientID);
             <script src="https://js.stripe.com/v3/"></script>
 
             <script>
-                setTimeout(function() {
-                    document.getElementById("errorMsg").style.display = "none";
-                }, 2000);
-
-
                 const paymentDate = document.querySelector("#paymentDate").value;
                 const startDate = document.querySelector("#startDate").value;
                 const PlanName = document.querySelector("#PlanName").value;
+                const PlanID = document.querySelector("#PlanID").value;
+                const currency = document.querySelector("#currency").value;
                 const PlanAmount = document.querySelector("#PlanAmount").value;
 
 
@@ -165,8 +162,15 @@ $clientData = getClientDataById($connect, $clientID);
 
                 // Payment request handler
                 payBtn.addEventListener("click", function(evt) {
-                    // setLoading(true);
-                    document.querySelector('#loading').style.display = 'flex';
+                    payBtn.disabled = true;
+
+                    if (PlanAmount === '') {
+                        displayMessage("errorMsg", "Amount Cannot Be Empty", true);
+                        payBtn.disabled = false;
+                        return;
+                    }
+
+                    //showLoader();
 
                     createCheckoutSession().then(function(data) {
                         if (data.sessionId) {
@@ -194,6 +198,8 @@ $clientData = getClientDataById($connect, $clientID);
                             paymentDate: paymentDate,
                             startDate: startDate,
                             PlanName: PlanName,
+                            PlanID: PlanID,
+                            currency: currency,
                             PlanAmount: PlanAmount,
                         }),
                     }).then(function(result) {
@@ -218,6 +224,20 @@ $clientData = getClientDataById($connect, $clientID);
 
 
 
+
+
+
+                // Function to toggle button content and show loader
+                function showLoader() {
+                    // Disable the button
+                    document.getElementById('paymentButton').disabled = true;
+
+                    // Change button content to loader
+                    document.getElementById('paymentButton').innerHTML = `
+            <span class="spinner-grow spinner-grow-sm" aria-hidden="true"></span>
+            <span role="status">Loading...</span>
+        `;
+                }
 
 
 

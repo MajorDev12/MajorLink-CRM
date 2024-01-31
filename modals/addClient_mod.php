@@ -15,10 +15,10 @@
 
 
 
-function insertClientData($Fname, $Lname, $primaryEmail, $secondaryEmail, $primaryNumber, $secondaryNumber, $PasswordHash, $area, $subArea, $Plan, $latitude, $longitude, $CreatedDate, $ProfilePictureURL, $activeStatus, $last_paymentDate, $expireDate, $connect)
+function insertClientData($Fname, $Lname, $primaryEmail, $secondaryEmail, $primaryNumber, $secondaryNumber, $PasswordHash, $area, $subArea, $Plan, $latitude, $longitude, $CreatedDate, $ProfilePictureURL, $activeStatus, $last_paymentDate, $paymentMethodID, $expireDate, $connect)
 {
-  $query = "INSERT INTO clients (FirstName, LastName, PrimaryEmail, SecondaryEmail, PrimaryNumber, SecondaryNumber, PasswordHash, AreaID, SubAreaID, PlanID, Latitude, Longitude, CreatedDate, ProfilePictureURL, ActiveStatus, ExpireDate)
-       VALUES (:Fname, :Lname, :primaryEmail, :secondaryEmail, :primaryNumber, :secondaryNumber, :PasswordHash, :area, :subArea, :Plan, :latitude, :longitude, :CreatedDate, :ProfilePictureURL, :activeStatus, :expireDate)";
+  $query = "INSERT INTO clients (FirstName, LastName, PrimaryEmail, SecondaryEmail, PrimaryNumber, SecondaryNumber, PasswordHash, AreaID, SubAreaID, PlanID, Latitude, Longitude, CreatedDate, ProfilePictureURL, ActiveStatus, LastPayment, PreferedPaymentMethod, ExpireDate)
+       VALUES (:Fname, :Lname, :primaryEmail, :secondaryEmail, :primaryNumber, :secondaryNumber, :PasswordHash, :area, :subArea, :Plan, :latitude, :longitude, :CreatedDate, :ProfilePictureURL, :activeStatus, :last_paymentDate, :paymentMethodID, :expireDate)";
   $statement = $connect->prepare($query);
   $statement->bindParam(':Fname', $Fname);
   $statement->bindParam(':Lname', $Lname);
@@ -35,6 +35,8 @@ function insertClientData($Fname, $Lname, $primaryEmail, $secondaryEmail, $prima
   $statement->bindParam(':CreatedDate', $CreatedDate);
   $statement->bindParam(':ProfilePictureURL', $ProfilePictureURL);
   $statement->bindParam(':activeStatus', $activeStatus);
+  $statement->bindParam(':last_paymentDate', $last_paymentDate);
+  $statement->bindParam(':paymentMethodID', $paymentMethodID);
   $statement->bindParam(':expireDate', $expireDate);
   $statement->execute();
 
@@ -43,15 +45,16 @@ function insertClientData($Fname, $Lname, $primaryEmail, $secondaryEmail, $prima
 
 
 
-function insertPaymentData($clientId, $Plan, $PlanAmount, $PaymentStatus,  $Paymentdate, $InstallationFees, $connect)
+function insertPaymentData($clientId, $Plan, $PlanAmount, $PaymentStatus,  $Paymentdate, $paymentMethodID, $InstallationFees, $connect)
 {
-  $query = "INSERT INTO Payments (ClientID, PlanID, PaymentAmount, PaymentStatus, PaymentDate, InstallationFees) VALUES (:clientId, :Plan, :PlanAmount, :PaymentStatus, :Paymentdate, :InstallationFees)";
+  $query = "INSERT INTO Payments (ClientID, PlanID, PaymentAmount, PaymentStatus, PaymentDate, PaymentOptionID, InstallationFees) VALUES (:clientId, :Plan, :PlanAmount, :PaymentStatus, :Paymentdate, :paymentMethodID, :InstallationFees)";
   $statement = $connect->prepare($query);
   $statement->bindParam(':clientId', $clientId);
   $statement->bindParam(':Plan', $Plan);
   $statement->bindParam(':PlanAmount', $PlanAmount);
   $statement->bindParam(':PaymentStatus', $PaymentStatus);
   $statement->bindParam(':Paymentdate', $Paymentdate);
+  $statement->bindParam(':paymentMethodID', $paymentMethodID);
   $statement->bindParam(':InstallationFees', $InstallationFees);
   $statement->execute();
 }

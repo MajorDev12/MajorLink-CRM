@@ -49,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (!empty($request->createCheckoutSession)) {
         // Convert product price to cent 
-        $stripeAmount = round($request->PlanAmount * 100, 2);
+        // $stripeAmount = round($request->PlanAmount * 100, 2);
 
         // Create new Checkout Session for the order 
         try {
@@ -60,12 +60,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             'name' => $request->PlanName,
                         ],
                         'unit_amount' => $request->PlanAmount . '00',
-                        'currency' => 'usd',
+                        'currency' => 'kes',
                     ],
                     'quantity' => 1
                 ]],
                 'mode' => 'payment',
-                'success_url' => STRIPE_SUCCESS_URL . '?session_id={CHECKOUT_SESSION_ID}',
+                'success_url' => STRIPE_SUCCESS_URL . '?session_id={CHECKOUT_SESSION_ID}&' . $request->PlanID,
                 'cancel_url' => STRIPE_CANCEL_URL,
             ]);
         } catch (Exception $e) {

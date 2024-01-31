@@ -1,8 +1,10 @@
 <?php session_start(); ?>
 <?php
-require_once "header.php";
+
+require_once  '../modals/adminandclientsetup.php';
 require_once  '../database/pdo.php';
 require_once "../modals/setup_mod.php";
+require_once "header.php";
 
 $connect = connectToDatabase($host, $dbname, $username, $password);
 
