@@ -27,25 +27,26 @@
 // // Output the result
 // echo $mergedJson;
 // JSON data
-$countries = json_decode(file_get_contents("assets/countryData.json"), true);
+// $countries = json_decode(file_get_contents("assets/countryData.json"), true);
 ?>
 
 <script>
-    const countryData = <?php echo json_encode($countries); ?>;
+    // const countryData = <?php //echo json_encode($countries); 
+                            ?>;
 
-    // Assuming you have the data stored in a variable named 'countryData'
+    // // Assuming you have the data stored in a variable named 'countryData'
 
-    const updatedCountryData = countryData.map(country => {
-        if (country.currencies && typeof country.currencies === 'object') {
-            Object.keys(country.currencies).forEach(currencyCode => {
-                const currencyDetails = country.currencies[currencyCode];
-                currencyDetails.code = currencyCode;
-            });
-        }
-        return country;
-    });
+    // const updatedCountryData = countryData.map(country => {
+    //     if (country.currencies && typeof country.currencies === 'object') {
+    //         Object.keys(country.currencies).forEach(currencyCode => {
+    //             const currencyDetails = country.currencies[currencyCode];
+    //             currencyDetails.code = currencyCode;
+    //         });
+    //     }
+    //     return country;
+    // });
 
-    console.log(JSON.stringify(updatedCountryData, null, 2));
+    // console.log(JSON.stringify(updatedCountryData, null, 2));
 </script>
 
 
