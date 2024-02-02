@@ -21,20 +21,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     require_once "../modals/config.php";
 
     $connect  = connectToDatabase($host, $dbname, $username, $password);
+    $input = file_get_contents('php://input');
+    $request = json_decode($input);
 
 
-    // $paymentDate = inputValidation($_POST["paymentDate"]);
-    // $startDate = inputValidation($_POST["startDate"]);
-    // $planVolume = inputValidation($_POST["planVolume"]);
-    // $planName = inputValidation($_POST["PlanName"]);
-    // $amount = inputValidation($_POST["PlanAmount"]);
+    //we'll use this for advance payment 
+    $paymentDate = inputValidation($request->paymentDate);
+    $PlanName = inputValidation($request->PlanName);
+    $amount = inputValidation($request->PlanAmount);
+    $currency = inputValidation($request->currency);
+    $PlanID = inputValidation($request->PlanID);
+    $startDate = inputValidation($request->startDate);
 
-    // if (empty($amount)) {
-    //     header("Location: ../user/stripe.php?error=emptyinput");
-    //     exit();
-    // }
 
-    // require_once "../apis/stripe/vendor/autoload.php";
+    if (empty($amount)) {
+        $response = array(
+            'error' => 'Amount Cannot Be Empty'
+        );
+        echo json_encode($response);
+        exit();
+    }
+
+    //get stripe currencies
+    //check if currency is  compatible
+    //if compatible:  pass it like that
+    //else: use converter api
+
+
+
+
 
 
     // Include the Stripe PHP library 
@@ -43,8 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Set API key 
     $stripe = new \Stripe\StripeClient(STRIPE_API_KEY);
 
-    $input = file_get_contents('php://input');
-    $request = json_decode($input);
+
 
 
     if (!empty($request->createCheckoutSession)) {
@@ -57,9 +71,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'line_items' => [[
                     'price_data' => [
                         'product_data' => [
-                            'name' => $request->PlanName,
+                            'name' => $PlanName,
                         ],
-                        'unit_amount' => $request->PlanAmount . '00',
+                        'unit_amount' => $amount . '00',
                         'currency' => 'kes',
                     ],
                     'quantity' => 1

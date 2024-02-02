@@ -3,8 +3,11 @@
 
     <div class="date">
         <?php
-        // Get the current date and format it as per your requirement
-        $currentDate = date('d-F-Y'); // Change the format as needed
+        require_once  '../modals/setup_mod.php';
+        $settings = get_Settings($connect);
+        $timezone = $settings[0]["TimeZone"];
+        date_default_timezone_set($timezone);
+        $currentDate = date('d-F-Y' . ' -  -' . 'H:i:s');
 
         // Display the formatted date
         echo "<p id='date' class='text-center'>" . $currentDate . "</p>";

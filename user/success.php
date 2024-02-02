@@ -16,6 +16,7 @@ require_once  '../modals/config.php';
 require_once  '../database/pdo.php';
 
 require_once '../modals/getStripeTransaction_mod.php';
+require_once  '../modals/setup_mod.php';
 
 $connect  = connectToDatabase($host, $dbname, $username, $password);
 $payment_id = $statusMsg = '';
@@ -35,10 +36,10 @@ if (!empty($_GET['session_id'])) {
         // Transaction details
         $transData = $result[0]; // Assuming you want the first row if there are multiple rows
         $payment_id = $transData['PaymentID'];
-        $transactionID = $transData['TransactionID'];
         $paidAmount = $transData['PaidAmount'];
         $paidCurrency = $transData['PaidCurrency'];
         $payment_status = $transData['Payment_status'];
+        $createdDate = $transData['CreatedDate'];
 
         $customer_name = $transData['Customer_name'];
         $customer_email = $transData['Customer_email'];
@@ -69,23 +70,34 @@ if (!empty($_GET['session_id'])) {
             } catch (\Stripe\Exception\ApiErrorException $e) {
                 $api_error = $e->getMessage();
             }
-            var_dump($paymentIntent);
-            echo "<br />";
-            echo "<br />";
-            var_dump($customer_details);
-            echo "<br />";
-            echo "<br />";
-            var_dump($checkout_session);
-            exit();
+
             if (empty($api_error) && $paymentIntent) {
                 // Check whether the payment was successful 
                 if (!empty($paymentIntent) && $paymentIntent->status == 'succeeded') {
                     // Transaction details  
-                    $transactionID = $paymentIntent->id;
+                    $payment_id = $paymentIntent->id;
                     $paidAmount = $paymentIntent->amount_received;
                     $paidAmount = ($paidAmount / 100);
                     $paidCurrency = $paymentIntent->currency;
-                    $payment_status = $paymentIntent->status;
+                    $payment_status = 'Paid';
+
+
+
+
+
+                    //handle the advance payment
+
+
+
+
+
+
+
+
+                    $settings = get_Settings($connect);
+                    $timezone = $settings[0]["TimeZone"];
+                    date_default_timezone_set($timezone);
+                    $createdDate = date('Y-m-d H:i:s');
 
                     // Customer info 
                     $customer_name = $customer_email = '';
@@ -93,14 +105,12 @@ if (!empty($_GET['session_id'])) {
                         $customer_name = !empty($customer_details->name) ? $customer_details->name : '';
                         $customer_email = !empty($customer_details->email) ? $customer_details->email : '';
                     }
-                    // Check if any transaction data is exists already with the same TXN ID 
-                    $result = getStripeTransactionId($connect, $transactionID);
+                    // Check if any transaction data exists with the same TXN ID 
+                    $result = getStripeTransactionId($connect, $payment_id);
 
-                    if (!empty($result)) {
-                        $payment_id = $result['TransactionID'];
-                    } else {
+                    if (empty($result)) {
                         // Insert transaction data into the database 
-                        setStripeTransaction($connect, $ClientID, $customer_name, $customer_email, $paidAmount, $paidCurrency, $payment_id, $transactionID, $payment_status, $session_id);
+                        setStripeTransaction($connect, $ClientID, $customer_name, $customer_email, $paidAmount, $paidCurrency, $createdDate, $payment_id, $payment_status, $session_id);
                     }
 
                     $status = 'success';
@@ -118,23 +128,56 @@ if (!empty($_GET['session_id'])) {
 }
 ?>
 
-<?php if (!empty($transactionID)) { ?>
+<?php if (!empty($payment_id)) { ?>
     <h1 class="<?php echo $status; ?>"><?php echo $statusMsg; ?></h1>
 
-    <h4>Payment Information</h4>
-    <p><b>Reference Number:</b> <?php echo $payment_id; ?></p>
-    <p><b>Transaction ID:</b> <?php echo $transactionID; ?></p>
-    <p><b>Paid Amount:</b> <?php echo $paidAmount . ' ' . $paidCurrency; ?></p>
-    <p><b>Payment Status:</b> <?php echo $payment_status; ?></p>
+    <h2>Payment Information</h2>
+    <table border="1" cellpadding="10">
+        <tr>
+            <th>Created Date</th>
+            <td><?php echo $createdDate; ?></td>
+        </tr>
+        <tr>
+            <th>Reference Number</th>
+            <td><?php echo $payment_id; ?></td>
+        </tr>
+        <tr>
+            <th>Paid Amount</th>
+            <td><?php echo $paidAmount . ' ' . $paidCurrency; ?></td>
+        </tr>
+        <tr>
+            <th>Payment Status</th>
+            <td><?php echo $payment_status; ?></td>
+        </tr>
+    </table>
 
-    <h4>Customer Information</h4>
-    <p><b>Name:</b> <?php echo $customer_name; ?></p>
-    <p><b>Email:</b> <?php echo $customer_email; ?></p>
+    <h2>Customer Information</h2>
+    <table border="1" cellpadding="10">
+        <tr>
+            <th>Name</th>
+            <td><?php echo $customer_name; ?></td>
+        </tr>
+        <tr>
+            <th>Email</th>
+            <td><?php echo $customer_email; ?></td>
+        </tr>
+    </table>
 
-    <h4>Product Information</h4>
-    <p><b>Name:</b> <?php echo $productName; ?></p>
-    <p><b>Price:</b> <?php echo $productPrice . ' ' . $currency; ?></p>
+    <h2>Product Information</h2>
+    <table border="1" cellpadding="10">
+        <tr>
+            <th>Name</th>
+            <td><?php echo $productName; ?></td>
+        </tr>
+        <tr>
+            <th>Price</th>
+            <td><?php echo $productPrice . ' ' . $currency; ?></td>
+        </tr>
+    </table>
+
+    <a href="index.php">Back</a>
+
 <?php } else { ?>
-    <h1 class="error">Your Payment been failed!</h1>
+    <h1 class="error">Your Payment has failed!</h1>
     <p class="error"><?php echo $statusMsg; ?></p>
 <?php } ?>

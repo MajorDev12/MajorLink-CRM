@@ -12,7 +12,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $countryTimezone = inputValidation($_POST["timezone"]);
     $currencyName = inputValidation($_POST["currency"]);
     $currencySymbol = inputValidation($_POST["symbol"]);
-    $phoneCode = inputValidation($_POST["phoneCode"]);
+    $currencyCode = inputValidation($_POST["code"]);
+    $phoneCode = inputValidation($_POST["phonecode"]);
 
     $settingId = 1;
 
@@ -40,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
 
-    $storedSetup = set_setup($countryName, $countryTimezone, $currencyName, $currencySymbol, $phoneCode, $settingId, $connect);
+    $storedSetup = set_setup($countryName, $countryTimezone, $currencyName, $currencySymbol, $currencyCode, $phoneCode, $settingId, $connect);
 
 
     $response = [

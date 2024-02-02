@@ -78,7 +78,7 @@ $clientData = getClientDataById($connect, $clientID);
 
                 <div id="paymentForm" class="offset-md-3 mt-5">
 
-                    <form action="../controllers/stripe_contr.php" method="post" id="paymentDetailsForm">
+                    <form id="paymentDetailsForm">
 
                         <div class="row mb-4">
                             <div class="form-group col-md-4">
@@ -108,14 +108,12 @@ $clientData = getClientDataById($connect, $clientID);
                             <div class="form-group col-md-4">
                                 <label for="PlanAmount" class="form-label">Amount</label>
                                 <div class="input-group">
-                                    <span class="input-group-text" id="currency">
-                                        <?php
-                                        $settings = get_Settings($connect);
-                                        echo $settings[0]["CurrencySymbol"];
-                                        ?>
+                                    <?php $settings = get_Settings($connect); ?>
+                                    <span class="input-group-text" id="currency" value="<?= $settings[0]["CurrencySymbol"]; ?>">
+                                        <?php echo $settings[0]["CurrencySymbol"]; ?>
                                     </span>
 
-                                    <input type="text" name="PlanAmount" id="PlanAmount" class="form-control" aria-label="Amount (to the nearest dollar)" placeholder="<?= $clientData['PlanPrice']; ?>">
+                                    <input type="number" id="PlanAmount" class="form-control" placeholder="<?= $clientData['PlanPrice']; ?>">
                                 </div>
                             </div>
 
@@ -145,14 +143,7 @@ $clientData = getClientDataById($connect, $clientID);
             <script src="https://js.stripe.com/v3/"></script>
 
             <script>
-                const paymentDate = document.querySelector("#paymentDate").value;
-                const startDate = document.querySelector("#startDate").value;
-                const PlanName = document.querySelector("#PlanName").value;
-                const PlanID = document.querySelector("#PlanID").value;
-                const currency = document.querySelector("#currency").value;
-                const PlanAmount = document.querySelector("#PlanAmount").value;
-
-
+                let paymentDate, startDate, PlanName, PlanID, currency, PlanAmount;
 
                 // Set Stripe publishable key to initialize Stripe.js
                 const stripe = Stripe('<?= STRIPE_PUBLISHABLE_KEY; ?>');
@@ -161,8 +152,17 @@ $clientData = getClientDataById($connect, $clientID);
                 const payBtn = document.querySelector("#paymentButton");
 
                 // Payment request handler
-                payBtn.addEventListener("click", function(evt) {
+                payBtn.addEventListener("click", function(e) {
+                    e.preventDefault();
                     payBtn.disabled = true;
+
+                    // Assign values to the global variables
+                    paymentDate = document.querySelector("#paymentDate").value;
+                    startDate = document.querySelector("#startDate").value;
+                    PlanName = document.querySelector("#PlanName").value;
+                    PlanID = document.querySelector("#PlanID").value;
+                    currency = document.querySelector("#currency").textContent;
+                    PlanAmount = document.getElementById("PlanAmount").value;
 
                     if (PlanAmount === '') {
                         displayMessage("errorMsg", "Amount Cannot Be Empty", true);
@@ -170,7 +170,7 @@ $clientData = getClientDataById($connect, $clientID);
                         return;
                     }
 
-                    //showLoader();
+                    showLoader();
 
                     createCheckoutSession().then(function(data) {
                         if (data.sessionId) {
@@ -204,6 +204,9 @@ $clientData = getClientDataById($connect, $clientID);
                         }),
                     }).then(function(result) {
                         return result.json();
+                    }).catch(function(error) {
+                        // Handle network or other errors
+                        console.error("Error:", error);
                     });
                 };
 
@@ -214,12 +217,9 @@ $clientData = getClientDataById($connect, $clientID);
                 // Handle any errors returned from Checkout
                 const handleResult = function(result) {
                     if (result.error) {
-                        // showMessage(result.error.message);
-                        displayMessage('errorMsg', result.error.message, true);
+                        console.error(result.error.message)
+                        displayMessage('errorMsg', 'something went wrong', true);
                     }
-
-                    // setLoading(false);
-                    document.querySelector('#loader').style.display = 'none';
                 };
 
 
@@ -238,8 +238,6 @@ $clientData = getClientDataById($connect, $clientID);
             <span role="status">Loading...</span>
         `;
                 }
-
-
 
 
 

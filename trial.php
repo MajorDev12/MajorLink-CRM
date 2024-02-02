@@ -26,12 +26,34 @@
 
 // // Output the result
 // echo $mergedJson;
+// JSON data
+$countries = json_decode(file_get_contents("assets/countryData.json"), true);
 ?>
 
+<script>
+    const countryData = <?php echo json_encode($countries); ?>;
 
+    // Assuming you have the data stored in a variable named 'countryData'
+
+    const updatedCountryData = countryData.map(country => {
+        if (country.currencies && typeof country.currencies === 'object') {
+            Object.keys(country.currencies).forEach(currencyCode => {
+                const currencyDetails = country.currencies[currencyCode];
+                currencyDetails.code = currencyCode;
+            });
+        }
+        return country;
+    });
+
+    console.log(JSON.stringify(updatedCountryData, null, 2));
+</script>
 
 
 <?php
+
+
+
+
 
 // $Paymentdate = date('2024-02-28');
 
@@ -41,15 +63,15 @@
 // $expireDate = $expireDate->format('Y-m-d');
 
 // echo $expireDate;
-$baseUrl = ((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
-$baseUrl .= $_SERVER['HTTP_HOST'] . dirname($_SERVER['PHP_SELF']);
+// $baseUrl = ((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
+// $baseUrl .= $_SERVER['HTTP_HOST'] . dirname($_SERVER['PHP_SELF']);
 
-define('STRIPE_SUCCESS_URL', $baseUrl . '/payment-success.php'); //Payment success URL 
-define('STRIPE_CANCEL_URL', $baseUrl . '/payment-cancel.php');
+// define('STRIPE_SUCCESS_URL', $baseUrl . '/payment-success.php'); //Payment success URL 
+// define('STRIPE_CANCEL_URL', $baseUrl . '/payment-cancel.php');
 
-echo STRIPE_SUCCESS_URL;
-echo '<br />';
-echo STRIPE_CANCEL_URL;
+// echo STRIPE_SUCCESS_URL;
+// echo '<br />';
+// echo STRIPE_CANCEL_URL;
 
 // function getTime()
 // {

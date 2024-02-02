@@ -14,11 +14,11 @@ function getStripeSessionId($connect, $session_id)
 }
 
 
-function getStripeTransactionId($connect, $transactionID)
+function getStripeTransactionId($connect, $payment_id)
 {
-    $sql = "SELECT TransactionID FROM stripepayments WHERE TransactionID = :TransactionID";
+    $sql = "SELECT PaymentID FROM stripepayments WHERE PaymentID = :payment_id";
     $statement = $connect->prepare($sql);
-    $statement->bindParam(":TransactionID", $transactionID);
+    $statement->bindParam(":payment_id", $payment_id);
     $statement->execute();
     $result = $statement->fetchAll(PDO::FETCH_ASSOC);
 
@@ -27,10 +27,10 @@ function getStripeTransactionId($connect, $transactionID)
 
 
 
-function setStripeTransaction($connect, $ClientID, $Customer_name, $Customer_email, $PaidAmount, $PaidCurrency, $payment_id, $TransactionID, $Payment_status, $Session_id)
+function setStripeTransaction($connect, $ClientID, $Customer_name, $Customer_email, $PaidAmount, $PaidCurrency, $createdDate, $payment_id, $Payment_status, $Session_id)
 {
-    $sql = "INSERT INTO stripepayments (ClientID, Customer_name, Customer_email, PaidAmount, PaidCurrency, PaymentID, TransactionID, Payment_status, Session_id) 
-            VALUES (:ClientID, :Customer_name, :Customer_email, :PaidAmount, :PaidCurrency, :payment_id, :TransactionID, :Payment_status, :Session_id)";
+    $sql = "INSERT INTO stripepayments (ClientID, Customer_name, Customer_email, PaidAmount, PaidCurrency, CreatedDate, PaymentID, Payment_status, Session_id) 
+            VALUES (:ClientID, :Customer_name, :Customer_email, :PaidAmount, :PaidCurrency, :createdDate, :payment_id, :Payment_status, :Session_id)";
 
     $stmt = $connect->prepare($sql);
 
@@ -39,8 +39,8 @@ function setStripeTransaction($connect, $ClientID, $Customer_name, $Customer_ema
     $stmt->bindParam(':Customer_email', $Customer_email, PDO::PARAM_STR);
     $stmt->bindParam(':PaidAmount', $PaidAmount, PDO::PARAM_INT);
     $stmt->bindParam(':PaidCurrency', $PaidCurrency, PDO::PARAM_STR);
+    $stmt->bindParam(':createdDate', $createdDate);
     $stmt->bindParam(':payment_id', $payment_id, PDO::PARAM_STR);
-    $stmt->bindParam(':TransactionID', $TransactionID, PDO::PARAM_STR);
     $stmt->bindParam(':Payment_status', $Payment_status, PDO::PARAM_STR);
     $stmt->bindParam(':Session_id', $Session_id, PDO::PARAM_STR);
 

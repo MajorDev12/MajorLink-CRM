@@ -134,8 +134,9 @@ CREATE TABLE companysettings (
     TimeZone VARCHAR(50),
     CurrencyName VARCHAR(100),
     CurrencySymbol VARCHAR(100),
+    CurrencyCode VARCHAR(100),
     PhoneCode VARCHAR(100),
-    LogoURL VARCHAR(255), -- Assuming a link to the logo image
+    LogoURL VARCHAR(255),
     Address TEXT
     -- other company-related attributes
 );
@@ -211,7 +212,6 @@ CREATE TABLE stripepayments (
     ID INT PRIMARY KEY AUTO_INCREMENT,
     Session_id VARCHAR(255) NOT NULL,
     PaymentID VARCHAR(255) NOT NULL,
-    TransactionID VARCHAR(255) NOT NULL,
     PaidAmount DECIMAL(10, 2) NOT NULL,
     PaidCurrency VARCHAR(255) NULL,
     Payment_status VARCHAR(255) NOT NULL,
@@ -219,8 +219,8 @@ CREATE TABLE stripepayments (
     PlanID INT,
     Customer_name VARCHAR(255) NULL,
     Customer_email VARCHAR(255) NULL,
-    CreatedDate DATETIME,
-    UpdatedDate DATETIME,
+    CreatedDate VARCHAR(255) NULL,
+    UpdatedDate VARCHAR(255) NULL,
     -- other advance payment-related attributes
     FOREIGN KEY (ClientID) REFERENCES clients(ClientID),
     FOREIGN KEY (PlanID) REFERENCES plans(PlanID)

@@ -130,6 +130,7 @@ $countries = json_decode(file_get_contents("../assets/countryData.json"), true);
         timezone: null,
         currency: null,
         currencySymbol: null,
+        currencyCode: null,
         phoneCode: null
     };
 
@@ -177,11 +178,13 @@ $countries = json_decode(file_get_contents("../assets/countryData.json"), true);
                     // Add selected data to the bucket list
                     bucketList.currency = document.getElementById('currency').value;
                     bucketList.currencySymbol = document.getElementById('currencySymbol').value;
+                    bucketList.currencyCode = document.getElementById('currencyCode').value;
+                    // console.log(bucketList.currencyCode)
                     break;
                 case 3:
                     // Add selected data to the bucket list
                     bucketList.phoneCode = document.getElementById('phoneCode').value;
-                    saveData(bucketList.name, bucketList.timezone, bucketList.currency, bucketList.currencySymbol, bucketList.phoneCode);
+                    saveData(bucketList.name, bucketList.timezone, bucketList.currency, bucketList.currencySymbol, bucketList.currencyCode, bucketList.phoneCode);
                     break;
                 default:
                     break;
@@ -196,10 +199,8 @@ $countries = json_decode(file_get_contents("../assets/countryData.json"), true);
             currentStep--;
             document.querySelectorAll('.step')[currentStep].classList.add('active');
         }
-        // updateData();
     }
 
-    // updateData();
 
     function updateData() {
         const selectedCountry = document.getElementById('countryName').value;
@@ -224,11 +225,31 @@ $countries = json_decode(file_get_contents("../assets/countryData.json"), true);
                 timezonesSelect.add(option);
             });
 
+
             // Populate currencies
             for (const currencyCode in selectedCountryData.currencies) {
                 const currencyDetails = selectedCountryData.currencies[currencyCode];
+                // Create a hidden input element for currency code
+                const hiddenInputCode = document.createElement('input');
+                hiddenInputCode.type = 'hidden';
+                hiddenInputCode.id = 'currencyCode';
+                hiddenInputCode.value = currencyDetails.code;
 
-                // Create a hidden input element
+                // Append the hidden input for currency code to the form or container (adjust accordingly)
+                currenciesSelect.parentNode.appendChild(hiddenInputCode);
+
+                // Create a hidden input element for currency name
+                const hiddenInputName = document.createElement('input');
+                hiddenInputName.type = 'hidden';
+                hiddenInputName.id = 'currencyName'; // Note: You might want to use a unique ID for each currency name
+                hiddenInputName.value = currencyDetails.name;
+
+                // Append the hidden input for currency name to the form or container (adjust accordingly)
+                currenciesSelect.parentNode.appendChild(hiddenInputName);
+
+
+
+                // Create a hidden input element for currency symbol
                 const hiddenInput = document.createElement('input');
                 hiddenInput.type = 'hidden';
                 hiddenInput.id = 'currencySymbol';
@@ -254,6 +275,7 @@ $countries = json_decode(file_get_contents("../assets/countryData.json"), true);
             selectedCountryData.phoneCode.forEach(phoneCode => {
                 const option = document.createElement('option');
                 option.value = phoneCode;
+                option.id = 'phoneCode';
                 option.text = phoneCode;
                 phoneCodeSelect.add(option);
             });
@@ -266,20 +288,16 @@ $countries = json_decode(file_get_contents("../assets/countryData.json"), true);
 
 
     // Send selected data to PHP file
-    function saveData(name, timezone, currency, symbol, phonecode) {
+    function saveData(name, timezone, currency, symbol, code, phonecode) {
         document.getElementById("loading").display = "flex";
         const formData = new FormData();
         formData.append('country', name);
         formData.append('timezone', timezone);
         formData.append('currency', currency);
         formData.append('symbol', symbol);
-        formData.append('phoneCode', phonecode);
+        formData.append('code', code);
+        formData.append('phonecode', phonecode);
 
-        // console.log(name)
-        // console.log(timezone)
-        // console.log(currency)
-        // console.log(symbol)
-        // console.log(phonecode)
 
         fetch('../controllers/setup_contr.php', {
                 method: 'POST',

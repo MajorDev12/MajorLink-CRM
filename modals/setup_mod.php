@@ -1,7 +1,7 @@
 <?php
 // $settingId = 1;
 
-function set_setup($countryName, $countryTimezone, $currencyName, $currencySymbol, $phoneCode, $settingId, $connect)
+function set_setup($countryName, $countryTimezone, $currencyName, $currencySymbol, $currencyCode, $phoneCode, $settingId, $connect)
 {
     try {
         $query = "UPDATE companysettings SET 
@@ -9,6 +9,7 @@ function set_setup($countryName, $countryTimezone, $currencyName, $currencySymbo
         TimeZone = :countryTimezone,
         CurrencyName = :currencyName,
         CurrencySymbol = :currencySymbol,
+        currencyCode = :currencyCode,
         PhoneCode = :phoneCode
         WHERE SettingID = :settingId";
 
@@ -17,6 +18,7 @@ function set_setup($countryName, $countryTimezone, $currencyName, $currencySymbo
         $statement->bindParam(':countryTimezone', $countryTimezone);
         $statement->bindParam(':currencyName', $currencyName);
         $statement->bindParam(':currencySymbol', $currencySymbol);
+        $statement->bindParam(':currencyCode', $currencyCode);
         $statement->bindParam(':phoneCode', $phoneCode);
         $statement->bindParam(':settingId', $settingId);
         $statement->execute();
