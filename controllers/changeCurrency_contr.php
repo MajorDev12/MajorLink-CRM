@@ -10,9 +10,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $currencyName = inputValidation($_POST["selectedCurrency"]);
     $currencySymbol = inputValidation($_POST["currencySymbol"]);
+    $currencyCode = inputValidation($_POST["currencyCode"]);
     $settingId = 1;
 
-    $updatedCurrency = update_currency($connect, $currencyName, $currencySymbol, $settingId);
+    $updatedCurrency = update_currency($connect, $currencyName, $currencySymbol, $currencyCode, $settingId);
 
     $response = [
         'success' => $updatedCurrency

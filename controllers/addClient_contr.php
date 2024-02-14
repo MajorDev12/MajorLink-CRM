@@ -149,11 +149,9 @@ if (isset($_POST["Fname"])) {
         $activeStatus = false;
     }
 
-    if ($activeStatus) {
-        $last_paymentDate = $Paymentdate;
-    } else {
-        $last_paymentDate = null;
-    }
+
+    $last_paymentDate = $Paymentdate;
+
 
 
     $defaultProfileImageURL = 'default-profile-image.png';

@@ -83,9 +83,15 @@ $clientData = getClientDataById($connect, $clientID);
                             </div>
 
                             <div class="form-group col-md-4">
-                                <label for="paymentDate">Start Date</label>
-                                <input type="date" class="form-control" id="startDate" disabled value="<?= ($clientData['startDate'] != null) ? $clientData['startDate'] : date('Y-m-d') ?>">
+                                <label for="startDate">Start Date</label>
+                                <?php
+                                // Convert $clientData['ExpireDate'] to a DateTime object
+                                $startDate = new DateTime($clientData['ExpireDate']);
 
+                                // Add one day to the start date
+                                $startDate->add(new DateInterval('P1D'));
+                                ?>
+                                <input type="date" class="form-control" id="startDate" name="startDate" readonly value="<?= ($startDate != null) ? $startDate->format('Y-m-d') : date('Y-m-d') ?>">
                             </div>
 
 

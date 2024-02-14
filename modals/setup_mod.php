@@ -57,17 +57,19 @@ function get_Settings($connect)
 }
 
 
-function update_currency($connect, $name, $symbol, $settingId)
+function update_currency($connect, $name, $symbol, $code, $settingId)
 {
     try {
         $query = "UPDATE companysettings SET 
         CurrencyName = :name,
-        CurrencySymbol = :symbol
+        CurrencySymbol = :symbol,
+        CurrencyCode = :code
         WHERE SettingID = :settingId";
 
         $statement = $connect->prepare($query);
         $statement->bindParam(':name', $name);
         $statement->bindParam(':symbol', $symbol);
+        $statement->bindParam(':code', $code);
         $statement->bindParam(':settingId', $settingId);
         $statement->execute();
         return true;

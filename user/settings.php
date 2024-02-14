@@ -181,34 +181,61 @@ $clientID = $_SESSION['clientID'];
                             <?php $clientData = getClientDataById($connect, $clientID); ?>
                             <div class="planName">
                                 <?php if ($clientData) : ?>
-                                    <h5><?php echo !empty($clientData["PlanName"]) ? $clientData["PlanName"] : "Not Subscribed Yet"; ?></h5>
-                                    <p>The perfect way to get started.</p>
+                                    <?php
+                                    // Convert expireDate to a DateTime object
+                                    $expireDate = new DateTime($clientData["ExpireDate"]);
+
+                                    // Check if expireDate has passed today
+                                    if ($expireDate < new DateTime()) {
+                                        // Set everything to 0
+                                        $totalDays = 0;
+                                        $daysRemaining = 0;
+                                        $percentageLeft = 0;
+                                    } else {
+                                        // Calculate total days
+                                        $expireDate = new DateTime($clientData["ExpireDate"]);
+                                        $lastPaymentDate = new DateTime($clientData["LastPayment"]);
+                                        // Calculate the difference between the two dates
+                                        $dateInterval = $expireDate->diff($lastPaymentDate);
+
+                                        // Get the total number of days from the DateInterval object
+                                        $totalDays = $dateInterval->days;
+
+                                        // // Calculate left days
+                                        $today = new DateTime();
+                                        $daysRemaining = max(0, $today->diff($expireDate)->days); // Ensure daysRemaining is not negative
+
+                                        // Calculate percentage of time left
+                                        $percentageLeft = ($totalDays > 0) ? max(0, ($daysRemaining / $totalDays) * 100) : 0; // Check if $totalDays is greater than 0
+                                    }
+                                    ?>
+                                    <h5><?php echo ($expireDate < new DateTime()) ? "Pay to continue Browsing" : (!empty($clientData["PlanName"]) ? $clientData["PlanName"] : "Not Subscribed Yet"); ?></h5>
+                                    <p><?php echo ($expireDate < new DateTime()) ? "😪😪" : "Best ay to get started"; ?></p>
                             </div>
                             <div class="planPrice">
-                                <h3 class=""> <sup class="currency"> <?php
-                                                                        $settings = get_Settings($connect);
-                                                                        echo $settings[0]["CurrencySymbol"];
-                                                                        ?></sup><span class="number"><?php echo $clientData["PlanPrice"]; ?>/</span><span class="month">month</span></h3>
+                                <h3 class="">
+                                    <sup class="currency"><?php $settings = get_Settings($connect);
+                                                            echo $settings[0]["CurrencySymbol"]; ?></sup>
+                                    <span class="number"><?php echo $clientData["PlanPrice"]; ?>/</span>
+                                    <span class="month">month</span>
+                                </h3>
                             </div>
                         </div>
                         <div class="timelinebar">
-                            <div class="days">
-                                <?php
-                                    // get total days
-                                    $lastPaymentTimestamp = strtotime($clientData["LastPayment"]);
-                                    $expireDateTimestamp = strtotime($clientData["ExpireDate"]);
-                                    $totalDays = round(($expireDateTimestamp - $lastPaymentTimestamp) / (60 * 60 * 24));
-
-                                    // get left days
-                                    $expireDate = new DateTime($clientData["ExpireDate"]);
-                                    $today = new DateTime();
-                                    $daysRemaining = $today->diff($expireDate)->days;
-
-                                    // calculate percentage of time left
-                                    $percentageLeft = ($daysRemaining / $totalDays) * 100;
-                                ?>
-                                <p class="day"><?php echo $totalDays; ?> days</p>
-                                <p><?php echo $daysRemaining; ?> days Left</p>
+                            <div class="timelinebar">
+                                <div class="days">
+                                    <?php
+                                    if ($totalDays > 30) {
+                                        // Calculate the number of months
+                                        $totalMonths = floor($totalDays / 30);
+                                        echo "<p class='day'>$totalMonths months</p>";
+                                    } else {
+                                        echo "<p class='day'>$totalDays days</p>";
+                                    }
+                                    ?>
+                                    <p><?php echo $daysRemaining; ?> days Left</p>
+                                </div>
+                                <!-- ... Other HTML code ... -->
                             </div>
                             <div class="progress" role="progressbar" aria-label="Time Left" aria-valuenow="<?php echo $percentageLeft; ?>" aria-valuemin="0" aria-valuemax="100">
                                 <div class="progress-bar text-bg-warning" style="width: <?php echo $percentageLeft; ?>%"></div>
@@ -220,6 +247,7 @@ $clientID = $_SESSION['clientID'];
                             <button type="button"><a href="changePlan.php">Change Plan</a></button>
                         </div>
                     </div>
+
 
 
                     <div class="changePaymentMethod shadow-sm p-3 mb-2 bg-body-tertiary rounded">

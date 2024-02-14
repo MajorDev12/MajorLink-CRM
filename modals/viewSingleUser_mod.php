@@ -1,9 +1,7 @@
 <?php
 $clientID = 'Ae4orbdIICDrUSBdOqXB0HbAwz41DvXZwYt9UXlCOska-hYHUEw2YkXEblL0N4VNgBmtAt9G8H7Gq1Mt';
 
-// echo json_encode(['clientID' => $clientID]);
 
-// define("clientid", "Ae4orbdIICDrUSBdOqXB0HbAwz41DvXZwYt9UXlCOska-hYHUEw2YkXEblL0N4VNgBmtAt9G8H7Gq1Mt");
 function getClientDataById($connect, $clientID)
 {
     $query = "SELECT 
@@ -25,7 +23,6 @@ function getClientDataById($connect, $clientID)
                 clients.ExpireDate,
                 clients.LastPayment AS LastPayment,
                 clients.PreferedPaymentMethod AS PreferedPaymentMethod,
-                clients.PaymentDate AS startDate,
                 plans.PlanID AS PlanID,
                 plans.Volume AS Plan,
                 plans.Name AS PlanName,

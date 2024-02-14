@@ -71,12 +71,11 @@ CREATE TABLE clients (
     Longitude DECIMAL(10, 6),
     LastLogin DATETIME,
     LastPayment DATETIME,
-    PaymentDate DATETIME DEFAULT NULL,
     CreatedDate DATETIME,
     PreferedPaymentMethod INT(255) NOT NULL DEFAULT '6',
     ProfilePictureURL VARCHAR(255), 
     ActiveStatus TINYINT(1), 
-    ExpireDate DATE,
+    ExpireDate DATETIME,
     -- other client-related attributes
     FOREIGN KEY (AreaID) REFERENCES areas(AreaID),
     FOREIGN KEY (SubAreaID) REFERENCES subareas(SubAreaID),

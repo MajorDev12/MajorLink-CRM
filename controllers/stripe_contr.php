@@ -28,13 +28,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     //we'll use this for advance payment 
     $paymentDate = inputValidation($request->paymentDate);
     $PlanName = inputValidation($request->PlanName);
-    $amount = inputValidation($request->PlanAmount);
-    $currency = inputValidation($request->currency);
+    $PlanAmount = inputValidation($request->PlanAmount);
+    $currencySymbol = inputValidation($request->currency);
+    $currencyCode = inputValidation($request->currencyCode);
     $PlanID = inputValidation($request->PlanID);
     $startDate = inputValidation($request->startDate);
+    $selectedMonths = inputValidation($request->selectedMonths);
 
+    // Set the value in the session
+    $_SESSION["selectedMonths"] = $selectedMonths;
 
-    if (empty($amount)) {
+    if (empty($PlanAmount)) {
         $response = array(
             'error' => 'Amount Cannot Be Empty'
         );
@@ -43,13 +47,53 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     //get stripe currencies
-    //check if currency is  compatible
-    //if compatible:  pass it like that
-    //else: use converter api
+    $stripeCurrencies = json_decode(file_get_contents("../assets/stripeCurrencies.json"), true);
+
+    // Convert to lowercase
+    $currency = trim(strtolower($currencyCode));
 
 
+    // Check if it's not in the list of Stripe currencies
+    if (!in_array($currency, $stripeCurrencies, false)) {
+        // API endpoint for ExchangeRatesAPI
+        $apiEndpoint = 'https://open.er-api.com/v6/latest';
+
+        // API request to get the latest exchange rates
+        $apiUrl = "{$apiEndpoint}?base={$currency}&symbols=USD";
+        $apiResponse = file_get_contents($apiUrl);
 
 
+        if ($apiResponse !== false) {
+            $exchangeRates = json_decode($apiResponse, true);
+
+            // Check if the response is valid
+            if (isset($exchangeRates['rates']['USD'])) {
+                // Convert the amount to USD
+                $amountInUSD = $PlanAmount * $exchangeRates['rates']['USD'];
+
+                // Set the currency to USD
+                $currency = 'usd';
+            } else {
+                // Handle invalid response
+                // Log an error or set a default conversion
+                $amountInUSD = $PlanAmount;
+            }
+        } else {
+            // Handle API request error
+            // Log an error or set a default conversion
+            $amountInUSD = $PlanAmount;
+        }
+    } else {
+        // If the currency is in the list, keep the amount and currency as is
+        $amountInUSD = $PlanAmount;
+    }
+
+
+    // Ensure $amountInUSD is a decimal with two decimal places
+    $amount = round($amountInUSD, 2);
+
+    // Convert $amountInUSD to cents
+    $stripeAmount = (int) round($amountInUSD * 100);
 
 
     // Include the Stripe PHP library 
@@ -73,8 +117,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         'product_data' => [
                             'name' => $PlanName,
                         ],
-                        'unit_amount' => $amount . '00',
-                        'currency' => 'kes',
+                        'unit_amount' => $stripeAmount,
+                        'currency' => strtolower($currency),
                     ],
                     'quantity' => 1
                 ]],

@@ -73,8 +73,8 @@ require_once "../controllers/session_Config.php";
                             // Check if the currency name is already added
                             if (!isset($uniqueCurrencyNames[$details['name']])) {
                             ?>
-                                <option class="currency" value="<?php echo $details['name']; ?>" data-currency-symbol="<?php echo $details['symbol']; ?>">
-                                    <?php echo $details['name'] . ' - ' . $details['symbol']; ?>
+                                <option class="currency" value="<?php echo $details['name']; ?>" data-currency-symbol="<?php echo $details['symbol']; ?>" data-currency-code="<?php echo $details['code']; ?>">
+                                    <?php echo $details['symbol'] . ' - ' . $details['name']; ?>
                                 </option>
                             <?php
                                 // Mark the currency name as added
@@ -103,12 +103,10 @@ require_once "../controllers/session_Config.php";
                         // Get the values
                         var selectedCurrency = selectedOption.value;
                         var currencySymbol = selectedOption.getAttribute("data-currency-symbol");
+                        var currencyCode = selectedOption.getAttribute("data-currency-code");
 
-                        // Log or do something with the selected currency and currency symbol
-                        // console.log("Selected Currency:", selectedCurrency);
-                        // console.log("Currency Symbol:", currencySymbol);
 
-                        if (!selectedCurrency || !currencySymbol) {
+                        if (!selectedCurrency || !currencySymbol || !currencyCode) {
                             displayMessage("errorMsg", "Choose a currency first", true);
                             return;
                         }
@@ -118,6 +116,7 @@ require_once "../controllers/session_Config.php";
                         var formData = new FormData();
                         formData.append("selectedCurrency", selectedCurrency);
                         formData.append("currencySymbol", currencySymbol);
+                        formData.append("currencyCode", currencyCode);
 
                         fetch("../controllers/changeCurrency_contr.php", {
                                 method: 'POST',

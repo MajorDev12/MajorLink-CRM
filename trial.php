@@ -1,5 +1,44 @@
 <?php
 
+$expireDate = new DateTime('2024-02-14');
+$lastPaymentDate = new DateTime('2024-07-14');
+// Calculate the difference between the two dates
+$dateInterval = $expireDate->diff($lastPaymentDate);
+
+// Access the difference in days, months, and years
+$daysDifference = $dateInterval->days;
+$monthsDifference = $dateInterval->m;
+$yearsDifference = $dateInterval->y;
+
+// Print the differences
+echo "Days Difference: $daysDifference days\n";
+echo "<br />";
+echo "Months Difference: $monthsDifference months\n";
+echo "<br />";
+echo "Years Difference: $yearsDifference years\n";
+
+
+$today = new DateTime();
+$daysRemaining = max(0, $today->diff($expireDate)->days);
+echo "<br />";
+echo "<br />";
+echo "Remaining: $daysRemaining days\n";
+
+
+
+$today = new DateTime();
+
+// Get the Unix timestamp representing the current date and time
+$initialExpireDate = $today->getTimestamp();
+
+// Format the timestamp into a human-readable date
+$initialExpireDateString = date('Y-m-d', $initialExpireDate);
+
+// Print the formatted date
+echo "<br />";
+echo "<br />";
+echo $initialExpireDateString;
+
 // JSON data
 // $currencies = json_decode(file_get_contents("assets/currencies.json"), true);
 // $timezones = json_decode(file_get_contents("assets/timezones.json"), true);
@@ -28,6 +67,28 @@
 // echo $mergedJson;
 // JSON data
 // $countries = json_decode(file_get_contents("assets/countryData.json"), true);
+
+// $currency = 'kes';
+
+// $stripeCurrencies = json_decode(file_get_contents("assets/stripeCurrencies.json"), true);
+
+// // Get the length of the array
+// $length = count($stripeCurrencies);
+
+// echo "Length of \$stripeCurrencies: {$length}";
+
+
+// // Convert to lowercase
+// $currency = strtolower($currency);
+
+
+// // Check if it's in the list of Stripe currencies
+// if (!in_array($currency, $stripeCurrencies)) {
+//     $currency = 'usd';
+// }
+
+// echo $currency;
+
 ?>
 
 <script>
