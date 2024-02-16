@@ -17,6 +17,7 @@ require_once  '../database/pdo.php';
 
 require_once '../modals/getStripeTransaction_mod.php';
 require_once  '../modals/setup_mod.php';
+require_once  '../modals/updateStatus_mod.php';
 require_once  '../modals/viewSingleUser_mod.php';
 require_once  '../modals/addPayment_mod.php';
 require_once  '../views/header.php';
@@ -160,7 +161,7 @@ if (!empty($_GET['session_id'])) {
                     $result = getStripeTransactionId($connect, $payment_id);
 
                     if (empty($result)) {
-                        $activeStatus = true;
+                        $activeStatus = 1;
                         $expireDate = new DateTime($expireDate);
 
                         if ($daysRemaining > 0) {
@@ -174,7 +175,7 @@ if (!empty($_GET['session_id'])) {
                         $expireDate = $expireDate->format('Y-m-d');
                         // Insert transaction data into the database 
                         updatePlan($ClientID, $PlanID, $expireDate, $last_paymentDate, $connect);
-                        // changeStatus($ClientID, $activeStatus, $connect);
+                        changeStatus($ClientID, $activeStatus, $connect);
                         setStripeTransaction($connect, $ClientID, $customer_name, $customer_email, $paidAmount, $paidCurrency, $createdDate, $payment_id, $payment_status, $session_id);
                     }
 
@@ -246,6 +247,13 @@ if (!empty($_GET['session_id'])) {
     .space {
         border: none;
     }
+
+    .status {
+        background-color: var(--green);
+        color: var(--light-green);
+        padding: 2px 20px;
+        border-radius: 10px;
+    }
 </style>
 
 
@@ -262,7 +270,7 @@ if (!empty($_GET['session_id'])) {
                     <h3><?php echo $clientData['FirstName'] . ' ' . $clientData['LastName']; ?></h3>
                     <p>Payment Date: <?php echo $createdDate; ?></p>
                     <p>Expire Date: <?php echo $expireDate; ?></p>
-                    <p>Status: <?php echo $payment_status; ?></p>
+                    <p>Status: <span class="status"> <?php echo $payment_status; ?></span></p>
                 </div>
                 <div class="col-md-4">
                     <h3>MajorLink.Co</h3>
