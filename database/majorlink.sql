@@ -230,13 +230,13 @@ CREATE TABLE stripepayments (
 
 CREATE TABLE messages (
     MessageID INT PRIMARY KEY AUTO_INCREMENT,
-    SenderID INT,
-    RecipientID INT,
-    MessageContent TEXT,
-    Timestamp DATETIME,
-    Status VARCHAR(50),
+    SenderName VARCHAR(50) NOT NULL,
+    RecipientID INT NOT NULL,
+    MessageType VARCHAR(50) NOT NULL,
+    MessageContent TEXT NOT NULL,
+    Timestamp DATETIME NOT NULL,
+    Status VARCHAR(50) NOT NULL,
     -- other message-related attributes
-    FOREIGN KEY (SenderID) REFERENCES clients(ClientID),
     FOREIGN KEY (RecipientID) REFERENCES clients(ClientID)
 );
 

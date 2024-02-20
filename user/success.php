@@ -20,6 +20,7 @@ require_once  '../modals/setup_mod.php';
 require_once  '../modals/updateStatus_mod.php';
 require_once  '../modals/viewSingleUser_mod.php';
 require_once  '../modals/addPayment_mod.php';
+require_once  '../modals/notification_mod.php';
 require_once  '../views/header.php';
 
 
@@ -177,6 +178,11 @@ if (!empty($_GET['session_id'])) {
                         updatePlan($ClientID, $PlanID, $expireDate, $last_paymentDate, $connect);
                         changeStatus($ClientID, $activeStatus, $connect);
                         setStripeTransaction($connect, $ClientID, $customer_name, $customer_email, $paidAmount, $paidCurrency, $createdDate, $payment_id, $payment_status, $session_id);
+                        $SenderName = 'system';
+                        $MessageType = 'Transaction-success';
+                        $MessageContent = 'Your payment has been successful';
+                        $Status = 0;
+                        insertMessage($connect, $SenderName, $clientID, $MessageType, $MessageContent, $createdDate, $Status);
                     }
 
                     $status = 'success';

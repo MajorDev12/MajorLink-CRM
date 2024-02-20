@@ -38,3 +38,29 @@ function updatePlan($clientId, $PlanID, $expireDate, $last_paymentDate, $connect
         return "Error: " . $e->getMessage();
     }
 }
+
+
+function getPayments($connect, $clientId)
+{
+    try {
+        $sql = "SELECT 
+            payments.PaymentAmount,
+            payments.PaymentStatus,
+            payments.PaymentDate,
+            paymentoptions.PaymentOptionName,
+            plans.Volume 
+        FROM payments
+        LEFT JOIN paymentoptions ON payments.PaymentOptionID = paymentoptions.PaymentOptionID
+        LEFT JOIN plans ON payments.PlanID = plans.PlanID 
+        WHERE payments.ClientID = :clientId";
+
+        $statement = $connect->prepare($sql);
+        $statement->bindParam(":clientId", $clientId, PDO::PARAM_INT);
+        $statement->execute();
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        return $result;
+    } catch (Exception $e) {
+        return "Error: " . $e->getMessage();
+    }
+}
