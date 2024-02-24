@@ -135,19 +135,19 @@ echo $initialExpireDateString;
 // echo '<br />';
 // echo STRIPE_CANCEL_URL;
 
-// function getTime()
-// {
-//     $targetTimezone = 'Antarctica/DumontDUrville';
+function getTime($CurrentTimezone)
+{
+    $targetTimezone = $CurrentTimezone;
 
-//     // Set the default timezone
-//     date_default_timezone_set($targetTimezone);
+    // Set the default timezone
+    date_default_timezone_set($targetTimezone);
 
-//     // Get the current date and time in the specified timezone
-//     $currentDateTime = date('Y-m-d H:i:s');
+    // Get the current date and time in the specified timezone
+    $currentDateTime = date('Y-m-d H:i:s');
 
-//     // Display the formatted date and time
-//     echo $currentDateTime;
-// }
+    // Display the formatted date and time
+    return $currentDateTime;
+}
 
 // getTime();
 // geoip_country_name_by_name();

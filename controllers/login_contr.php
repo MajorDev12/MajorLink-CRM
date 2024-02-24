@@ -4,6 +4,9 @@
 require_once '../database/pdo.php';
 require_once '../modals/validate_mod.php';
 require_once '../modals/login_mod.php';
+require_once '../modals/setup_mod.php';
+require_once '../modals/getTime_mod.php';
+require_once '../modals/notification_mod.php';
 
 $connect = connectToDatabase($host, $dbname, $username, $password);
 // Get the posted data
@@ -16,6 +19,9 @@ if ($postData) {
 
 
     if (!empty($email) && !empty($password)) {
+
+        $settings = get_Settings($connect);
+        $CurrentTimezone = $settings[0]["TimeZone"];
 
         $hashedPassword = $password;
         // echo $hashedPassword;
@@ -32,7 +38,13 @@ if ($postData) {
                 session_start();
                 $_SESSION['clientID'] = $isClient['ClientID'];
                 $_SESSION['FirstName'] = $isClient['FirstName'];
-
+                $SenderName = 'system';
+                $MessageType = 'ActivityLog';
+                $MessageContent = 'Logged in successful ' . $isClient['FirstName'];
+                $Status = 0;
+                $timestamp = getTime($CurrentTimezone);
+                $clientID = $isClient['ClientID'];
+                insertMessage($connect, $SenderName, $clientID, $MessageType, $MessageContent, $timestamp, $Status);
                 $response = [
                     'success' => true,
                     'role' => 'client',

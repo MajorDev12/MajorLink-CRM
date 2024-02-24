@@ -342,7 +342,7 @@ if (!empty($_GET['session_id'])) {
 
         <div class="mt-4">
             <a href="index.php" class="btn btn-warning Print">Print</a>
-            <a href="index.php" class="btn btn-success Download">Download</a>
+            <a href="../controllers/generatepdf_contr.php" class="btn btn-success Download" target="_blank">Download pdf</a>
             <a href="index.php" class="btn btn-secondary">View Transactions</a>
             <a href="index.php" class="btn btn-primary">Done</a>
         </div>

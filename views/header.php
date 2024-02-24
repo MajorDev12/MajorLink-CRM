@@ -42,6 +42,8 @@
 	<link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet" />
 	<!-- Include zxcvbn library -->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/zxcvbn/4.4.2/zxcvbn.js"></script>
+	<!-- gutenberg -->
+	<!-- <link rel="stylesheet" href="https://unpkg.com/gutenberg-css@0.6"> -->
 </head>
 
 <body>
