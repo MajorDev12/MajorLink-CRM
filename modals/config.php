@@ -11,3 +11,11 @@ define('STRIPE_API_KEY', 'sk_test_51OahpHCOzF40fi2hTL2NuZVCPFdfM6vUSjdLvf9oozxk7
 define('STRIPE_PUBLISHABLE_KEY', 'pk_test_51OahpHCOzF40fi2hi1gx9KobB3Dp4gT2UZ54X7GxDnaeJXn6AltexdtJMxfvFgi8bpY435mSCrxVcS7aCjkwBQnZ00RFNMMqbA');
 define('STRIPE_SUCCESS_URL', 'http://localhost/majorlink/user/success.php'); //Payment success URL 
 define('STRIPE_CANCEL_URL', 'http://localhost/majorlink/user/cancel.php'); //Payment cancel URL 
+
+
+
+// COMPANY DETAILS
+define('COMPANY NAME', 'MajorLink');
+define('COMPANY_WEBSITE', 'www.majorlink.com');
+define('COMPANY EMAIL', 'majorlink@gmail.com');
+define('COMPANY NUMBER', '(254) 718 317 726');

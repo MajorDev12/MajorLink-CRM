@@ -1,9 +1,10 @@
-<?php require "header.php"; ?>
+<?php require "../views/header.php"; ?>
 <style>
     .invoiceContainer {
-        width: 100%;
+        width: 60%;
         height: 100vh;
         position: relative;
+        left: 20%;
         background-color: #F9F9F9;
         font-family: 'Poppins', sans-serif;
     }
@@ -113,6 +114,20 @@
     .invoiceContainer table tbody tr .totalPrice {
         color: #3C91E6;
     }
+
+    @media print {
+        .invoiceContainer {
+            width: 100%;
+        }
+
+        .actions {
+            display: none;
+        }
+
+        h5 {
+            font-size: 18px;
+        }
+    }
 </style>
 
 
@@ -143,7 +158,7 @@
     <div class="secondContainer">
         <div class="clientInfo">
             <p>Billed To</p>
-            <h5>{{ name }}</h5>
+            <h5>Major Nganga</h5>
             <h5>Nakuru, Pipeline</h5>
             <!-- <h5>Nakuru City, Kenya</h5> -->
             <h5>20100</h5>
@@ -201,4 +216,4 @@
 
 </div>
 
-<?php require "footer.php"; ?>
+<?php require "../views/footer.php"; ?>

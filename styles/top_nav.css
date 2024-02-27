@@ -85,7 +85,7 @@
 }
 #content .top-nav .dropdown-menu{
 	/* max-width: 40%; */
-	width: fit-content;
+	width: min(30%, 30%);
 	padding: 10px;
 }
 #content .top-nav .dropdown-menu .dropdownHeader{

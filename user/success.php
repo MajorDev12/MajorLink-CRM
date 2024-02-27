@@ -183,6 +183,7 @@ if (!empty($_GET['session_id'])) {
                         $MessageContent = 'Your payment has been successful';
                         $Status = 0;
                         insertMessage($connect, $SenderName, $clientID, $MessageType, $MessageContent, $createdDate, $Status);
+                        addInvoice($connect, $clientID, $invoiceNumber, $totalAmount, $startDate, $dueDate, $status);
                     }
 
                     $status = 'success';

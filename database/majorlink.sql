@@ -247,7 +247,8 @@ CREATE TABLE invoices (
     ClientID INT,
     InvoiceNumber VARCHAR(50),
     TotalAmount DECIMAL(10, 2) NOT NULL,
-    DueDate DATE,
+    StartDate DATETIME,
+    DueDate DATETIME,
     Status VARCHAR(50),
     -- other invoice-related attributes
     FOREIGN KEY (ClientID) REFERENCES clients(ClientID)

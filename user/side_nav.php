@@ -58,7 +58,7 @@
         </li>
         <li>
             <div class="iocn-link">
-                <a href="#">
+                <a href="invoices.php">
                     <i class='bx bx-plug'></i>
                     <span class="link_name">Invoices</span>
                 </a>
