@@ -37,6 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Set the value in the session
     $_SESSION["selectedMonths"] = $selectedMonths;
+    $_SESSION["startDate"] = $startDate;
 
     if (empty($PlanAmount)) {
         $response = array(

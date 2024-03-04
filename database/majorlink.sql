@@ -247,11 +247,29 @@ CREATE TABLE invoices (
     ClientID INT,
     InvoiceNumber VARCHAR(50),
     TotalAmount DECIMAL(10, 2) NOT NULL,
+    paymentDate DATETIME,
     StartDate DATETIME,
     DueDate DATETIME,
     Status VARCHAR(50),
+    TaxSymbol VARCHAR(50),
+    Taxamount INT,
     -- other invoice-related attributes
     FOREIGN KEY (ClientID) REFERENCES clients(ClientID)
+);
+
+
+
+CREATE TABLE invoiceProducts (
+    ProductID INT PRIMARY KEY AUTO_INCREMENT,
+    InvoiceID INT,
+    Name VARCHAR(255),
+    Volume VARCHAR(50),
+    Qty INT,
+    Price DECIMAL(10, 2) NULL,
+    Amount DECIMAL(10, 2) NULL,
+    subTotal DECIMAL(10, 2) NULL,
+    -- other product-related attributes
+    FOREIGN KEY (InvoiceID) REFERENCES invoices(InvoiceID)
 );
 
 

@@ -135,7 +135,7 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                         areaName = button.getAttribute('data-subarea-name');
                         currentAreaId = button.getAttribute('data-subarea-id');
                         modalAreaName.innerText = currentAreaId;
-                        console.log("Current Area ID: " + currentAreaId);
+                        // console.log("Current Area ID: " + currentAreaId);
                         // Add a callback function to refresh the page when the modal is hidden
                         // showModal();
                     });

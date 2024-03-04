@@ -182,8 +182,6 @@ $clientData = getClientDataById($connect, $clientID);
                 // Get payments data from PHP and convert it to a JavaScript array
                 const payments = <?php echo json_encode($payments); ?>;
 
-                console.log(payments)
-
 
                 // Function to render table rows
                 function renderTableRows(data, currentPage, itemsPerPage) {

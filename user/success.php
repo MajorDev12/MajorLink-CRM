@@ -21,6 +21,7 @@ require_once  '../modals/updateStatus_mod.php';
 require_once  '../modals/viewSingleUser_mod.php';
 require_once  '../modals/addPayment_mod.php';
 require_once  '../modals/notification_mod.php';
+require_once  '../modals/addInvoice_mod.php';
 require_once  '../views/header.php';
 
 
@@ -183,6 +184,14 @@ if (!empty($_GET['session_id'])) {
                         $MessageContent = 'Your payment has been successful';
                         $Status = 0;
                         insertMessage($connect, $SenderName, $clientID, $MessageType, $MessageContent, $createdDate, $Status);
+                        $prefix = "INV";
+                        $randomDigits = str_pad(mt_rand(1, 99999), 5, '0', STR_PAD_LEFT);
+                        $invoiceNumber = $prefix . $randomDigits;
+
+                        $totalAmount =  $paidAmount;
+                        $startDate =  $_SESSION['startDate'];
+                        $dueDate =  $expireDate;
+                        $status =  "Paid";
                         addInvoice($connect, $clientID, $invoiceNumber, $totalAmount, $startDate, $dueDate, $status);
                     }
 

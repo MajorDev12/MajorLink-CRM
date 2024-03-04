@@ -1,5 +1,4 @@
 <?php
-$clientID = 'Ae4orbdIICDrUSBdOqXB0HbAwz41DvXZwYt9UXlCOska-hYHUEw2YkXEblL0N4VNgBmtAt9G8H7Gq1Mt';
 
 
 function getClientDataById($connect, $clientID)
