@@ -181,3 +181,37 @@ function hideToast() {
 
 
 
+															// tab changer
+// Get all tabs and tab content
+function initializeTabs(tabSelector, contentSelector) {
+    let tabs = document.querySelectorAll(tabSelector);
+    let tabContents = document.querySelectorAll(contentSelector);
+
+    tabs.forEach((tab, index) => {
+        tab.addEventListener("click", () => {
+            // Hide all tab contents
+            tabContents.forEach((content) => {
+                content.classList.remove("active");
+            });
+            // Deactivate all tabs
+            tabs.forEach((tab) => {
+                tab.classList.remove("active");
+            });
+            // Show the clicked tab content and activate the tab
+            tabContents[index].classList.add("active");
+            tabs[index].classList.add("active");
+        });
+    });
+}
+
+
+
+
+
+															// table navigation functions
+
+  // Create a flexible table navigation module
+ 
+
+
+

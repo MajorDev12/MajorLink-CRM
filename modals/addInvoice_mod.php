@@ -143,3 +143,25 @@ function getInvoiceProducts($connect, $invoiceID)
         return false;
     }
 }
+
+
+
+
+
+
+function getAllInvoices($connect)
+{
+    try {
+        $query = "SELECT invoices.*, clients.FirstName, clients.LastName FROM invoices
+                  JOIN clients ON invoices.ClientID = clients.ClientID";
+        $statement = $connect->prepare($query);
+        $statement->execute();
+
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        return $result;
+    } catch (PDOException $e) {
+        echo "Error: " . $e->getMessage();
+        return false;
+    }
+}

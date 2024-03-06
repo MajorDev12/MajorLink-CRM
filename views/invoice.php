@@ -3,13 +3,20 @@
 require_once  '../database/pdo.php';
 require_once  '../modals/getClientsNames_mod.php';
 require_once  '../modals/viewSingleUser_mod.php';
+require_once  '../modals/addInvoice_mod.php';
 $connect = connectToDatabase($host, $dbname, $username, $password);
 $clientData = getClientsNames($connect);
+$invoicesData = getAllInvoices($connect);
 ?>
 <?php require_once "header.php"; ?>
 
 <style>
-    .invoiceContainer {
+    .page {
+        width: 100%;
+        height: 100%;
+    }
+
+    .newInvoice {
         width: 80%;
         min-height: 130vh;
         position: relative;
@@ -19,33 +26,33 @@ $clientData = getClientsNames($connect);
         padding: 5%;
     }
 
-    .invoiceContainer h5 {
+    .newInvoice h5 {
         color: var(--dark);
     }
 
-    .invoiceContainer .header {
+    .newInvoice .header {
         background-color: var(--blue);
         padding: 20px;
         position: relative;
     }
 
-    .invoiceContainer .header h1 {
+    .newInvoice .header h1 {
         color: var(--light);
         font-size: 3.5em;
         padding-bottom: 10px;
     }
 
-    .invoiceContainer .header p {
+    .newInvoice .header p {
         color: var(--grey);
         font-size: 14px;
         line-height: 10px;
     }
 
-    .invoiceContainer .header .companyInfo .first {
+    .newInvoice .header .companyInfo .first {
         padding-bottom: 10px;
     }
 
-    .invoiceContainer .secondContainer {
+    .newInvoice .secondContainer {
         margin: 7% 0;
         display: flex;
         flex-direction: row;
@@ -53,59 +60,59 @@ $clientData = getClientsNames($connect);
         /* background-color: var(--yellow); */
     }
 
-    .invoiceContainer .secondContainer p {
+    .newInvoice .secondContainer p {
         color: var(--dark-grey);
         font-size: 14px;
     }
 
-    .invoiceContainer .secondContainer h5 {
+    .newInvoice .secondContainer h5 {
         color: var(--dark);
         font-size: 16px;
     }
 
-    .invoiceContainer .secondContainer .clientsSelect {
+    .newInvoice .secondContainer .clientsSelect {
         width: 140%;
     }
 
-    .invoiceContainer input {
+    .newInvoice input {
         border: none;
         color: var(--dark);
     }
 
-    .invoiceContainer input::placeholder {
+    .newInvoice input::placeholder {
         color: var(--dark);
         font-size: 16px;
         font-weight: 500;
     }
 
-    .invoiceContainer .secondContainer .topTotal {
+    .newInvoice .secondContainer .topTotal {
         color: var(--blue);
     }
 
-    .invoiceContainer table {
+    .newInvoice table {
         margin-top: 10%;
     }
 
-    .invoiceContainer .table thead {
+    .newInvoice .table thead {
         margin-bottom: 10px;
     }
 
-    .invoiceContainer .table thead tr th {
+    .newInvoice .table thead tr th {
         color: var(--blue);
         border-bottom: 2px solid var(--blue);
 
     }
 
-    .invoiceContainer .table tr .Subtotal,
-    .invoiceContainer .table tr #Tax {
+    .newInvoice .table tr .Subtotal,
+    .newInvoice .table tr #Tax {
         color: var(--dark-grey);
     }
 
-    .invoiceContainer .table input {
+    .newInvoice .table input {
         width: 80%;
     }
 
-    .invoiceContainer .secondContainer .status {
+    .newInvoice .secondContainer .status {
         background-color: var(--green);
         color: var(--light-green);
         padding: 0px 5px;
@@ -124,12 +131,87 @@ $clientData = getClientsNames($connect);
         margin-left: 20px;
     }
 
-    .invoiceContainer footer {
+    .newInvoice footer {
         text-align: center;
         position: relative;
         bottom: 0%;
         width: 90%;
         color: var(--dark-grey);
+    }
+
+
+
+    .main-content .content table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .main-content .content table th {
+        padding-bottom: 12px;
+        font-size: 13px;
+        text-align: left;
+        border-bottom: 1px solid var(--grey);
+    }
+
+    .main-content .content table td {
+        padding: 16px 0;
+        text-align: left;
+    }
+
+    .main-content .content table td .icon {
+        background-color: var(--blue);
+        border-radius: 5px;
+        padding: 4px;
+        cursor: pointer;
+    }
+
+    .main-content .content table td .view {
+        background-color: var(--blue);
+    }
+
+    .main-content .content table td .pdf {
+        background-color: var(--yellow);
+    }
+
+    .main-content .content table td .print {
+        background-color: var(--orange);
+    }
+
+    .main-content .content table td .icon img {
+        width: 20px;
+    }
+
+    .main-content .content table tbody tr:hover {
+        background: var(--grey);
+    }
+
+    .main-content .content .tablenav {
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+    }
+
+    .main-content .content .tablenav p {
+        display: flex;
+        justify-content: start;
+    }
+
+    .main-content .content .tablenav .pagination {
+        display: flex;
+        justify-content: end;
+    }
+
+
+    @media screen and (max-width: 920px) {
+        .main-content .content {
+            min-width: 700px;
+        }
+
+        .main-content .content .head {
+            min-width: 900px;
+        }
+
     }
 </style>
 <!-- SIDEBAR -->
@@ -183,128 +265,441 @@ $clientData = getClientsNames($connect);
                     </div>
                 </div>
             </div>
+
+
             <div class="content tab-content">
-                <div class="tabs mb-2">
-                    <button type="button" class="btn active">Service Invoice</button>
-                    <button type="button" class="btn active">Product Invoice</button>
+
+                <div class="page active" id="all">
+                    <div class="order">
+
+                        <div class="head">
+                            <h3>ALL Records</h3>
+                            <i class='bx bx-search'></i>
+                            <i class='bx bxs-printer'></i>
+                            <i class='bx bxs-spreadsheet'></i>
+                            <i class='bx bx-filter'></i>
+                        </div>
+
+
+
+                        <table class="mt-5">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Number</th>
+                                    <th>Name</th>
+                                    <th>Amount</th>
+                                    <th>Start Date</th>
+                                    <th>Due Date</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tableBody">
+                                <tr>
+                                    <td>INV0001</td>
+                                    <td>Major Nganga</td>
+                                    <td>2000</td>
+                                    <td>13/03/24</td>
+                                    <td>13/02/24</td>
+                                    <td>Paid</td>
+                                    <td class="actions">
+                                        <abbr title="View"><a href="viewInvoice.php" target="_blank" class="icon view"><img src="../img/eyeIcon.png" alt=""></a></abbr>
+                                        <abbr title="download pdf"><a href="../controllers/generatepdf_contr.php" target="_blank" class="icon pdf"><img src="../img/pdfIcon.png" alt=""></a></abbr>
+                                        <abbr title="print"><a href="printInvoice.php" target="_blank" class="icon print"><img src="../img/printIcon.png" alt=""></a></abbr>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>INV0002</td>
+                                    <td>Collings wahome</td>
+                                    <td>1500</td>
+                                    <td>12/02/23</td>
+                                    <td>12/01/23</td>
+                                    <td>Paid</td>
+                                    <td class="actions">
+                                        <abbr title="View"><a href="viewInvoice.php" target="_blank" class="icon view"><img src="../img/eyeIcon.png" alt=""></a></abbr>
+                                        <abbr title="download pdf"><a href="../controllers/generatepdf_contr.php" target="_blank" class="icon pdf"><img src="../img/pdfIcon.png" alt=""></a></abbr>
+                                        <abbr title="print"><a href="printInvoice.php" target="_blank" class="icon print"><img src="../img/printIcon.png" alt=""></a></abbr>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <!-- Pagination -->
+                        <nav class="tablenav mt-5" aria-label="Page navigation">
+                            <p id="paginationInfo" class=""></p>
+                            <ul class="pagination" id="pagination"></ul>
+                        </nav>
+
+
+
+
+                    </div>
                 </div>
 
-                <div class="invoiceContainer shadow-sm bg-body rounded">
-                    <!-- header -->
-                    <div class="header">
 
-                        <div class="companyInfo">
-                            <div class="">
-                                <h1>INVOICE</h1>
-                            </div>
-                            <div class="first">
-                                <p class="website">www.majorlink.com</p>
-                                <p class="email">majorlink@gmail.com</p>
-                                <p class="phonenumber">(254) 718 317 726</p>
-                            </div>
-                            <div class="second">
-                                <p class="Address">Pipeline, Nakuru</p>
-                                <p class="City">Nakuru City</p>
-                                <p class="country">Kenya</p>
-                                <p class="zipCode">20100</p>
-                            </div>
-                        </div>
-                    </div>
 
-                    <!-- Client info -->
-                    <div class="secondContainer">
-                        <div class="clientInfo">
-                            <select id="user_select" name="user_id" class="clientsSelect">
-                                <option value="" selected hidden>--Search--</option>
-                            </select>
-                            <p>Billed To</p>
-                            <h5 class="clientNames"></h5>
-                            <h5 class="address">Nakuru, Pipeline</h5>
-                            <h5 class="City">Nakuru City</h5>
-                            <h5 class="zipcode">20100</h5>
-                            <h5 class="country">Kenya</h5>
 
-                        </div>
 
-                        <div class="invoiceInfo">
-                            <p>Invoice Number</p>
-                            <abbr title="leave blank for automatic generation">
-                                <h5><input type="text" style="border: none;" placeholder="INV00001" class="invoiceNumber"></h5>
-                            </abbr>
 
-                            <p class="issueDate">Date of Issue</p>
-                            <h5><input type="date" class="paymentDate"></h5>
-                            <p class="issueDate">Start Date</p>
-                            <h5><input type="date" class="startDate"></h5>
-                        </div>
-                        <div class="invoiceTotal">
-                            <p class="issueDate">Expire Date</p>
-                            <h5><input type="date" class="expireDate"></h5>
-                            <p>Invoice Total</p>
-                            <h4 class="topTotal"><span class="currency">$</span>00.00</h4>
 
-                        </div>
-                    </div>
-
-                    <div class="addbuttons">
-                        <button type="button" class="btn btn-primary" onclick="addRow()">Add Blank Line</button>
-                        <!-- <button type="button" class="btn btn-primary">Add Service</button> -->
-                    </div>
-
-                    <table class="table" id="dataTable">
+                <div class="page" id="paid">
+                    <h3>Paid Records</h3>
+                    <table class="mt-5">
                         <thead>
                             <tr>
-                                <th>Product</th>
-                                <th>Volume</th>
-                                <th>Qty/Months</th>
-                                <th>Price</th>
+                                <th>#</th>
+                                <th>Name</th>
                                 <th>Amount</th>
+                                <th>Start Date</th>
+                                <th>Due Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
-                        <tbody>
-
+                        <tbody id="tableBody">
                             <tr>
-                                <td colspan="3" class="border-0"></td>
-                                <td colspan="" class="Subtotal">Subtotal</td>
-                                <td class="subtotalAmount">0</td>
-                            </tr>
-                            <tr>
-                                <td colspan="3" class="border-0"></td>
-                                <td colspan="" id="Tax">
-                                    Tax<br />
-                                    <span>$</span>
-                                    <input type="radio" name="taxType" value="$" checked id="dollarRadio">
-                                    <br />
-                                    <span>%</span>
-                                    <input type="radio" name="taxType" value="%" id="percentRadio">
+                                <td>INV0001</td>
+                                <td>Major Nganga</td>
+                                <td>2000</td>
+                                <td>13/03/24</td>
+                                <td>13/02/24</td>
+                                <td>Paid</td>
+                                <td class="actions">
+                                    <abbr title="View"><a href="viewInvoice.php" target="_blank" class="icon view"><img src="../img/eyeIcon.png" alt=""></a></abbr>
+                                    <abbr title="download pdf"><a href="../controllers/generatepdf_contr.php" target="_blank" class="icon pdf"><img src="../img/pdfIcon.png" alt=""></a></abbr>
+                                    <abbr title="print"><a href="printInvoice.php" target="_blank" class="icon print"><img src="../img/printIcon.png" alt=""></a></abbr>
                                 </td>
-                                <td class="taxAmount"><input type="text" placeholder="" class="tax"></td>
                             </tr>
                             <tr>
-                                <td colspan="3" class="border-0"></td>
-                                <td colspan="" class="Total">Total</td>
-                                <td class="totalPrice">0</td>
+                                <td>INV0002</td>
+                                <td>Collings wahome</td>
+                                <td>1500</td>
+                                <td>12/02/23</td>
+                                <td>12/01/23</td>
+                                <td>Paid</td>
+                                <td class="actions">
+                                    <abbr title="View"><a href="viewInvoice.php" target="_blank" class="icon view"><img src="../img/eyeIcon.png" alt=""></a></abbr>
+                                    <abbr title="download pdf"><a href="../controllers/generatepdf_contr.php" target="_blank" class="icon pdf"><img src="../img/pdfIcon.png" alt=""></a></abbr>
+                                    <abbr title="print"><a href="printInvoice.php" target="_blank" class="icon print"><img src="../img/printIcon.png" alt=""></a></abbr>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
-
                 </div>
 
 
-                <div class="addbuttons">
-                    <!-- <button type="button" class="btn btn-primary">Save</button> -->
-                    <button type="button" class="btn btn-primary" onclick="saveInvoice()">Save and close</button>
 
-                    <div id="errorMsg"></div>
+
+
+
+
+                <div class="page" id="unpaid">
+                    <h3>Unpaid Records</h3>
+                    <table class="mt-5">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Name</th>
+                                <th>Amount</th>
+                                <th>Start Date</th>
+                                <th>Due Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            <tr>
+                                <td>INV0001</td>
+                                <td>Major Nganga</td>
+                                <td>2000</td>
+                                <td>13/03/24</td>
+                                <td>13/02/24</td>
+                                <td>Paid</td>
+                                <td class="actions">
+                                    <abbr title="View"><a href="viewInvoice.php" target="_blank" class="icon view"><img src="../img/eyeIcon.png" alt=""></a></abbr>
+                                    <abbr title="download pdf"><a href="../controllers/generatepdf_contr.php" target="_blank" class="icon pdf"><img src="../img/pdfIcon.png" alt=""></a></abbr>
+                                    <abbr title="print"><a href="printInvoice.php" target="_blank" class="icon print"><img src="../img/printIcon.png" alt=""></a></abbr>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>INV0002</td>
+                                <td>Collings wahome</td>
+                                <td>1500</td>
+                                <td>12/02/23</td>
+                                <td>12/01/23</td>
+                                <td>Paid</td>
+                                <td class="actions">
+                                    <abbr title="View"><a href="viewInvoice.php" target="_blank" class="icon view"><img src="../img/eyeIcon.png" alt=""></a></abbr>
+                                    <abbr title="download pdf"><a href="../controllers/generatepdf_contr.php" target="_blank" class="icon pdf"><img src="../img/pdfIcon.png" alt=""></a></abbr>
+                                    <abbr title="print"><a href="printInvoice.php" target="_blank" class="icon print"><img src="../img/printIcon.png" alt=""></a></abbr>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
+
+
+
+
+
+
+                <div class="page" id="newInvoice">
+                    <div class="tabs mb-2">
+                        <!-- <button type="button" class="btn active">Service Invoice</button>
+                    <button type="button" class="btn active">Product Invoice</button> -->
+                    </div>
+
+                    <div class="newInvoice shadow-sm bg-body rounded">
+                        <!-- header -->
+                        <div class="header">
+
+                            <div class="companyInfo">
+                                <div class="">
+                                    <h1>INVOICE</h1>
+                                </div>
+                                <div class="first">
+                                    <p class="website">www.majorlink.com</p>
+                                    <p class="email">majorlink@gmail.com</p>
+                                    <p class="phonenumber">(254) 718 317 726</p>
+                                </div>
+                                <div class="second">
+                                    <p class="Address">Pipeline, Nakuru</p>
+                                    <p class="City">Nakuru City</p>
+                                    <p class="country">Kenya</p>
+                                    <p class="zipCode">20100</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Client info -->
+                        <div class="secondContainer">
+                            <div class="clientInfo">
+                                <select id="user_select" name="user_id" class="clientsSelect">
+                                    <option value="" selected hidden>--Search--</option>
+                                </select>
+                                <p>Billed To</p>
+                                <h5 class="clientNames"></h5>
+                                <h5 class="address">Nakuru, Pipeline</h5>
+                                <h5 class="City">Nakuru City</h5>
+                                <h5 class="zipcode">20100</h5>
+                                <h5 class="country">Kenya</h5>
+
+                            </div>
+
+                            <div class="invoiceInfo">
+                                <p>Invoice Number</p>
+                                <abbr title="leave blank for automatic generation">
+                                    <h5><input type="text" style="border: none;" placeholder="INV00001" class="invoiceNumber"></h5>
+                                </abbr>
+
+                                <p class="issueDate">Date of Issue</p>
+                                <h5><input type="date" class="paymentDate"></h5>
+                                <p class="issueDate">Start Date</p>
+                                <h5><input type="date" class="startDate"></h5>
+                            </div>
+                            <div class="invoiceTotal">
+                                <p class="issueDate">Expire Date</p>
+                                <h5><input type="date" class="expireDate"></h5>
+                                <p>Invoice Total</p>
+                                <h4 class="topTotal"><span class="currency">$</span>00.00</h4>
+
+                            </div>
+                        </div>
+
+                        <div class="addbuttons">
+                            <button type="button" class="btn btn-primary" onclick="addRow()">Add Blank Line</button>
+                            <!-- <button type="button" class="btn btn-primary">Add Service</button> -->
+                        </div>
+
+                        <table class="table" id="dataTable">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Volume</th>
+                                    <th>Qty/Months</th>
+                                    <th>Price</th>
+                                    <th>Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                <tr>
+                                    <td colspan="3" class="border-0"></td>
+                                    <td colspan="" class="Subtotal">Subtotal</td>
+                                    <td class="subtotalAmount">0</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3" class="border-0"></td>
+                                    <td colspan="" id="Tax">
+                                        Tax<br />
+                                        <span>$</span>
+                                        <input type="radio" name="taxType" value="$" checked id="dollarRadio">
+                                        <br />
+                                        <span>%</span>
+                                        <input type="radio" name="taxType" value="%" id="percentRadio">
+                                    </td>
+                                    <td class="taxAmount"><input type="text" placeholder="" class="tax"></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3" class="border-0"></td>
+                                    <td colspan="" class="Total">Total</td>
+                                    <td class="totalPrice">0</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+
+
+                    <div class="addbuttons">
+                        <!-- <button type="button" class="btn btn-primary">Save</button> -->
+                        <button type="button" class="btn btn-primary" onclick="saveInvoice()">Save and close</button>
+
+                        <div id="errorMsg"></div>
+                    </div>
+                </div>
+
+
+
+
+
+                <div class="page" id="recurring"></div>
+
+
+
+
+
+
+                <div class="page" id="newrecurring"></div>
+
+
+
+
+
+
+
+
+
+
+
+
             </div>
 
-
-
-            <?php require_once "footer.php";  ?>
-
+            <?php require_once "footer.php"; ?>
 
             <script>
+                // tab navigation
+                initializeTabs(".tabs button", ".tab-content .page");
+
+                const invoicesData = <?php echo json_encode($invoicesData); ?>;
+
+
+
+
+
+                // Function to render pagination
+                function renderPagination(totalPages, currentPage) {
+                    const pagination = document.getElementById('pagination');
+                    pagination.innerHTML = '';
+
+                    for (let i = 1; i <= totalPages; i++) {
+                        const li = document.createElement('li');
+                        li.className = `page-item ${i === currentPage ? 'active' : ''}`;
+                        li.innerHTML = `<a class="page-link" href="#" onclick="loadData(${i})">${i}</a>`;
+                        pagination.appendChild(li);
+                    }
+                }
+
+                // Function to load data based on page number
+                function loadData(page) {
+                    const itemsPerPage = 5;
+                    const startIndex = (page - 1) * itemsPerPage;
+                    const endIndex = startIndex + itemsPerPage;
+                    const dataToShow = invoicesData.slice(startIndex, endIndex);
+
+                    renderTableRows(dataToShow, page, itemsPerPage);
+                    renderPagination(Math.ceil(invoicesData.length / itemsPerPage), page);
+                }
+
+
+
+
+
+                // Function to render table rows
+                function renderTableRows(data, currentPage, itemsPerPage) {
+                    const tableBody = document.getElementById('tableBody');
+                    tableBody.innerHTML = '';
+                    const actions = `
+                <abbr title="View"><a href="viewInvoice.php" class="icon view"><img src="../img/eyeIcon.png" alt=""></a></abbr>
+                <abbr title="download pdf"><a href="../controllers/generatepdf_contr.php" target="_blank" class="icon pdf"><img src="../img/pdfIcon.png" alt=""></a></abbr>
+                <abbr title="print"><a href="printInvoice.php" target="_blank" class="icon print"><img src="../img/printIcon.png" alt=""></a></abbr>`;
+
+                    const startIndex = (currentPage - 1) * itemsPerPage;
+
+                    data.forEach((item, index) => {
+                        const row = document.createElement('tr');
+                        // console.log(item.StartDate);
+                        // console.log(formatDate(item.StartDate));
+                        // return;
+
+                        row.innerHTML = `
+            <td>${startIndex + index + 1}</td>
+            <td>${item.InvoiceNumber}</td>
+            <td>${item.FirstName} ${item.LastName}</td>
+            <td>${item.TotalAmount}</td>
+            <td>${item.startDate}</td>
+            <td>${item.DueDate}</td>
+            <td>${item.Status}</td>
+            <td>${actions}</td>
+        `;
+                        tableBody.appendChild(row);
+                    });
+
+                    // Update the paginationInfo
+                    const endIndex = Math.min(startIndex + itemsPerPage - 1, data.length);
+                    const paginationInfo = document.getElementById('paginationInfo');
+                    paginationInfo.textContent = `${startIndex + 1} to ${endIndex} of ${data.length}`;
+                }
+
+                // Initial load (page 1)
+                loadData(1);
+                // Function to format date
+                function formatDate(dateTime) {
+                    const date = new Date(dateTime);
+
+                    const options = {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit'
+                    };
+                    const formattedDate = date.toLocaleDateString('en-US', options);
+
+                    return formattedDate;
+                }
+
+
+
+
+                // Get payments data from PHP and convert it to a JavaScript array
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                 var selectedClientId;
                 var taxSymbol = "$";
                 var dollarRadio = document.getElementById('dollarRadio');

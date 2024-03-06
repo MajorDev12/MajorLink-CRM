@@ -95,7 +95,3 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                 </div>
             </div>
             <?php require_once "footer.php"; ?>
-
-            <script>
-
-            </script>

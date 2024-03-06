@@ -13,6 +13,9 @@ a {
 li {
 	list-style: none;
 }
+abbr {
+	display: inline;
+}
 
 :root {
 	--poppins: 'Poppins', sans-serif;
@@ -77,6 +80,24 @@ label {
 	background-color: rgba(0, 0, 0, 0.7);
 	z-index: 100;
 }
+
+/* tab changer */
+.tabs button{
+	background-color: var(--latto);
+	border: 1px solid var(--dark);
+}
+.tab-content .page {
+    display: none;
+  }
+  .tab-content .active {
+    display: block;
+  }
+  .tabs .active {
+    background-color: var(--blue);
+    color: var(--light);
+	border: 1px solid var(--blue);
+  }
+
 .modal-container {
 	display: none;
 	position: absolute;

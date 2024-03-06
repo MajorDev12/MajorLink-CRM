@@ -204,32 +204,8 @@ $clientData = getClientDataById($connect, $clientID);
                     });
                 }
 
-                // Function to render pagination
-                function renderPagination(totalPages, currentPage) {
-                    const pagination = document.getElementById('pagination');
-                    pagination.innerHTML = '';
-
-                    for (let i = 1; i <= totalPages; i++) {
-                        const li = document.createElement('li');
-                        li.className = `page-item ${i === currentPage ? 'active' : ''}`;
-                        li.innerHTML = `<a class="page-link" href="#" onclick="loadData(${i})">${i}</a>`;
-                        pagination.appendChild(li);
-                    }
-                }
-
-                // Function to load data based on page number
-                function loadData(page) {
-                    const itemsPerPage = 5;
-                    const startIndex = (page - 1) * itemsPerPage;
-                    const endIndex = startIndex + itemsPerPage;
-                    const dataToShow = payments.slice(startIndex, endIndex);
-
-                    renderTableRows(dataToShow, page, itemsPerPage);
-                    renderPagination(Math.ceil(payments.length / itemsPerPage), page);
-                }
-
                 // Initial load (page 1)
-                loadData(1);
+                loadData(1, payments);
             </script>
 
 
