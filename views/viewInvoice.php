@@ -214,13 +214,13 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                 <div class="tabs mb-2">
 
                     <a href="invoice.php" class="btn active">Go Back</a>
-                    <?php if (isset($_SESSION["invoiceID"]) && isset($_SESSION["clientID"])) : ?>
+                    <?php if (isset($_POST["invoiceID"]) && isset($_POST["clientID"])) : ?>
                         <a href="../controllers/generatepdf_contr.php" target="_blank" class="btn active">Download PDF</a>
 
                 </div>
                 <?php
-                        $invoiceID = $_SESSION["invoiceID"];
-                        $clientID = $_SESSION["clientID"];
+                        $invoiceID = $_POST["invoiceID"];
+                        $clientID = $_POST["clientID"];
                         $invoice = getInvoiceData($connect, $invoiceID);
                         //get clientInfo
                         $clientData = getClientDataById($connect, $clientID);
@@ -339,7 +339,8 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
 
                 </div>
             <?php else : ?>
-                <?php echo "nothing here"; ?>
+
+                <?php echo "No Data to Show"; ?>
             <?php endif; ?>
             <?php
             // unset($_SESSION["invoiceID"]);

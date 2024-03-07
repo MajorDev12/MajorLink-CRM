@@ -623,25 +623,26 @@ $invoicesData = getAllInvoices($connect);
                 }
 
 
+                const tableBody = document.getElementById('tableBody');
 
-
-
-                // Function to render table rows
                 function renderTableRows(data, currentPage, itemsPerPage) {
-                    const tableBody = document.getElementById('tableBody');
+
                     tableBody.innerHTML = '';
-                    const actions = `
-                <abbr title="View"><a href="viewInvoice.php" class="icon view"><img src="../img/eyeIcon.png" alt=""></a></abbr>
-                <abbr title="download pdf"><a href="../controllers/generatepdf_contr.php" target="_blank" class="icon pdf"><img src="../img/pdfIcon.png" alt=""></a></abbr>
-                <abbr title="print"><a href="printInvoice.php" target="_blank" class="icon print"><img src="../img/printIcon.png" alt=""></a></abbr>`;
 
                     const startIndex = (currentPage - 1) * itemsPerPage;
 
                     data.forEach((item, index) => {
                         const row = document.createElement('tr');
-                        // console.log(item.StartDate);
-                        // console.log(formatDate(item.StartDate));
-                        // return;
+
+                        const viewIcon = `<a href="javascript:void(0)" class="icon view" data-invoiceID="${item.InvoiceID}" data-clientID="${item.ClientID}"><img src="../img/eyeIcon.png" alt=""></a>`;
+
+                        // console.log(viewIcon.outerHTML)
+
+
+                        const actions = `
+            ${viewIcon}
+            <abbr title="download pdf"><a href="../controllers/generatepdf_contr.php" target="_blank" class="icon pdf"><img src="../img/pdfIcon.png" alt=""></a></abbr>
+            <abbr title="print"><a href="printInvoice.php" target="_blank" class="icon print"><img src="../img/printIcon.png" alt=""></a></abbr>`;
 
                         row.innerHTML = `
             <td>${startIndex + index + 1}</td>
@@ -662,6 +663,8 @@ $invoicesData = getAllInvoices($connect);
                     paginationInfo.textContent = `${startIndex + 1} to ${endIndex} of ${data.length}`;
                 }
 
+
+
                 // Initial load (page 1)
                 loadData(1);
                 // Function to format date
@@ -677,6 +680,54 @@ $invoicesData = getAllInvoices($connect);
 
                     return formattedDate;
                 }
+
+
+
+
+
+                // Use event delegation to handle "View" icon click
+                document.addEventListener("click", function(event) {
+                    const clickedIcon = event.target.closest('.view');
+                    if (clickedIcon) {
+                        const invoiceID = clickedIcon.dataset.invoiceID;
+                        const clientID = clickedIcon.dataset.clientID;
+
+                        // Use AJAX to send data to viewInvoice.php
+                        const xhr = new XMLHttpRequest();
+                        const url = 'viewInvoice.php';
+                        const params = `invoiceID=${invoiceID}&clientID=${clientID}`;
+
+                        xhr.open('POST', url, true);
+                        xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+
+                        xhr.onreadystatechange = function() {
+                            if (xhr.readyState == 4) {
+                                if (xhr.status == 200) {
+                                    // Handle the response if needed
+                                    console.log(xhr.responseText);
+                                } else {
+                                    // Handle errors
+                                    console.error('Error:', xhr.statusText);
+                                }
+                            }
+                        };
+
+                        xhr.send(params);
+                    }
+                });
+
+
+                // Common function to handle "View" icon click
+
+
+
+
+
+
+
+
+
+
 
 
 
