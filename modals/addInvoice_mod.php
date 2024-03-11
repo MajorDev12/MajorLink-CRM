@@ -165,3 +165,84 @@ function getAllInvoices($connect)
         return false;
     }
 }
+
+
+
+
+
+function getAllPaidInvoices($connect)
+{
+    try {
+        // Modify the query to include a WHERE clause for the "Paid" status
+        $query = "SELECT invoices.*, clients.FirstName, clients.LastName 
+                  FROM invoices
+                  JOIN clients ON invoices.ClientID = clients.ClientID
+                  WHERE invoices.Status = 'Paid'";
+
+        $statement = $connect->prepare($query);
+        $statement->execute();
+
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        return $result;
+    } catch (PDOException $e) {
+        echo "Error: " . $e->getMessage();
+        return false;
+    }
+}
+
+
+
+
+
+function getAllUnpaidInvoices($connect)
+{
+    try {
+        // Modify the query to include a WHERE clause for the "Paid" status
+        $query = "SELECT invoices.*, clients.FirstName, clients.LastName 
+                  FROM invoices
+                  JOIN clients ON invoices.ClientID = clients.ClientID
+                  WHERE invoices.Status = 'Unaid'";
+
+        $statement = $connect->prepare($query);
+        $statement->execute();
+
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        return $result;
+    } catch (PDOException $e) {
+        echo "Error: " . $e->getMessage();
+        return false;
+    }
+}
+
+
+
+
+
+
+
+
+
+function searchData($connect, $searchInput)
+{
+    try {
+        // Use a prepared statement to prevent SQL injection
+        $query = "SELECT invoices.*, clients.FirstName, clients.LastName FROM invoices
+                  JOIN clients ON invoices.ClientID = clients.ClientID
+                  WHERE FirstName LIKE :searchInput 
+                     OR LastName LIKE :searchInput 
+                     OR InvoiceNumber LIKE :searchInput";
+        $statement = $connect->prepare($query);
+        $statement->bindValue(':searchInput', '%' . $searchInput . '%', PDO::PARAM_STR);
+        $statement->execute();
+
+        $results = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        return $results;
+    } catch (PDOException $e) {
+        // Handle the exception as needed
+        echo "Error: " . $e->getMessage();
+        return false;
+    }
+}

@@ -36,14 +36,13 @@ if (isset($_POST["selectedClientId"])) {
 
 
     $invoiceid =  getInvoiceIDByNumber($connect, $invoiceNumber);
-    session_start();
-    $_SESSION["invoiceID"] = $invoiceid;
-    $_SESSION["clientID"] = $clientid;
 
 
     $response = [
         'addInvoice' => $addInvoice ? true : false,
-        'saveProducts' => $saveProducts ? true : false
+        'saveProducts' => $saveProducts ? true : false,
+        'invoiceid' => $invoiceid,
+        'clientid' => $clientid
     ];
 
     echo json_encode($response);

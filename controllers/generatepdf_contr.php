@@ -1,7 +1,5 @@
 <?php
-session_start();
-
-if (!isset($_SESSION["invoiceID"]) && !isset($_SESSION["clientID"])) {
+if (!isset($_GET["i"]) && !isset($_GET["c"])) {
     echo "Something went wrong";
     exit();
 }
@@ -13,8 +11,8 @@ require_once  '../modals/viewSingleUser_mod.php';
 $connect = connectToDatabase($host, $dbname, $username, $password);
 
 //get invoice data
-$invoiceID = $_SESSION["invoiceID"];
-$clientID = $_SESSION["clientID"];
+$invoiceID = $_GET["i"];
+$clientID = $_GET["c"];
 
 
 $invoice = getInvoiceData($connect, $invoiceID);

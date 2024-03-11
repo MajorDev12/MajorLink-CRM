@@ -140,6 +140,51 @@ $invoicesData = getAllInvoices($connect);
     }
 
 
+    .main-content .content .page .head .tableActions {
+        display: flex;
+        flex-direction: row;
+        justify-content: end;
+    }
+
+    .main-content .content .page .head .tableActions .bx {
+        padding: 5px;
+        cursor: pointer;
+    }
+
+    .main-content .content .page .head .tableActions .searchBtn,
+    .main-content .content .page .head .tableActions .searchInput {
+        border: 1px solid var(--dark-grey);
+        outline: none;
+        display: none;
+        transition: all 0.5s ease-in-out;
+    }
+
+    .show {
+        display: inline-block !important;
+    }
+
+    .main-content .content .page .head .tableActions .searchInput {
+        width: 20%;
+        padding-left: 10px;
+        border-top-right-radius: 10px;
+        border-bottom-right-radius: 10px;
+        font-size: 14px;
+    }
+
+    .main-content .content .page .head .tableActions .searchBtn {
+        background-color: var(--light);
+        color: var(--dark);
+        padding: 2px;
+        margin-right: 2px;
+        font-size: 14px;
+        border-top-left-radius: 5px;
+        border-bottom-left-radius: 5px;
+    }
+
+    .main-content .content .page .head .tableActions .searchBtn:hover {
+        color: var(--light-green);
+        background-color: var(--blue);
+    }
 
     .main-content .content table {
         width: 100%;
@@ -258,10 +303,8 @@ $invoicesData = getAllInvoices($connect);
 
                         <button type="button" class="btn active">Paid</button>
                         <button type="button" class="btn active">Unpaid</button>
-                        <!-- <button type="button" class="btn active">Reports</button> -->
                         <button type="button" class="btn active">New Invoice</button>
-                        <button type="button" class="btn active">Recurring</button>
-                        <button type="button" class="btn active">New Recurring</button>
+                        <button type="button" class="btn active">Analytics</button>
                     </div>
                 </div>
             </div>
@@ -274,10 +317,14 @@ $invoicesData = getAllInvoices($connect);
 
                         <div class="head">
                             <h3>ALL Records</h3>
-                            <i class='bx bx-search'></i>
-                            <i class='bx bxs-printer'></i>
-                            <i class='bx bxs-spreadsheet'></i>
-                            <i class='bx bx-filter'></i>
+                            <div class="tableActions">
+                                <input type="submit" value="Search" class="searchBtn" id="searchBtn">
+                                <input type="search" class="searchInput" id="searchInput">
+                                <i class='bx bx-search' id="searchIcon"></i>
+                                <i class='bx bxs-printer'></i>
+                                <i class='bx bxs-spreadsheet'></i>
+                                <i class='bx bx-filter'></i>
+                            </div>
                         </div>
 
 
@@ -292,36 +339,27 @@ $invoicesData = getAllInvoices($connect);
                                     <th>Start Date</th>
                                     <th>Due Date</th>
                                     <th>Status</th>
-                                    <th>Actions</th>
+                                    <th style="text-align:center">Actions</th>
                                 </tr>
                             </thead>
                             <tbody id="tableBody">
-                                <tr>
-                                    <td>INV0001</td>
-                                    <td>Major Nganga</td>
-                                    <td>2000</td>
-                                    <td>13/03/24</td>
-                                    <td>13/02/24</td>
-                                    <td>Paid</td>
-                                    <td class="actions">
-                                        <abbr title="View"><a href="viewInvoice.php" target="_blank" class="icon view"><img src="../img/eyeIcon.png" alt=""></a></abbr>
-                                        <abbr title="download pdf"><a href="../controllers/generatepdf_contr.php" target="_blank" class="icon pdf"><img src="../img/pdfIcon.png" alt=""></a></abbr>
-                                        <abbr title="print"><a href="printInvoice.php" target="_blank" class="icon print"><img src="../img/printIcon.png" alt=""></a></abbr>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>INV0002</td>
-                                    <td>Collings wahome</td>
-                                    <td>1500</td>
-                                    <td>12/02/23</td>
-                                    <td>12/01/23</td>
-                                    <td>Paid</td>
-                                    <td class="actions">
-                                        <abbr title="View"><a href="viewInvoice.php" target="_blank" class="icon view"><img src="../img/eyeIcon.png" alt=""></a></abbr>
-                                        <abbr title="download pdf"><a href="../controllers/generatepdf_contr.php" target="_blank" class="icon pdf"><img src="../img/pdfIcon.png" alt=""></a></abbr>
-                                        <abbr title="print"><a href="printInvoice.php" target="_blank" class="icon print"><img src="../img/printIcon.png" alt=""></a></abbr>
-                                    </td>
-                                </tr>
+                                <?php $counter = 1; ?>
+                                <?php foreach ($invoicesData as $index => $invoice) : ?>
+                                    <tr>
+                                        <td class="index pe-3"><?= $index + 1;  ?></td>
+                                        <td class=""><?php echo $invoice['InvoiceNumber']; ?></td>
+                                        <td class=""><?php echo $invoice['FirstName'] . ' ' . $invoice['LastName']; ?></td>
+                                        <td><span class=""><?php echo $invoice['TotalAmount']; ?></span></td>
+                                        <td><span class=""><?php echo $invoice['StartDate']; ?></span></td>
+                                        <td><span class=""><?php echo $invoice['DueDate']; ?></span></td>
+                                        <td><span class=""><?php echo $invoice['Status']; ?></span></td>
+                                        <td style="text-align:center">
+                                            <a href="viewInvoice.php?i=<?= $invoice["InvoiceID"]; ?>&c=<?= $invoice["ClientID"]; ?>" class="icon view"><img src="../img/eyeIcon.png" alt=""></a>
+                                            <abbr title="download pdf"><a href="../controllers/generatepdf_contr.php?i=<?= $invoice["InvoiceID"]; ?>&c=<?= $invoice["ClientID"]; ?>" target="_blank" class="icon pdf"><img src="../img/pdfIcon.png" alt=""></a></abbr>
+                                            <abbr title="print"><a href="../user/printInvoice.php?i=<?= $invoice["InvoiceID"]; ?>&c=<?= $invoice["ClientID"]; ?>" target="_blank" class="icon print"><img src="../img/printIcon.png" alt=""></a></abbr>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
                             </tbody>
                         </table>
 
@@ -358,32 +396,31 @@ $invoicesData = getAllInvoices($connect);
                             </tr>
                         </thead>
                         <tbody id="tableBody">
-                            <tr>
-                                <td>INV0001</td>
-                                <td>Major Nganga</td>
-                                <td>2000</td>
-                                <td>13/03/24</td>
-                                <td>13/02/24</td>
-                                <td>Paid</td>
-                                <td class="actions">
-                                    <abbr title="View"><a href="viewInvoice.php" target="_blank" class="icon view"><img src="../img/eyeIcon.png" alt=""></a></abbr>
-                                    <abbr title="download pdf"><a href="../controllers/generatepdf_contr.php" target="_blank" class="icon pdf"><img src="../img/pdfIcon.png" alt=""></a></abbr>
-                                    <abbr title="print"><a href="printInvoice.php" target="_blank" class="icon print"><img src="../img/printIcon.png" alt=""></a></abbr>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>INV0002</td>
-                                <td>Collings wahome</td>
-                                <td>1500</td>
-                                <td>12/02/23</td>
-                                <td>12/01/23</td>
-                                <td>Paid</td>
-                                <td class="actions">
-                                    <abbr title="View"><a href="viewInvoice.php" target="_blank" class="icon view"><img src="../img/eyeIcon.png" alt=""></a></abbr>
-                                    <abbr title="download pdf"><a href="../controllers/generatepdf_contr.php" target="_blank" class="icon pdf"><img src="../img/pdfIcon.png" alt=""></a></abbr>
-                                    <abbr title="print"><a href="printInvoice.php" target="_blank" class="icon print"><img src="../img/printIcon.png" alt=""></a></abbr>
-                                </td>
-                            </tr>
+                            <?php $counter = 1; ?>
+                            <?php $PaidInvoices = getAllPaidInvoices($connect); ?>
+                            <?php if ($PaidInvoices) : ?>
+                                <?php foreach ($PaidInvoices as $index => $invoice) : ?>
+                                    <tr>
+                                        <td class="index pe-3"><?= $index + 1;  ?></td>
+                                        <td class=""><?php echo $invoice['InvoiceNumber']; ?></td>
+                                        <td class=""><?php echo $invoice['FirstName'] . ' ' . $invoice['LastName']; ?></td>
+                                        <td><span class=""><?php echo $invoice['TotalAmount']; ?></span></td>
+                                        <td><span class=""><?php echo $invoice['StartDate']; ?></span></td>
+                                        <td><span class=""><?php echo $invoice['DueDate']; ?></span></td>
+                                        <td><span class=""><?php echo $invoice['Status']; ?></span></td>
+                                        <td style="text-align:center">
+                                            <a href="viewInvoice.php?i=<?= $invoice["InvoiceID"]; ?>&c=<?= $invoice["ClientID"]; ?>" class="icon view"><img src="../img/eyeIcon.png" alt=""></a>
+                                            <abbr title="download pdf"><a href="../controllers/generatepdf_contr.php?i=<?= $invoice["InvoiceID"]; ?>&c=<?= $invoice["ClientID"]; ?>" target="_blank" class="icon pdf"><img src="../img/pdfIcon.png" alt=""></a></abbr>
+                                            <abbr title="print"><a href="../user/printInvoice.php?i=<?= $invoice["InvoiceID"]; ?>&c=<?= $invoice["ClientID"]; ?>" target="_blank" class="icon print"><img src="../img/printIcon.png" alt=""></a></abbr>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php else : ?>
+                                <?php echo '  
+                             <tr>
+                                <td colspan="8" style="text-center"> No Data Yet</td>
+                            </tr>'; ?>
+                            <?php endif; ?>
                         </tbody>
                     </table>
                 </div>
@@ -409,32 +446,31 @@ $invoicesData = getAllInvoices($connect);
                             </tr>
                         </thead>
                         <tbody id="tableBody">
-                            <tr>
-                                <td>INV0001</td>
-                                <td>Major Nganga</td>
-                                <td>2000</td>
-                                <td>13/03/24</td>
-                                <td>13/02/24</td>
-                                <td>Paid</td>
-                                <td class="actions">
-                                    <abbr title="View"><a href="viewInvoice.php" target="_blank" class="icon view"><img src="../img/eyeIcon.png" alt=""></a></abbr>
-                                    <abbr title="download pdf"><a href="../controllers/generatepdf_contr.php" target="_blank" class="icon pdf"><img src="../img/pdfIcon.png" alt=""></a></abbr>
-                                    <abbr title="print"><a href="printInvoice.php" target="_blank" class="icon print"><img src="../img/printIcon.png" alt=""></a></abbr>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>INV0002</td>
-                                <td>Collings wahome</td>
-                                <td>1500</td>
-                                <td>12/02/23</td>
-                                <td>12/01/23</td>
-                                <td>Paid</td>
-                                <td class="actions">
-                                    <abbr title="View"><a href="viewInvoice.php" target="_blank" class="icon view"><img src="../img/eyeIcon.png" alt=""></a></abbr>
-                                    <abbr title="download pdf"><a href="../controllers/generatepdf_contr.php" target="_blank" class="icon pdf"><img src="../img/pdfIcon.png" alt=""></a></abbr>
-                                    <abbr title="print"><a href="printInvoice.php" target="_blank" class="icon print"><img src="../img/printIcon.png" alt=""></a></abbr>
-                                </td>
-                            </tr>
+                            <?php $counter = 1; ?>
+                            <?php $UnpaidInvoices = getAllUnpaidInvoices($connect); ?>
+                            <?php if ($UnpaidInvoices) : ?>
+                                <?php foreach ($UnpaidInvoices as $index => $invoice) : ?>
+                                    <tr>
+                                        <td class="index pe-3"><?= $index + 1;  ?></td>
+                                        <td class=""><?php echo $invoice['InvoiceNumber']; ?></td>
+                                        <td class=""><?php echo $invoice['FirstName'] . ' ' . $invoice['LastName']; ?></td>
+                                        <td><span class=""><?php echo $invoice['TotalAmount']; ?></span></td>
+                                        <td><span class=""><?php echo $invoice['StartDate']; ?></span></td>
+                                        <td><span class=""><?php echo $invoice['DueDate']; ?></span></td>
+                                        <td><span class=""><?php echo $invoice['Status']; ?></span></td>
+                                        <td style="text-align:center">
+                                            <a href="viewInvoice.php?i=<?= $invoice["InvoiceID"]; ?>&c=<?= $invoice["ClientID"]; ?>" class="icon view"><img src="../img/eyeIcon.png" alt=""></a>
+                                            <abbr title="download pdf"><a href="../controllers/generatepdf_contr.php?i=<?= $invoice["InvoiceID"]; ?>&c=<?= $invoice["ClientID"]; ?>" target="_blank" class="icon pdf"><img src="../img/pdfIcon.png" alt=""></a></abbr>
+                                            <abbr title="print"><a href="../user/printInvoice.php?i=<?= $invoice["InvoiceID"]; ?>&c=<?= $invoice["ClientID"]; ?>" target="_blank" class="icon print"><img src="../img/printIcon.png" alt=""></a></abbr>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php else : ?>
+                                <?php echo '  
+                             <tr>
+                                <td colspan="8" style="text-center"> No Data Yet</td>
+                            </tr>'; ?>
+                            <?php endif; ?>
                         </tbody>
                     </table>
                 </div>
@@ -592,150 +628,70 @@ $invoicesData = getAllInvoices($connect);
                 // tab navigation
                 initializeTabs(".tabs button", ".tab-content .page");
 
-                const invoicesData = <?php echo json_encode($invoicesData); ?>;
 
+                document.addEventListener('DOMContentLoaded', function() {
+                    const searchIcon = document.getElementById('searchIcon');
+                    const searchInput = document.getElementById('searchInput');
+                    const searchBtn = document.getElementById('searchBtn');
 
+                    searchIcon.addEventListener('click', function() {
+                        // Toggle the 'show' class on searchInput and searchBtn
+                        searchInput.classList.toggle('show');
+                        searchBtn.classList.toggle('show');
 
-
-
-                // Function to render pagination
-                function renderPagination(totalPages, currentPage) {
-                    const pagination = document.getElementById('pagination');
-                    pagination.innerHTML = '';
-
-                    for (let i = 1; i <= totalPages; i++) {
-                        const li = document.createElement('li');
-                        li.className = `page-item ${i === currentPage ? 'active' : ''}`;
-                        li.innerHTML = `<a class="page-link" href="#" onclick="loadData(${i})">${i}</a>`;
-                        pagination.appendChild(li);
-                    }
-                }
-
-                // Function to load data based on page number
-                function loadData(page) {
-                    const itemsPerPage = 5;
-                    const startIndex = (page - 1) * itemsPerPage;
-                    const endIndex = startIndex + itemsPerPage;
-                    const dataToShow = invoicesData.slice(startIndex, endIndex);
-
-                    renderTableRows(dataToShow, page, itemsPerPage);
-                    renderPagination(Math.ceil(invoicesData.length / itemsPerPage), page);
-                }
-
-
-                const tableBody = document.getElementById('tableBody');
-
-                function renderTableRows(data, currentPage, itemsPerPage) {
-
-                    tableBody.innerHTML = '';
-
-                    const startIndex = (currentPage - 1) * itemsPerPage;
-
-                    data.forEach((item, index) => {
-                        const row = document.createElement('tr');
-
-                        const viewIcon = `<a href="javascript:void(0)" class="icon view" data-invoiceID="${item.InvoiceID}" data-clientID="${item.ClientID}"><img src="../img/eyeIcon.png" alt=""></a>`;
-
-                        // console.log(viewIcon.outerHTML)
-
-
-                        const actions = `
-            ${viewIcon}
-            <abbr title="download pdf"><a href="../controllers/generatepdf_contr.php" target="_blank" class="icon pdf"><img src="../img/pdfIcon.png" alt=""></a></abbr>
-            <abbr title="print"><a href="printInvoice.php" target="_blank" class="icon print"><img src="../img/printIcon.png" alt=""></a></abbr>`;
-
-                        row.innerHTML = `
-            <td>${startIndex + index + 1}</td>
-            <td>${item.InvoiceNumber}</td>
-            <td>${item.FirstName} ${item.LastName}</td>
-            <td>${item.TotalAmount}</td>
-            <td>${item.startDate}</td>
-            <td>${item.DueDate}</td>
-            <td>${item.Status}</td>
-            <td>${actions}</td>
-        `;
-                        tableBody.appendChild(row);
+                        // Focus on the searchInput when it becomes visible
+                        if (searchInput.classList.contains('show')) {
+                            searchInput.focus();
+                        }
                     });
 
-                    // Update the paginationInfo
-                    const endIndex = Math.min(startIndex + itemsPerPage - 1, data.length);
-                    const paginationInfo = document.getElementById('paginationInfo');
-                    paginationInfo.textContent = `${startIndex + 1} to ${endIndex} of ${data.length}`;
-                }
 
 
 
-                // Initial load (page 1)
-                loadData(1);
-                // Function to format date
-                function formatDate(dateTime) {
-                    const date = new Date(dateTime);
+                    searchBtn.addEventListener("click", function() {
+                        const inputValue = searchInput.value;
+                        if (!inputValue) {
+                            displayMessage("errorMsg", "Cannot be empty");
+                            return;
+                        }
 
-                    const options = {
-                        year: 'numeric',
-                        month: '2-digit',
-                        day: '2-digit'
-                    };
-                    const formattedDate = date.toLocaleDateString('en-US', options);
+                        var formData = new FormData();
+                        formData.append("inputValue", inputValue);
 
-                    return formattedDate;
-                }
+                        fetch('../controllers/searchData_contr.php', {
+                                method: 'POST',
+                                body: formData,
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                console.log(data)
+                                if (!data) {
+                                    console.log(data)
+                                    // Handle case where no data was found
+                                    var tableBody = document.getElementById('tableBody');
 
-
-
-
-
-                // Use event delegation to handle "View" icon click
-                document.addEventListener("click", function(event) {
-                    const clickedIcon = event.target.closest('.view');
-                    if (clickedIcon) {
-                        const invoiceID = clickedIcon.dataset.invoiceID;
-                        const clientID = clickedIcon.dataset.clientID;
-
-                        // Use AJAX to send data to viewInvoice.php
-                        const xhr = new XMLHttpRequest();
-                        const url = 'viewInvoice.php';
-                        const params = `invoiceID=${invoiceID}&clientID=${clientID}`;
-
-                        xhr.open('POST', url, true);
-                        xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-
-                        xhr.onreadystatechange = function() {
-                            if (xhr.readyState == 4) {
-                                if (xhr.status == 200) {
-                                    // Handle the response if needed
-                                    console.log(xhr.responseText);
+                                    // Set the received HTML as the innerHTML of the table body
+                                    tableBody.innerHTML = `
+                                    <tr>
+                                        <td colspan="8" style="text-center"> no such data</td>
+                                     </tr>
+                                    `;
                                 } else {
-                                    // Handle errors
-                                    console.error('Error:', xhr.statusText);
+                                    // Access the table body element
+                                    const tableBody = document.getElementById('tableBody');
+
+                                    // Set the received HTML as the innerHTML of the table body
+                                    tableBody.innerHTML = data;
                                 }
-                            }
-                        };
 
-                        xhr.send(params);
-                    }
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                            });
+                    });
+
+
                 });
-
-
-                // Common function to handle "View" icon click
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                // Get payments data from PHP and convert it to a JavaScript array
-
-
-
 
 
 
@@ -1035,7 +991,10 @@ $invoicesData = getAllInvoices($connect);
                         .then(response => response.json())
                         .then(data => {
                             if (data.addInvoice && data.saveProducts) {
-                                window.location.href = "viewInvoice.php";
+                                if (data.invoiceid && data.clientid) {
+                                    window.location.href = `viewInvoice.php?i=${data.invoiceid}&c=${data.clientid}`;
+                                }
+
                             }
                         })
                         .catch(error => {

@@ -138,37 +138,25 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
         color: var(--dark-grey);
     }
 
+
+
     @media print {
-        body {
-            scrollbar-width: thin;
-            /* Firefox */
-            scrollbar-color: transparent transparent;
-            /* Firefox */
-            overflow: -moz-scrollbars-none;
-            /* Firefox */
+        body * {
+            visibility: hidden;
         }
 
-        /* For Webkit based browsers (Chrome, Safari, Edge) */
-        ::after {
-            content: '';
+        .invoiceContainer,
+        .invoiceContainer * {
+            visibility: visible;
             display: block;
-            position: fixed;
-            top: 0;
-            right: 0;
-            bottom: 0;
-            left: 0;
-            z-index: 9999;
-            /* background-color: white; */
-            /* Set the background color of the overlay */
         }
-    }
 
-    @media print {
 
         .invoiceContainer {
-            width: 80%;
-            position: relative;
-            left: 10%;
+            display: block;
+            position: absolute;
+            left: 0%;
+            top: 0%;
             background-color: #3C91E6;
             font-family: 'Poppins', sans-serif;
         }
@@ -209,18 +197,20 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
         <!-- content-container -->
         <div class="main-content">
 
-            <div class="content tab-content">
+            <div id="responseContainer" class="content tab-content">
 
                 <div class="tabs mb-2">
-
+                    <?php
+                    // Use $_GET to retrieve encoded parameters
+                    $invoiceID = isset($_GET['i']) ? $_GET['i'] : null;
+                    $clientID = isset($_GET['c']) ? $_GET['c'] : null;
+                    ?>
                     <a href="invoice.php" class="btn active">Go Back</a>
-                    <?php if (isset($_POST["invoiceID"]) && isset($_POST["clientID"])) : ?>
-                        <a href="../controllers/generatepdf_contr.php" target="_blank" class="btn active">Download PDF</a>
-
+                    <?php if ($invoiceID !== null && $clientID !== null) : ?>
+                        <a href="../controllers/generatepdf_contr.php?i=<?= $invoiceID; ?>&c=<?= $clientID; ?>" target="_blank" class="btn active">Download PDF</a>
+                        <a href="../user/printInvoice.php?i=<?= $invoiceID; ?>&c=<?= $clientID; ?>" target="_blank" class="btn active">Print</a>
                 </div>
                 <?php
-                        $invoiceID = $_POST["invoiceID"];
-                        $clientID = $_POST["clientID"];
                         $invoice = getInvoiceData($connect, $invoiceID);
                         //get clientInfo
                         $clientData = getClientDataById($connect, $clientID);
@@ -342,13 +332,24 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
 
                 <?php echo "No Data to Show"; ?>
             <?php endif; ?>
-            <?php
-            // unset($_SESSION["invoiceID"]);
-            // unset($_SESSION["clientID"]);
-            ?>
 
             </div>
 
 
 
             <?php require_once "footer.php";  ?>
+
+
+            <script>
+                function printInvoice() {
+                    var printContent = document.querySelector('.invoiceContainer').outerHTML;
+                    var printWindow = window.open('', '_blank');
+                    printWindow.document.write(printContent);
+                    printWindow.document.close();
+                    printWindow.print();
+                }
+
+
+
+                document.getElementById('printButton').addEventListener('click', printInvoice);
+            </script>
