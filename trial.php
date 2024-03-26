@@ -1,7 +1,7 @@
 <?php
 
-$expireDate = new DateTime('2024-02-14');
-$lastPaymentDate = new DateTime('2024-07-14');
+$expireDate = new DateTime('2024-03-29 00:00:00');
+$lastPaymentDate = new DateTime('2024-03-26 01:37:00');
 // Calculate the difference between the two dates
 $dateInterval = $expireDate->diff($lastPaymentDate);
 

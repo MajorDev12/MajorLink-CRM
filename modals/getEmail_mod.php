@@ -67,3 +67,39 @@ function updateEmailTemplate($connect, $templateID, $subject, $body)
         return false;
     }
 }
+
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\SMTP;
+
+
+function sendEmail($to, $name, $subject, $message)
+{
+
+    $mail = new PHPMailer(true);
+
+    try {
+        // $mail->SMTPDebug = SMTP::DEBUG_SERVER;
+
+        $mail->isSMTP();
+        $mail->SMTPAuth = true;
+
+        $mail->Host = "smtp.gmail.com";
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        $mail->Port = 587;
+
+        $mail->Username = "majordev12@gmail.com";
+        $mail->Password = "jhdi bxqh tlfh bgwp";
+
+        $mail->setFrom($to, $name);
+        $mail->addAddress($to, $name);
+
+        $mail->Subject = $subject;
+        $mail->Body = $message;
+
+        $mail->send();
+        // Redirect or any other action after successful email sending
+        header("Location: ../views/index.php");
+    } catch (Exception $e) {
+        echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+    }
+}
