@@ -2,7 +2,7 @@
 <?php
 
 require_once  '../database/pdo.php';
-require_once  '../modals/addInvoice_mod.php';
+require_once  '../modals/addSale_mod.php';
 require_once  '../modals/viewSingleUser_mod.php';
 $connect = connectToDatabase($host, $dbname, $username, $password);
 
@@ -24,7 +24,7 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
     .invoiceContainer .status {
         position: absolute;
         left: 60%;
-        top: 60%;
+        top: 57%;
         font-size: 3em;
         rotate: -10deg;
         color: #ecfaf6;
@@ -62,6 +62,7 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
         display: flex;
         flex-direction: row;
         justify-content: space-around;
+        /* background-color: var(--yellow); */
     }
 
     .invoiceContainer .secondContainer p {
@@ -99,7 +100,6 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
 
     .invoiceContainer .table thead {
         margin-bottom: 10px;
-        background-color: transparent;
     }
 
     .invoiceContainer .table thead tr th {
@@ -120,6 +120,14 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
     .invoiceContainer .table .totalPrice {
         color: var(--blue);
         font-weight: 600;
+    }
+
+    .invoiceContainer .secondContainer .status {
+        background-color: var(--green);
+        color: var(--light-green);
+        padding: 0px 5px;
+        border-radius: 10px;
+        text-align: center;
     }
 
     .actions {
@@ -228,18 +236,17 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                 <div class="actions mb-2">
                     <?php
                     // Use $_GET to retrieve encoded parameters
-                    $invoiceID = isset($_GET['i']) ? $_GET['i'] : null;
+                    $SaleID = isset($_GET['i']) ? $_GET['i'] : null;
                     $clientID = isset($_GET['c']) ? $_GET['c'] : null;
                     ?>
                     <?php
-                    $invoice = getInvoiceData($connect, $invoiceID);
+                    $sales = getSalesByID($connect, $SaleID);
                     //get clientInfo
                     $clientData = getClientDataById($connect, $clientID);
 
                     ?>
-
                     <div class="col-md-2">
-                        <?php $status = $invoice["Status"]; ?>
+                        <?php $status = $sales[0]["PaymentStatus"]; ?>
                         <select name="status" class="form-select" style="border: 1px solid black;" onchange="openChangeModal(this)">
                             <option value="" disabled selected>Mark as</option>
                             <?php if ($status !== "Paid") : ?>
@@ -256,17 +263,15 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                             <?php endif; ?>
                         </select>
                     </div>
-
                     <a href="invoice.php" class="btn active">Go Back</a>
-                    <?php if ($invoiceID !== null && $clientID !== null) : ?>
-                        <a href="../controllers/generatepdf_contr.php?i=<?= $invoiceID; ?>&c=<?= $clientID; ?>" target="_blank" class="btn active">Download PDF</a>
-                        <a href="../user/printInvoice.php?i=<?= $invoiceID; ?>&c=<?= $clientID; ?>" target="_blank" class="btn active">Print</a>
+                    <?php if ($SaleID !== null && $clientID !== null) : ?>
+                        <a href="../controllers/generatepdf_contr.php?i=<?= $SaleID; ?>&c=<?= $clientID; ?>" target="_blank" class="btn active">Download PDF</a>
+                        <a href="../user/printInvoice.php?i=<?= $SaleID; ?>&c=<?= $clientID; ?>" target="_blank" class="btn active">Print</a>
+                    <?php endif; ?>
                 </div>
 
                 <div class="invoiceContainer shadow-sm bg-body rounded">
-
-                    <h1 class="status"><?= $status; ?></h1>
-
+                    <h1 class="status"><?= $sales[0]["PaymentStatus"]; ?></h1>
                     <!-- header -->
                     <div class="header">
 
@@ -294,94 +299,69 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                         <div class="clientInfo">
                             <p>Billed To</p>
                             <?php if ($clientData) : ?>
-                                <h5 class="clientNames"><?= $clientData["FirstName"] . ' ' . $clientData["LastName"]; ?></h5>
+                                <h5 class="clientNames"><?= $clientData["FirstName"]; ?></h5>
                                 <h5 class="address">Nakuru, Pipeline</h5>
                                 <h5 class="City">Nakuru City</h5>
                                 <h5 class="zipcode">20100</h5>
                                 <h5 class="country">Kenya</h5>
                             <?php endif; ?>
                         </div>
-                        <?php if (!empty($invoice)) : ?>
-                            <div class="invoiceInfo">
-                                <p>Invoice Number</p>
-                                <h5><?= $invoice["InvoiceNumber"]; ?></h5>
-                                <p class="issueDate">Date of Issue</p>
-                                <h5><?= date("Y-m-d", strtotime($invoice["paymentDate"])); ?></h5>
-                                <p class="issueDate">Start Date</p>
-                                <h5><?= date("Y-m-d", strtotime($invoice["StartDate"])); ?></h5>
-                            </div>
-                            <div class="invoiceTotal">
-                                <p class="issueDate">Expire Date</p>
-                                <h5><?= date("Y-m-d", strtotime($invoice["DueDate"])); ?></h5>
-                                <p>Invoice Total</p>
-                                <h4 class="topTotal"><span class="currency">$</span><?= number_format($invoice["TotalAmount"], 2); ?></h4>
-                            </div>
-                        <?php endif; ?>
+
+                        <div class="invoiceInfo">
+                            <p>Invoice Number</p>
+                            <h5>INV097654</h5>
+                            <p class="issueDate">Date of Issue</p>
+                            <h5><?= date("Y-m-d", strtotime($sales[0]["SaleDate"])); ?></h5>
+                        </div>
+                        <div class="invoiceTotal">
+                            <p>Invoice Total</p>
+                            <?php
+                            $total = $sales[0]["UnitPrice"] * $sales[0]["Quantity"];
+                            ?>
+                            <h4 class="topTotal"><span class="currency">$</span><?= number_format($total, 2); ?></h4>
+                        </div>
+
                     </div>
 
                     <table class="table" id="dataTable">
                         <thead>
                             <tr>
                                 <th>Product</th>
-                                <th>Volume</th>
-                                <th>Qty/Months</th>
-                                <th>Price</th>
+                                <th>Qty</th>
+                                <th>Unit Price</th>
                                 <th>Amount</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <?php
-                            $products = getInvoiceProducts($connect, $invoiceID);
-                            $subtotal = 0; // Initialize subtotal
+                            <tr>
+                                <td><?= $sales[0]["ProductName"]; ?></td>
+                                <td><?= $sales[0]["Quantity"]; ?></td>
+                                <td><?= $sales[0]["UnitPrice"]; ?></td>
+                                <td><?= number_format($total, 2); ?></td>
+                            </tr>
 
-                            ?>
-
-                            <!-- Check if $products is not empty -->
-                            <?php if (!empty($products)) : ?>
-                                <!-- Loop through each product -->
-                                <?php foreach ($products as $product) : ?>
-                                    <tr>
-                                        <td><?= $product["Name"]; ?></td>
-                                        <td><?= $product["Volume"]; ?></td>
-                                        <td><?= $product["Qty"]; ?></td>
-                                        <td><?= $product["Price"]; ?></td>
-                                        <td><?= $product["Amount"]; ?></td>
-                                    </tr>
-                                    <?php
-                                    // Update subtotal for each product
-                                    $subtotal += $product["Amount"];
-                                    ?>
-                                <?php endforeach; ?>
-                            <?php else : ?>
-                                <!-- Handle the case where $products is empty -->
-                                <tr>
-                                </tr>
-                            <?php endif; ?>
 
                             <tr>
-                                <td colspan="3" class="border-0"></td>
+                                <td colspan="2" class="border-0"></td>
                                 <td colspan="" class="Subtotal">Subtotal</td>
-                                <td class="subtotalAmount"><?= number_format($subtotal, 2); ?></td>
+                                <td class="subtotalAmount"><?= number_format($total, 2); ?></td>
                             </tr>
 
                             <tr>
-                                <td colspan="3" class="border-0"></td>
-                                <td colspan="" id="Tax">Tax(<?= $invoice["TaxSymbol"]; ?>)</td>
-                                <td class="taxAmount"><?= $invoice["Taxamount"]; ?></td>
+                                <td colspan="2" class="border-0"></td>
+                                <td colspan="" id="Tax">Tax(<?= '%'; ?>)</td>
+                                <td class="taxAmount"><?= 0; ?></td>
                             </tr>
                             <tr>
-                                <td colspan="3" class="border-0"></td>
+                                <td colspan="2" class="border-0"></td>
                                 <td colspan="" class="Total">Total</td>
-                                <td class="totalPrice">$ <?= number_format($invoice["TotalAmount"], 2); ?></td>
+                                <td class="totalPrice">$ <?= number_format($total, 2); ?></td>
                             </tr>
                         </tbody>
                     </table>
 
                 </div>
-            <?php else : ?>
 
-                <?php echo "No Data to Show"; ?>
-            <?php endif; ?>
 
             </div>
 
@@ -391,15 +371,6 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
 
 
             <script>
-                function printInvoice() {
-                    var printContent = document.querySelector('.invoiceContainer').outerHTML;
-                    var printWindow = window.open('', '_blank');
-                    printWindow.document.write(printContent);
-                    printWindow.document.close();
-                    printWindow.print();
-                }
-
-
                 function openChangeModal(selectElement) {
                     // Get the selected option value
                     var selectedStatus = selectElement.value;
@@ -413,19 +384,18 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
 
 
 
-
                 var closeDelModal = document.querySelector("#closeDelModal");
                 var cancel = document.querySelector("#cancel");
                 var saveBtn = document.querySelector("#saveBtn");
 
                 saveBtn.addEventListener("click", function() {
                     var status = document.getElementById('status').value;
-                    var invoiceID = <?php echo json_encode($invoiceID); ?>;
+                    var SaleID = <?php echo json_encode($SaleID); ?>;
 
 
                     var formData = new FormData();
                     formData.append("status", status);
-                    formData.append("invoiceID", invoiceID);
+                    formData.append("SaleID", SaleID);
 
                     // Use Fetch API to send the data
                     fetch('../controllers/updateInvoiceStatus_contr.php', {

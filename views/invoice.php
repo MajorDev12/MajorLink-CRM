@@ -4,6 +4,8 @@ require_once  '../database/pdo.php';
 require_once  '../modals/getClientsNames_mod.php';
 require_once  '../modals/viewSingleUser_mod.php';
 require_once  '../modals/addInvoice_mod.php';
+require_once  '../modals/addSale_mod.php';
+require_once  '../modals/addPlan_mod.php';
 $connect = connectToDatabase($host, $dbname, $username, $password);
 $clientData = getClientsNames($connect);
 $invoicesData = getAllInvoices($connect);
@@ -139,20 +141,23 @@ $invoicesData = getAllInvoices($connect);
         color: var(--dark-grey);
     }
 
+    .main-content .content .page .head {
+        position: relative;
+    }
 
-    .main-content .content .page .head .tableActions {
+    .main-content .content .page .tableActions {
         display: flex;
         flex-direction: row;
         justify-content: end;
     }
 
-    .main-content .content .page .head .tableActions .bx {
+    .main-content .content .page .tableActions .bx {
         padding: 5px;
         cursor: pointer;
     }
 
-    .main-content .content .page .head .tableActions .searchBtn,
-    .main-content .content .page .head .tableActions .searchInput {
+    .main-content .content .page .tableActions .searchBtn,
+    .main-content .content .page .tableActions .searchInput {
         border: 1px solid var(--dark-grey);
         outline: none;
         display: none;
@@ -163,7 +168,7 @@ $invoicesData = getAllInvoices($connect);
         display: inline-block !important;
     }
 
-    .main-content .content .page .head .tableActions .searchInput {
+    .main-content .content .page .tableActions .searchInput {
         width: 20%;
         padding-left: 10px;
         border-top-right-radius: 10px;
@@ -171,7 +176,7 @@ $invoicesData = getAllInvoices($connect);
         font-size: 14px;
     }
 
-    .main-content .content .page .head .tableActions .searchBtn {
+    .main-content .content .page .tableActions .searchBtn {
         background-color: var(--light);
         color: var(--dark);
         padding: 2px;
@@ -181,9 +186,29 @@ $invoicesData = getAllInvoices($connect);
         border-bottom-left-radius: 5px;
     }
 
-    .main-content .content .page .head .tableActions .searchBtn:hover {
+    .main-content .content .page .tableActions .searchBtn:hover {
         color: var(--light-green);
         background-color: var(--blue);
+    }
+
+    .main-content .content .page .tableActions .filterdiv {
+        position: absolute;
+        top: 100%;
+        display: none;
+        flex-direction: column;
+        width: 15%;
+        background-color: var(--light);
+        box-shadow: 2px 2px 5px var(--light-green);
+    }
+
+    .main-content .content .page .tableActions .filterdiv p {
+        padding-bottom: 5px;
+        border-bottom: 1px solid var(--grey);
+        font-weight: 500;
+    }
+
+    .main-content .content .page .tableActions .filterdiv span {
+        font-size: 12px;
     }
 
     .main-content .content table {
@@ -247,6 +272,10 @@ $invoicesData = getAllInvoices($connect);
         justify-content: end;
     }
 
+    .main-content .content .printTable {
+        width: 70%;
+        background: var(--grey);
+    }
 
     @media screen and (max-width: 920px) {
         .main-content .content {
@@ -257,6 +286,22 @@ $invoicesData = getAllInvoices($connect);
             min-width: 900px;
         }
 
+    }
+
+
+
+    @media print {
+        #tableBody {
+            width: 80%;
+        }
+
+        .tdIcons {
+            display: none;
+        }
+
+        #printTable {
+            background-color: var(--dark);
+        }
     }
 </style>
 <!-- SIDEBAR -->
@@ -299,10 +344,8 @@ $invoicesData = getAllInvoices($connect);
             <div class="content">
                 <div class="h4 pb-2 mt-2 mb-2 border-bottom">
                     <div class="tabs">
-                        <button type="button" class="btn active">All</button>
-
-                        <button type="button" class="btn active">Paid</button>
-                        <button type="button" class="btn active">Unpaid</button>
+                        <button type="button" class="btn active">Services</button>
+                        <button type="button" class="btn active">Products</button>
                         <button type="button" class="btn active">New Invoice</button>
                         <button type="button" class="btn active">Analytics</button>
                     </div>
@@ -312,81 +355,42 @@ $invoicesData = getAllInvoices($connect);
 
             <div class="content tab-content">
 
-                <div class="page active" id="all">
-                    <div class="order">
 
-                        <div class="head">
-                            <h3>ALL Records</h3>
-                            <div class="tableActions">
-                                <input type="submit" value="Search" class="searchBtn" id="searchBtn">
-                                <input type="search" class="searchInput" id="searchInput">
-                                <i class='bx bx-search' id="searchIcon"></i>
-                                <i class='bx bxs-printer'></i>
-                                <i class='bx bxs-spreadsheet'></i>
-                                <i class='bx bx-filter'></i>
+
+                <div class="page active" id="services">
+                    <h3>Services Records</h3>
+                    <div class="tableActions">
+                        <input type="submit" value="Search" class="searchBtn" id="searchBtn1">
+                        <input type="search" class="searchInput" id="searchInput1">
+                        <i class='bx bx-search' id="searchIcon1" onclick=""></i>
+                        <i class='bx bxs-printer' id="printIcon1"></i>
+                        <i class='bx bxs-spreadsheet' id="spreadsheetIcon1"></i>
+                        <!-- <i class='bx bx-filter'></i> -->
+                        <div class="filterdiv shadow-sm p-3 mb-5 bg-white rounded row">
+                            <p>Filter</p>
+                            <div class="col">
+                                <input type="radio" name="" id="">
+                                <span>None</span>
+                            </div>
+                            <div class="col">
+                                <input type="radio" name="" id="">
+                                <span>Start Date</span>
+                            </div>
+                            <div class="col">
+                                <input type="radio" name="" id="">
+                                <span>Due Date</span>
+                            </div>
+                            <div class="col">
+                                <input type="radio" name="" id="">
+                                <span>Status</span>
                             </div>
                         </div>
-
-
-
-                        <table class="mt-5">
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Number</th>
-                                    <th>Name</th>
-                                    <th>Amount</th>
-                                    <th>Start Date</th>
-                                    <th>Due Date</th>
-                                    <th>Status</th>
-                                    <th style="text-align:center">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tableBody">
-                                <?php $counter = 1; ?>
-                                <?php foreach ($invoicesData as $index => $invoice) : ?>
-                                    <tr>
-                                        <td class="index pe-3"><?= $index + 1;  ?></td>
-                                        <td class=""><?php echo $invoice['InvoiceNumber']; ?></td>
-                                        <td class=""><?php echo $invoice['FirstName'] . ' ' . $invoice['LastName']; ?></td>
-                                        <td><span class=""><?php echo $invoice['TotalAmount']; ?></span></td>
-                                        <td><span class=""><?php echo $invoice['StartDate']; ?></span></td>
-                                        <td><span class=""><?php echo $invoice['DueDate']; ?></span></td>
-                                        <td><span class=""><?php echo $invoice['Status']; ?></span></td>
-                                        <td style="text-align:center">
-                                            <a href="viewInvoice.php?i=<?= $invoice["InvoiceID"]; ?>&c=<?= $invoice["ClientID"]; ?>" class="icon view"><img src="../img/eyeIcon.png" alt=""></a>
-                                            <abbr title="download pdf"><a href="../controllers/generatepdf_contr.php?i=<?= $invoice["InvoiceID"]; ?>&c=<?= $invoice["ClientID"]; ?>" target="_blank" class="icon pdf"><img src="../img/pdfIcon.png" alt=""></a></abbr>
-                                            <abbr title="print"><a href="../user/printInvoice.php?i=<?= $invoice["InvoiceID"]; ?>&c=<?= $invoice["ClientID"]; ?>" target="_blank" class="icon print"><img src="../img/printIcon.png" alt=""></a></abbr>
-                                        </td>
-                                    </tr>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table>
-
-                        <!-- Pagination -->
-                        <nav class="tablenav mt-5" aria-label="Page navigation">
-                            <p id="paginationInfo" class=""></p>
-                            <ul class="pagination" id="pagination"></ul>
-                        </nav>
-
-
-
-
                     </div>
-                </div>
-
-
-
-
-
-
-
-                <div class="page" id="paid">
-                    <h3>Paid Records</h3>
                     <table class="mt-5">
-                        <thead>
+                        <thead id="thead1">
                             <tr>
                                 <th>#</th>
+                                <th>Number</th>
                                 <th>Name</th>
                                 <th>Amount</th>
                                 <th>Start Date</th>
@@ -395,11 +399,10 @@ $invoicesData = getAllInvoices($connect);
                                 <th>Actions</th>
                             </tr>
                         </thead>
-                        <tbody id="tableBody">
+                        <tbody id="tableBody1" class="tableBody searchData">
                             <?php $counter = 1; ?>
-                            <?php $PaidInvoices = getAllPaidInvoices($connect); ?>
-                            <?php if ($PaidInvoices) : ?>
-                                <?php foreach ($PaidInvoices as $index => $invoice) : ?>
+                            <?php if ($invoicesData) : ?>
+                                <?php foreach ($invoicesData as $index => $invoice) : ?>
                                     <tr>
                                         <td class="index pe-3"><?= $index + 1;  ?></td>
                                         <td class=""><?php echo $invoice['InvoiceNumber']; ?></td>
@@ -431,37 +434,61 @@ $invoicesData = getAllInvoices($connect);
 
 
 
-                <div class="page" id="unpaid">
-                    <h3>Unpaid Records</h3>
+                <div class="page" id="products">
+                    <h3>Products Records</h3>
+                    <div class="tableActions">
+                        <input type="submit" value="Search" class="searchBtn" id="searchBtn2">
+                        <input type="search" class="searchInput" id="searchInput2">
+                        <i class='bx bx-search' id="searchIcon2"></i>
+                        <i class='bx bxs-printer' id="printIcon2"></i>
+                        <i class='bx bxs-spreadsheet' id="spreadsheetIcon2"></i>
+                        <!-- <i class='bx bx-filter'></i> -->
+                        <div class="filterdiv shadow-sm p-3 mb-5 bg-white rounded row">
+                            <p>Filter</p>
+                            <div class="col">
+                                <input type="radio" name="" id="">
+                                <span>None</span>
+                            </div>
+                            <div class="col">
+                                <input type="radio" name="" id="">
+                                <span>Start Date</span>
+                            </div>
+                            <div class="col">
+                                <input type="radio" name="" id="">
+                                <span>Due Date</span>
+                            </div>
+                            <div class="col">
+                                <input type="radio" name="" id="">
+                                <span>Status</span>
+                            </div>
+                        </div>
+                    </div>
                     <table class="mt-5">
-                        <thead>
+                        <thead id="thead2">
                             <tr>
                                 <th>#</th>
                                 <th>Name</th>
                                 <th>Amount</th>
-                                <th>Start Date</th>
-                                <th>Due Date</th>
+                                <th>Issue Date</th>
                                 <th>Status</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
-                        <tbody id="tableBody">
+                        <tbody id="tableBody2" class="tableBody searchSales">
                             <?php $counter = 1; ?>
-                            <?php $UnpaidInvoices = getAllUnpaidInvoices($connect); ?>
-                            <?php if ($UnpaidInvoices) : ?>
-                                <?php foreach ($UnpaidInvoices as $index => $invoice) : ?>
+                            <?php $sales = getSalesData($connect); ?>
+                            <?php if ($sales) : ?>
+                                <?php foreach ($sales as $index => $sale) : ?>
                                     <tr>
                                         <td class="index pe-3"><?= $index + 1;  ?></td>
-                                        <td class=""><?php echo $invoice['InvoiceNumber']; ?></td>
-                                        <td class=""><?php echo $invoice['FirstName'] . ' ' . $invoice['LastName']; ?></td>
-                                        <td><span class=""><?php echo $invoice['TotalAmount']; ?></span></td>
-                                        <td><span class=""><?php echo $invoice['StartDate']; ?></span></td>
-                                        <td><span class=""><?php echo $invoice['DueDate']; ?></span></td>
-                                        <td><span class=""><?php echo $invoice['Status']; ?></span></td>
+                                        <td class=""><?php echo $sale['FirstName'] . ' ' . $sale['LastName']; ?></td>
+                                        <td><span class=""><?php echo $sale['Quantity'] * $sale['UnitPrice']; ?></span></td>
+                                        <td><span class=""><?php echo $sale['SaleDate']; ?></span></td>
+                                        <td><span class=""><?php echo $sale['PaymentStatus']; ?></span></td>
                                         <td style="text-align:center">
-                                            <a href="viewInvoice.php?i=<?= $invoice["InvoiceID"]; ?>&c=<?= $invoice["ClientID"]; ?>" class="icon view"><img src="../img/eyeIcon.png" alt=""></a>
-                                            <abbr title="download pdf"><a href="../controllers/generatepdf_contr.php?i=<?= $invoice["InvoiceID"]; ?>&c=<?= $invoice["ClientID"]; ?>" target="_blank" class="icon pdf"><img src="../img/pdfIcon.png" alt=""></a></abbr>
-                                            <abbr title="print"><a href="../user/printInvoice.php?i=<?= $invoice["InvoiceID"]; ?>&c=<?= $invoice["ClientID"]; ?>" target="_blank" class="icon print"><img src="../img/printIcon.png" alt=""></a></abbr>
+                                            <a href="viewProduct.php?i=<?= $sale["SaleID"]; ?>&c=<?= $sale["ClientID"]; ?>" class="icon view"><img src="../img/eyeIcon.png" alt=""></a>
+                                            <abbr title="download pdf"><a href="../controllers/generateSalesInvoice_contr.php?i=<?= $sale["SaleID"]; ?>&c=<?= $sale["ClientID"]; ?>" target="_blank" class="icon pdf"><img src="../img/pdfIcon.png" alt=""></a></abbr>
+                                            <abbr title="print"><a href="../views/printSaleInvoice.php?i=<?= $sale["SaleID"]; ?>&c=<?= $sale["ClientID"]; ?>" target="_blank" class="icon print"><img src="../img/printIcon.png" alt=""></a></abbr>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>
@@ -485,6 +512,78 @@ $invoicesData = getAllInvoices($connect);
                         <!-- <button type="button" class="btn active">Service Invoice</button>
                     <button type="button" class="btn active">Product Invoice</button> -->
                     </div>
+
+
+
+
+                    <!-- the service modal -->
+                    <div id="overlay"></div>
+                    <div class="modal-container" id="changeModal">
+                        <!-- Modal content -->
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Choose Service</h5>
+                                <button type="button" id="closeDelModal" class="close" data-dismiss="modal">&times;</button>
+                            </div>
+                            <!-- Modal body -->
+                            <div class="modal-body">
+                                <table class="mt-3" id="serviceTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Volume</th>
+                                            <th>Price</th>
+                                            <th>Select</th> <!-- Add a new column for radio buttons -->
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+
+                                        <?php $plans = getPlanData($connect); ?>
+                                        <?php if ($plans) : ?>
+                                            <?php foreach ($plans as $index => $plan) : ?>
+                                                <tr>
+                                                    <td class=""><?php echo $plan['Name']; ?></td>
+                                                    <td><span class=""><?php echo $plan['Volume']; ?></span></td>
+                                                    <td><span class=""><?php echo $plan['Price']; ?></span></td>
+                                                    <td style="text-align: center;"><input type="radio" name="selectedRow"></td>
+                                                </tr>
+                                            <?php endforeach; ?>
+                                        <?php else : ?>
+                                            <?php echo '  
+                             <tr>
+                                <td colspan="8" style="text-center"> No Data Yet</td>
+                            </tr>'; ?>
+                                        <?php endif; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <!-- Modal footer -->
+                            <div class="modal-footer">
+                                <button type="button" id="saveBtn" class="btn btn-primary ml-3">Yes</button>
+                                <button type="button" id="cancel" class="btn btn-danger ml-3">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
                     <div class="newInvoice shadow-sm bg-body rounded">
                         <!-- header -->
@@ -539,13 +638,19 @@ $invoicesData = getAllInvoices($connect);
                                 <h5><input type="date" class="expireDate"></h5>
                                 <p>Invoice Total</p>
                                 <h4 class="topTotal"><span class="currency">$</span>00.00</h4>
-
+                                <select name="" id="status">
+                                    <option value="" disabled selected>Status</option>
+                                    <option value="Paid">Paid</option>
+                                    <option value="Partially Paid">Partial Paid</option>
+                                    <option value="Pending">Pending</option>
+                                    <option value="Cancelled">Cancelled</option>
+                                </select>
                             </div>
                         </div>
 
                         <div class="addbuttons">
                             <button type="button" class="btn btn-primary" onclick="addRow()">Add Blank Line</button>
-                            <!-- <button type="button" class="btn btn-primary">Add Service</button> -->
+                            <button type="button" class="btn btn-primary" id="addService">Add Service</button>
                         </div>
 
                         <table class="table" id="dataTable">
@@ -600,7 +705,130 @@ $invoicesData = getAllInvoices($connect);
 
 
 
-                <div class="page" id="recurring"></div>
+                <div class="page" id="analytics">
+                    <h3 class="pb-2 mt-2 mb-2 border-bottom">Reports</h3>
+
+                    <div class="sales mt-5">
+                        <h5> Services Analytics</h5>
+                        <div class="content.main">
+                            <ul class="box-info">
+                                <li style="background-color: #eee;">
+
+                                    <span class="text">
+                                        <p> <?php
+                                            $settings = get_Settings($connect);
+                                            echo $settings[0]["CurrencySymbol"];
+                                            ?> 1020</p>
+                                        <h3 style="color: #2cce89;">Paid</h3>
+                                    </span>
+                                </li>
+                                <li style="background-color: #eee;">
+
+                                    <span class="text">
+                                        <p> <?php
+                                            $settings = get_Settings($connect);
+                                            echo $settings[0]["CurrencySymbol"];
+                                            ?> 934</p>
+                                        <h3 style="color: #FFCE26;">UnPaid</h3>
+                                    </span>
+                                </li>
+                                <li style="background-color: #eee;">
+
+                                    <span class="text">
+                                        <p> <?php
+                                            $settings = get_Settings($connect);
+                                            echo $settings[0]["CurrencySymbol"];
+                                            ?> 934</p>
+                                        <h3 style="color: #3C91E6;">Partially Paid</h3>
+                                    </span>
+                                </li>
+                                <li style="background-color: #eee;">
+
+                                    <span class="text">
+                                        <p> <?php
+                                            $settings = get_Settings($connect);
+                                            echo $settings[0]["CurrencySymbol"];
+                                            ?> 2543</p>
+                                        <h3 style="color: #FD7238;">Pending</h3>
+                                    </span>
+                                </li>
+                                <li style="background-color: #eee;">
+
+                                    <span class="text">
+                                        <p> <?php
+                                            $settings = get_Settings($connect);
+                                            echo $settings[0]["CurrencySymbol"];
+                                            ?> 1020</p>
+                                        <h3 style="color: #342E37;">Cancelled</h3>
+                                    </span>
+                                </li>
+                            </ul>
+                        </div>
+
+
+                    </div>
+
+
+
+                    <div class="Plan mt-5">
+                        <h5>Sales Analytics</h5>
+
+                        <div class="content.main">
+                            <ul class="box-info">
+                                <li style="background-color: #eee;">
+
+                                    <span class="text">
+                                        <p> <?php
+                                            $settings = get_Settings($connect);
+                                            echo $settings[0]["CurrencySymbol"];
+                                            ?> 1020</p>
+                                        <h3 style="color: #2cce89;">Paid</h3>
+                                    </span>
+                                </li>
+                                <li style="background-color: #eee;">
+
+                                    <span class="text">
+                                        <p> <?php
+                                            $settings = get_Settings($connect);
+                                            echo $settings[0]["CurrencySymbol"];
+                                            ?> 934</p>
+                                        <h3 style="color: #FFCE26;">UnPaid</h3>
+                                    </span>
+                                </li>
+                                <li style="background-color: #eee;">
+
+                                    <span class="text">
+                                        <p> <?php
+                                            $settings = get_Settings($connect);
+                                            echo $settings[0]["CurrencySymbol"];
+                                            ?> 934</p>
+                                        <h3 style="color: #3C91E6;">Partially Paid</h3>
+                                    </span>
+                                </li>
+                                <li style="background-color: #eee;">
+
+                                    <span class="text">
+                                        <p> <?php
+                                            $settings = get_Settings($connect);
+                                            echo $settings[0]["CurrencySymbol"];
+                                            ?> 2543</p>
+                                        <h3 style="color: #FD7238;">Pending</h3>
+                                    </span>
+                                </li>
+                                <li style="background-color: #eee;">
+
+                                    <span class="text">
+                                        <p> <?php
+                                            $settings = get_Settings($connect);
+                                            echo $settings[0]["CurrencySymbol"];
+                                            ?> 1020</p>
+                                        <h3 style="color: #342E37;">Cancelled</h3>
+                                    </span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
 
 
 
@@ -625,70 +853,79 @@ $invoicesData = getAllInvoices($connect);
             <?php require_once "footer.php"; ?>
 
             <script>
-                // tab navigation
-                initializeTabs(".tabs button", ".tab-content .page");
+                document.getElementById('saveBtn').addEventListener('click', function() {
+                    var selectedRadio = document.querySelector('input[name="selectedRow"]:checked');
+                    if (!selectedRadio) {
+                        // Handle case where no radio button is selected
+                        return;
+                    }
+
+                    var selectedRow = selectedRadio.closest('tr');
+
+                    // Extract data from the selected row
+                    var rowData = Array.from(selectedRow.querySelectorAll('td')).map(cell => cell.textContent);
+
+                    // Create a new row in the main table
+                    var table = document.getElementById('dataTable').getElementsByTagName('tbody')[0];
+                    var newRow = table.insertRow(table.rows.length - 3);
+
+                    // Add cells to the new row
+                    for (var i = 0; i < 5; i++) {
+                        var cell = newRow.insertCell(i);
+
+                        if (i === 0 || i === 1) {
+                            // For the first, second, and fourth columns
+                            var input = document.createElement('input');
+                            input.type = 'text';
+                            input.value = rowData[i]; // Populate input with row data
+                            cell.appendChild(input);
+                        } else if (i === 2) {
+                            // For the third cell (Price)
+                            var input = document.createElement('input');
+                            input.type = 'text';
+                            input.classList.add('months');
+                            input.addEventListener('input', updateAmount);
+                            cell.appendChild(input);
+                        } else if (i === 3) {
+                            // For the third cell (Price)
+                            var input = document.createElement('input');
+                            input.type = 'text';
+                            input.classList.add('price');
+                            input.value = rowData[2]; // Populate input with price data from modal row
+                            input.addEventListener('input', updateAmount);
+                            cell.appendChild(input);
+                        } else if (i === 4) {
+                            // For the last cell (Amount)
+                            cell.classList.add('amount');
+                            cell.textContent = '0';
 
 
-                document.addEventListener('DOMContentLoaded', function() {
-                    const searchIcon = document.getElementById('searchIcon');
-                    const searchInput = document.getElementById('searchInput');
-                    const searchBtn = document.getElementById('searchBtn');
+                            // Create the delete icon
+                            var deleteIcon = document.createElement('i');
+                            deleteIcon.className = 'fas fa-trash-alt delete-icon';
+                            deleteIcon.style.position = 'absolute';
+                            deleteIcon.style.left = '2%';
+                            deleteIcon.style.color = '#AAAAAA';
+                            deleteIcon.style.cursor = 'pointer';
+                            cell.appendChild(deleteIcon);
 
-                    searchIcon.addEventListener('click', function() {
-                        // Toggle the 'show' class on searchInput and searchBtn
-                        searchInput.classList.toggle('show');
-                        searchBtn.classList.toggle('show');
-
-                        // Focus on the searchInput when it becomes visible
-                        if (searchInput.classList.contains('show')) {
-                            searchInput.focus();
-                        }
-                    });
-
-
-
-
-                    searchBtn.addEventListener("click", function() {
-                        const inputValue = searchInput.value;
-                        if (!inputValue) {
-                            displayMessage("errorMsg", "Cannot be empty");
-                            return;
-                        }
-
-                        var formData = new FormData();
-                        formData.append("inputValue", inputValue);
-
-                        fetch('../controllers/searchData_contr.php', {
-                                method: 'POST',
-                                body: formData,
-                            })
-                            .then(response => response.json())
-                            .then(data => {
-                                console.log(data)
-                                if (!data) {
-                                    console.log(data)
-                                    // Handle case where no data was found
-                                    var tableBody = document.getElementById('tableBody');
-
-                                    // Set the received HTML as the innerHTML of the table body
-                                    tableBody.innerHTML = `
-                                    <tr>
-                                        <td colspan="8" style="text-center"> no such data</td>
-                                     </tr>
-                                    `;
-                                } else {
-                                    // Access the table body element
-                                    const tableBody = document.getElementById('tableBody');
-
-                                    // Set the received HTML as the innerHTML of the table body
-                                    tableBody.innerHTML = data;
-                                }
-
-                            })
-                            .catch(error => {
-                                console.error('Error:', error);
+                            // Add event listener to delete icon
+                            deleteIcon.addEventListener('click', function() {
+                                var rowToDelete = this.closest('tr');
+                                rowToDelete.parentNode.removeChild(rowToDelete);
                             });
-                    });
+
+                        }
+
+
+
+
+
+
+                    }
+
+
+                    hideModal();
 
 
                 });
@@ -707,6 +944,97 @@ $invoicesData = getAllInvoices($connect);
 
 
 
+
+
+                // tab navigation
+                initializeTabs(".tabs button", ".tab-content .page");
+
+
+                document.addEventListener('DOMContentLoaded', function() {
+
+                    function addSearchEventListener(searchIcon, searchInput, searchBtn) {
+                        searchIcon.addEventListener('click', function() {
+                            // Toggle the 'show' class on searchInput and searchBtn
+                            searchInput.classList.toggle('show');
+                            searchBtn.classList.toggle('show');
+
+                            // Focus on the searchInput when it becomes visible
+                            if (searchInput.classList.contains('show')) {
+                                searchInput.focus();
+                            }
+                        });
+                    }
+
+
+                    const searchIcon1 = document.getElementById('searchIcon1');
+                    const searchInput1 = document.getElementById('searchInput1');
+                    const searchBtn1 = document.getElementById('searchBtn1');
+                    const printIcon1 = document.getElementById('printIcon1');
+                    const spreadsheetIcon1 = document.getElementById('spreadsheetIcon1');
+                    const thead1 = document.getElementById('thead1');
+                    const searchData = document.getElementsByClassName('searchData');
+                    const pageUrl1 = '../controllers/searchData_contr.php';
+                    addSearchEventListener(searchIcon1, searchInput1, searchBtn1);
+
+
+                    const searchIcon2 = document.getElementById('searchIcon2');
+                    const searchInput2 = document.getElementById('searchInput2');
+                    const searchBtn2 = document.getElementById('searchBtn2');
+                    const printIcon2 = document.getElementById('printIcon2');
+                    const spreadsheetIcon2 = document.getElementById('spreadsheetIcon2');
+                    const thead2 = document.getElementById('thead2');
+                    const searchSales = document.getElementsByClassName('searchSales');
+                    const pageUrl2 = '../controllers/searchSales_contr.php';
+                    addSearchEventListener(searchIcon2, searchInput2, searchBtn2);
+
+
+
+
+                    Search(searchBtn1, searchInput1, pageUrl1, 'searchData');
+                    Search(searchBtn2, searchInput2, pageUrl2, 'searchSales');
+
+
+                    printIcon1.addEventListener('click', function() {
+                        // Access the first element with the class 'searchSales'
+                        printTable(printIcon1, searchData[0], 'thead1');
+                    });
+
+
+                    printIcon2.addEventListener('click', function() {
+                        // Access the first element with the class 'searchSales'
+                        printTable(printIcon2, searchSales[0], 'thead2');
+                    });
+
+
+
+                    // const searchData = document.getElementsByClassName('searchData');
+                    // const searchSales = document.getElementsByClassName('searchSales');
+
+                    spreadsheetIcon1.addEventListener("click", function() {
+                        exportToCSV(thead1, searchData[0]);
+                    })
+
+                    spreadsheetIcon2.addEventListener("click", function() {
+                        exportToCSV(thead2, searchSales[0]);
+                    })
+
+
+
+
+                });
+
+
+
+
+
+
+
+
+
+
+
+
+                // new invoice code
                 var selectedClientId;
                 var taxSymbol = "$";
                 var dollarRadio = document.getElementById('dollarRadio');
@@ -803,9 +1131,9 @@ $invoicesData = getAllInvoices($connect);
 
                         var total = 0;
 
-                        if (taxType === '$') {
+                        if (taxType !== '%') {
                             total = subtotalAmount + taxAmount;
-                        } else if (taxType === '%') {
+                        } else {
                             var taxPercentage = (taxAmount / 100) * subtotalAmount;
                             total = subtotalAmount + taxPercentage;
                         }
@@ -822,10 +1150,6 @@ $invoicesData = getAllInvoices($connect);
 
                     // Initial calculation
                     updateTotal();
-
-
-
-
 
                 });
 
@@ -856,9 +1180,68 @@ $invoicesData = getAllInvoices($connect);
                             // For the last cell
                             cell.classList.add('amount');
                             cell.textContent = '0';
+
+                            // Add the delete icon directly to the last cell's HTML
+                            cell.innerHTML += '<i class="fas fa-trash-alt delete-icon" style="position: absolute; left: 2%; color: #AAAAAA; cursor: pointer;"></i>';
                         }
+
+
+
                     }
+
+
+
                 }
+
+                // Event delegation to handle delete icon clicks
+                document.addEventListener('click', function(event) {
+                    if (event.target.classList.contains('delete-icon')) {
+                        var row = event.target.closest('tr');
+                        deleteRow(row);
+                    }
+                });
+
+                function deleteRow(row) {
+                    var table = row.closest('tbody'); // Reference the parent table body
+                    table.removeChild(row);
+                }
+
+
+
+
+
+
+
+
+                var addService = document.querySelector("#addService");
+                var closeDelModal = document.querySelector("#closeDelModal");
+                var cancel = document.querySelector("#cancel");
+                var saveBtn = document.querySelector("#saveBtn");
+
+                addService.addEventListener("click", function() {
+                    showModal();
+                })
+
+                cancel.addEventListener('click', function() {
+                    hideModal();
+                })
+                closeDelModal.addEventListener('click', function() {
+                    hideModal();
+                })
+
+                function showModal() {
+                    document.getElementById('changeModal').style.display = 'block';
+                    document.getElementById('overlay').style.display = 'block';
+                }
+
+
+                function hideModal() {
+                    document.getElementById('changeModal').style.display = 'none';
+                    document.getElementById('overlay').style.display = 'none';
+                }
+
+
+
 
                 // Function to update amount based on input values
                 function updateAmount() {
@@ -883,6 +1266,22 @@ $invoicesData = getAllInvoices($connect);
 
                     // Update the "amount" cell
                     row.querySelector('.amount').textContent = isNaN(amount) ? 'NaN' : amount.toFixed(2);
+
+                    // Create the delete icon
+                    var deleteIcon = document.createElement('i');
+                    deleteIcon.className = 'fas fa-trash-alt delete-icon';
+                    deleteIcon.style.position = 'absolute';
+                    deleteIcon.style.left = '1%';
+                    deleteIcon.style.color = '#AAAAAA';
+                    deleteIcon.style.cursor = 'pointer';
+                    row.appendChild(deleteIcon);
+
+                    // Add event listener to delete icon
+                    deleteIcon.addEventListener('click', function() {
+                        var rowToDelete = this.closest('tr');
+                        rowToDelete.parentNode.removeChild(rowToDelete);
+                    });
+
 
                     // Recalculate subtotal
                     updateSubtotal();
@@ -928,12 +1327,18 @@ $invoicesData = getAllInvoices($connect);
                     var paymentDate = document.querySelector(".paymentDate");
                     var startDate = document.querySelector(".startDate");
                     var expireDate = document.querySelector(".expireDate");
+                    var status = document.querySelector("#status").value;
 
 
 
 
                     if (!selectedClientId) {
                         displayMessage("errorMsg", "Choose the recipient first", true);
+                        return;
+                    }
+
+                    if (!status) {
+                        displayMessage("errorMsg", "Choose Payment Status", true);
                         return;
                     }
 
@@ -956,6 +1361,12 @@ $invoicesData = getAllInvoices($connect);
 
                         // Get the amount from the last td
                         var amount = cells[4].textContent;
+
+                        if (!qty || !price) {
+                            displayMessage("errorMsg", "Quantity or Price Cannot be Empty", true);
+                            return;
+                        }
+
 
                         // Add the product data to the array
                         invoiceProducts.push({
@@ -981,6 +1392,7 @@ $invoicesData = getAllInvoices($connect);
                     formData.append("taxSymbol", taxSymbol);
                     formData.append("subtotalAmount", subtotalAmount);
                     formData.append("totalPrice", totalPrice);
+                    formData.append("status", status);
                     formData.append("invoiceProducts", JSON.stringify(invoiceProducts));
 
                     // Perform fetch API request

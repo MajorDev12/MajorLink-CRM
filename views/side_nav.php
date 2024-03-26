@@ -100,8 +100,8 @@
       <ul class="sub-menu">
         <li><a class="link_name" href="#">Notifications</a></li>
         <li><a href="invoice.php" data-target="invoice">Invoice</a></li>
-        <li><a href="#" data-target="email">Email</a></li>
-        <li><a href="#" data-target="sms">Sms</a></li>
+        <li><a href="email.php" data-target="email">Email</a></li>
+        <li><a href="sms.php" data-target="sms">Sms</a></li>
       </ul>
     </li>
 

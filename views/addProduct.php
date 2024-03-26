@@ -5,6 +5,7 @@ require_once  '../controllers/addProduct_contr.php';
 require_once  '../modals/addProduct_mod.php';
 
 $connect = connectToDatabase($host, $dbname, $username, $password);
+$products = getProductData($connect);
 ?>
 <?php require_once "header.php"; ?>
 
@@ -53,7 +54,7 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
 
                 <div id="overlay"></div>
                 <!-- Add this to your HTML for the modal -->
-                <div class="modal-plan" id="productModal">
+                <div class="modal-container" id="productModal">
                     <div id="modalBackground"></div>
                     <div class="modal-dialog-plan">
                         <div class="modal-content-plan">

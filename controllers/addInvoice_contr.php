@@ -19,7 +19,7 @@ if (isset($_POST["selectedClientId"])) {
     $subtotal = inputValidation($_POST["subtotalAmount"]);
     $totalPrice = inputValidation($_POST["totalPrice"]);
     $invoiceProducts = json_decode($_POST["invoiceProducts"], true);
-    $status = "Paid";
+    $status = inputValidation($_POST["status"]);
 
     if (empty($invoiceNumber)) {
         $invoiceNumber = 'INV' . str_pad(mt_rand(1, 99999), 5, '0', STR_PAD_LEFT);

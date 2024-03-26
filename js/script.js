@@ -208,10 +208,159 @@ function initializeTabs(tabSelector, contentSelector) {
 
 
 
-															// table navigation functions
+// table search function
+function Search(searchBtn, searchInput, dataUrl, source) {
+	searchBtn.addEventListener("click", function() {
+		const inputValue = searchInput.value;
+		if (!inputValue) {
+			displayMessage("errorMsg", "Cannot be empty");
+			return;
+		}
 
-  // Create a flexible table navigation module
- 
+		var formData = new FormData();
+		formData.append("inputValue", inputValue);
+
+		fetch(dataUrl, {
+				method: 'POST',
+				body: formData,
+			})
+			.then(response => response.json())
+			.then(data => {
+				if (!data) {
+					// Handle case where no data was found
+					var tableBody = document.querySelector(`.${source}`);
+
+					// Set the message directly to the table body
+					tableBody.innerHTML = `
+	<tr>
+		<td colspan="8" style="text-center"> no such data</td>
+	</tr>
+`;
+				} else {
+					// Get the target table body based on the source
+					var targetTableBody = document.querySelector(`.${source}`);
+
+					if (targetTableBody) {
+						// Manipulate the target table body element
+						targetTableBody.innerHTML = data;
+					} else {
+						console.error('Table body element not found.');
+					}
+				}
+
+			})
+			.catch(error => {
+				console.error('Error:', error);
+			});
+	});
+}
 
 
 
+// print table
+
+function printTable(printIcon, tableBody, theadId) {
+	// Open a new window or tab
+	var printWindow = window.open('', '_blank');
+
+	// Create a blank page with the Bootstrap table
+	printWindow.document.write('<html><head><title>Print Table</title>');
+	printWindow.document.write('<link rel="stylesheet" href="../styles/table.css">');
+	printWindow.document.write('</head><body>');
+
+	// Create a table and append it to the new window
+	var printTable = document.createElement('table');
+	printTable.className = 'table printTable';
+	printTable.style.border = '1px solid black';
+	printTable.style.width = "80%";
+	printTable.style.position = "relative";
+	printTable.style.left = "10%";
+
+	// Copy the table headers, excluding the last td
+	var originalTableHeaders = document.getElementById(theadId);
+	var TableHeaderRows = document.querySelector('#' + theadId + ' th');
+	if (originalTableHeaders) {
+		var clonedHeaders = originalTableHeaders.cloneNode(true);
+		var lastHeaderCell = clonedHeaders.querySelector('th:last-child');
+		if (lastHeaderCell) {
+			lastHeaderCell.remove();
+		}
+		clonedHeaders.style.background = "#342E37";
+		clonedHeaders.style.color = "#F9F9F9";
+		TableHeaderRows.style.padding = "8px";
+		TableHeaderRows.style.borderRight = "1px solid #F9F9F9";
+		printTable.appendChild(clonedHeaders);
+	}
+
+	// Copy the table body content, excluding the last td
+	var clonedTableBody = tableBody.cloneNode(true);
+	var lastBodyCells = clonedTableBody.querySelectorAll('td:last-child');
+
+	lastBodyCells.forEach(function(cell) {
+		cell.remove();
+	});
+
+	printTable.appendChild(clonedTableBody);
+
+	// Append the table to the new window
+	printWindow.document.body.appendChild(printTable);
+
+	printWindow.document.write('</body></html>');
+
+	// Attach an event listener to clean up and close the window after printing
+	printWindow.onafterprint = function() {
+		// Clean up: Remove the cloned elements
+		printTable.remove();
+		// Close the blank page after the print dialog is closed
+		printWindow.close();
+	};
+
+	// Trigger the print function for the new window
+	printWindow.print();
+}
+
+
+
+
+
+
+
+
+function exportToCSV(tableHeader, tableBody) {
+	// Extract the table headers, excluding the last td
+	var headers = Array.from(tableHeader.querySelectorAll('th:not(:last-child)')).map(header => header.textContent);
+
+	// Extract the table data, excluding the last td
+	var rows = tableBody.querySelectorAll('tr');
+
+	// Build CSV content manually
+	var csvContent = headers.join(',') + '\n';
+
+	// Add rows to the CSV content, excluding the last td
+	rows.forEach(function(row) {
+		var rowData = [];
+		var cells = row.querySelectorAll('td:not(:last-child)');
+		cells.forEach(function(cell) {
+			rowData.push('"' + cell.textContent.replace(/"/g, '""') + '"'); // Enclose in double quotes and escape existing double quotes
+		});
+		csvContent += rowData.join(',') + '\n';
+	});
+
+	// Create a Blob with the CSV content
+	var blob = new Blob([csvContent], {
+		type: 'text/csv'
+	});
+
+	// Create a download link
+	var link = document.createElement('a');
+	link.href = URL.createObjectURL(blob);
+	link.download = 'exported_table.csv';
+
+	// Append the link to the document and trigger the click event
+	document.body.appendChild(link);
+	link.click();
+
+	// Clean up: Remove the link from the document
+	document.body.removeChild(link);
+
+}

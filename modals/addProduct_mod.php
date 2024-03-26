@@ -52,10 +52,12 @@ function  insertProductData($name, $price, $notes, $connect)
 function getProductData($connect)
 {
     try {
-        $query = "SELECT ProductID, ProductName, Price, Description FROM products";
+        $query = "SELECT * FROM products";
         $statement = $connect->prepare($query);
         $statement->execute();
-        return $statement->fetchAll(PDO::FETCH_ASSOC);
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        return $result;
     } catch (PDOException $e) {
         echo "Error: " . $e->getMessage();
         return false;

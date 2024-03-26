@@ -16,7 +16,9 @@ li {
 abbr {
 	display: inline;
 }
-
+.asterik{
+	color: #DB504A;
+}
 :root {
 	--poppins: 'Poppins', sans-serif;
 	--lato: 'Lato', sans-serif;
@@ -105,15 +107,18 @@ label {
 	left: 50%;
 	transform: translate(-50%, -50%);
 	transition: .3s;
-	background-color: #fff;
-	border: 1px solid #ccc;
+	background-color: var(--light);
+	border: 1px solid var(--grey);
 	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-	min-width: 40%;
-	min-height: 40%;
+	min-width: 50%;
+	height: 90%;
 	padding: 20px;
-	z-index: 100;
+	z-index: 1000;
+	overflow-y: scroll;
 }
-
+.modal-dialog{
+	position: relative;
+}
 .modal-header {
 	display: flex;
 	justify-content: space-between;

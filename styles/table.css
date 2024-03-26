@@ -1,0 +1,59 @@
+.printTable{
+    position: relative;
+    left: 10%;
+    width: 80%;
+    border: 1px solid black;
+    background-color: #F9F9F9;
+}
+
+.printTable thead{
+    background-color: grey;
+}
+.printTable th {
+    padding-bottom: 12px;
+    font-size: 13px;
+    text-align: left;
+    border-bottom: 1px solid gray;
+}
+
+.printTable td {
+    padding: 16px 0;
+    text-align: left;
+    border-bottom: 1px solid gray;
+}
+.printTable thead{
+    background-color: #342E37;
+    color: #F9F9F9;
+}
+
+@media print {
+    .printTable{
+        position: relative;
+        left: 10%;
+        width: 80%;
+        border: 1px solid black;
+        background-color: #F9F9F9;
+    }
+    
+    .printTable thead{
+        background-color: grey;
+        border-left: 1px solid gray;
+    }
+    .printTable th {
+        padding-bottom: 12px;
+        font-size: 13px;
+        text-align: left;
+        border-bottom: 1px solid gray;
+    }
+    
+    .printTable td {
+        padding: 16px 0;
+        text-align: left;
+        border-bottom: 1px solid gray;
+    }
+    .printTable thead{
+        background-color: #342E37;
+        color: #F9F9F9;
+    }
+    
+}

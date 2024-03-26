@@ -1,12 +1,9 @@
 <?php require "header.php"; ?>
 <?php
-session_start();
-
 require_once  '../database/pdo.php';
-require_once  '../modals/addInvoice_mod.php';
+require_once  '../modals/addSale_mod.php';
 $connect = connectToDatabase($host, $dbname, $username, $password);
 
-$invoiceID = $_SESSION["invoiceID"];
 ?>
 <style>
     .invoiceContainer {
@@ -15,6 +12,7 @@ $invoiceID = $_SESSION["invoiceID"];
         position: relative;
         background-color: #F9F9F9;
         font-family: 'Poppins', sans-serif;
+        padding: 0;
         z-index: 1;
     }
 
@@ -142,7 +140,7 @@ $invoiceID = $_SESSION["invoiceID"];
 
 
 <div class="invoiceContainer">
-    <h1 class="status">Pending</h1>
+    <h1 class="status">Paid</h1>
     <!-- header -->
 
     <div class="header">
@@ -179,15 +177,11 @@ $invoiceID = $_SESSION["invoiceID"];
             <label>Invoice Number</label>
             <p>{{ invoiceNumber }}</p>
             <label class="issueDate">Date of Issue</label>
-            <p>{{ paymentDate }}</p>
-            <label class="startDate">Start Date</label>
-            <p>{{ StartDate }}</p>
+            <p>{{ saleDate }}</p>
         </div>
         <div class="invoiceTotal">
-            <label class="expireDate">Expire Date</label>
-            <p>{{ expireDate }}</p>
             <label>Invoice Total</label>
-            <h4 class="topTotal"><span class="currency">$</span>{{ totalAmount }}</h4>
+            <h4 class="topTotal"><span class="currency">{{ taxSymbol }}</span>{{ total }}</h4>
         </div>
     </div>
 
@@ -197,8 +191,7 @@ $invoiceID = $_SESSION["invoiceID"];
         <thead>
             <tr>
                 <th>Product</th>
-                <th>Volume</th>
-                <th>Qty/Months</th>
+                <th>Qty</th>
                 <th>Price</th>
                 <th>Amount</th>
             </tr>
@@ -207,20 +200,20 @@ $invoiceID = $_SESSION["invoiceID"];
             {{ htmlProducts }}
             <!-- Add Subtotal, Tax, and Total rows here -->
             <tr>
-                <td colspan="3" class="space"></td>
+                <td colspan="2" class="space"></td>
                 <td colspan="" class="Subtotal">Subtotal</td>
                 <td class="">{{ subtotal }}</td>
             </tr>
             <tr>
-                <td colspan="3" class="space"></td>
+                <td colspan="2" class="space"></td>
                 <td colspan="" class="Tax">Tax({{ taxSymbol }})</td>
                 <td class="">{{ tax }}</td>
             </tr>
 
             <tr>
-                <td colspan="3" class="space"></td>
+                <td colspan="2" class="space"></td>
                 <td colspan="" class="Total">Total</td>
-                <td class="totalPrice">$ {{ totalAmount }}</td>
+                <td class="totalPrice">{{ taxSymbol }} {{ total }}</td>
             </tr>
         </tbody>
     </table>

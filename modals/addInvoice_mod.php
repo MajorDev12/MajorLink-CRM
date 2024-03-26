@@ -224,7 +224,7 @@ function getAllUnpaidInvoices($connect)
 
 
 
-function searchData($connect, $searchInput)
+function searchServicesData($connect, $searchInput)
 {
     try {
         // Use a prepared statement to prevent SQL injection
@@ -233,6 +233,32 @@ function searchData($connect, $searchInput)
                   WHERE FirstName LIKE :searchInput 
                      OR LastName LIKE :searchInput 
                      OR InvoiceNumber LIKE :searchInput";
+        $statement = $connect->prepare($query);
+        $statement->bindValue(':searchInput', '%' . $searchInput . '%', PDO::PARAM_STR);
+        $statement->execute();
+
+        $results = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        return $results;
+    } catch (PDOException $e) {
+        // Handle the exception as needed
+        echo "Error: " . $e->getMessage();
+        return false;
+    }
+}
+
+
+
+
+function searchProductsData($connect, $searchInput)
+{
+    try {
+        // Use a prepared statement to prevent SQL injection
+        $query = "SELECT sales.*, clients.FirstName, clients.LastName FROM sales
+                  JOIN clients ON sales.ClientID = clients.ClientID
+                  WHERE FirstName LIKE :searchInput 
+                     OR LastName LIKE :searchInput 
+                     OR PaymentStatus LIKE :searchInput";
         $statement = $connect->prepare($query);
         $statement->bindValue(':searchInput', '%' . $searchInput . '%', PDO::PARAM_STR);
         $statement->execute();

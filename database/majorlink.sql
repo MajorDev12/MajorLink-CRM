@@ -150,15 +150,17 @@ VALUES (NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 CREATE TABLE sales (
     SaleID INT PRIMARY KEY AUTO_INCREMENT,
     SaleDate DATE NOT NULL,
-    AdminID INT, -- Salesperson who is an admin
-    ClientID INT,
-    ProductID INT,
+    AdminID INT NOT NULL, -- Salesperson who is an admin
+    ClientID INT NOT NULL,
+    ProductID INT NOT NULL,
+    InvoiceNumber VARCHAR(50) NOT NULL,
     Quantity INT NOT NULL,
     UnitPrice DECIMAL(10, 2) NOT NULL,
+    Total DECIMAL(10, 2) NOT NULL,
     PaymentOptionID INT,
-    PaymentDate DATE,
+    Tax INT NOT NULL,
+    TaxSymbol VARCHAR(50) NOT NULL,
     PaymentStatus VARCHAR(50),
-    CreatedDate DATETIME,
     UpdatedDate DATETIME,
     -- other sale-related attributes
     FOREIGN KEY (AdminID) REFERENCES admins(AdminID),
@@ -292,6 +294,17 @@ CREATE TABLE emails (
 
 
 
+CREATE TABLE emailTemplate (
+    TemplateID INT PRIMARY KEY AUTO_INCREMENT,
+    Category VARCHAR(50),
+    Name VARCHAR(255),
+    Subject VARCHAR(255),
+    Body TEXT,
+    Status VARCHAR(50)
+);
+
+
+
 
 
 CREATE TABLE expenses (
@@ -338,3 +351,11 @@ VALUES ('admin', '12345678', 'admin', 'admin@example.com', 'Active', NOW());
 -- Insert Client
 INSERT INTO Clients (FirstName, LastName, PrimaryEmail, PasswordHash, CreatedDate)
 VALUES ('client', 'client', 'client@example.com', '123456', NOW());
+
+
+
+INSERT INTO emailTemplate (Category, Name, Subject, Body, Status) 
+VALUES 
+    ('Promotion', 'Promotional Email', 'Special Offer Inside!', 'Dear Customer, Check out our latest offers. Don\'t miss out!', 'Active'),
+    ('Reminder', 'Payment Reminder', 'Reminder: Payment Due', 'Dear Customer, This is a friendly reminder that your payment is due soon. Please ensure timely payment. Thank you.', 'Active'),
+    ('Welcome', 'Welcome Email', 'Welcome to Our Platform', 'Dear New User, Welcome to our platform! We are thrilled to have you with us. If you have any questions, feel free to reach out.', 'Active');

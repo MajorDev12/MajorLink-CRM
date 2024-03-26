@@ -18,6 +18,7 @@
 	<link rel="stylesheet" href="../styles/addClient.css">
 	<link rel="stylesheet" href="../styles/viewClient.css">
 	<link rel="stylesheet" href="../styles/addArea.css">
+	<link rel="stylesheet" href="../styles/table.css">
 	<!-- <link rel="stylesheet" href="../styles/addSubarea.css">
 	<link rel="stylesheet" href="../styles/addplan.css"> -->
 

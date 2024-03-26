@@ -10,9 +10,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $connect = connectToDatabase($host, $dbname, $username, $password);
 
         $searchInput = inputValidation($_POST['inputValue']);
-        $results = searchServicesData($connect, $searchInput);
-
-
+        $results = searchProductsData($connect, $searchInput);
 
 
         if ($results !== false) {
@@ -27,16 +25,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $table .= '
              <tr>
                  <td class="index pe-3">' . $index . '</td>
-                 <td>' . $result['InvoiceNumber'] . '</td>
                  <td>' . $result['FirstName'] . ' ' . $result['LastName'] . '</td>
-                 <td>' . $result['TotalAmount'] . '</td>
-                 <td>' . $result['StartDate'] . '</td>
-                 <td>' . $result['DueDate'] . '</td>
-                 <td>' . $result['Status'] . '</td>
+                 <td>' . $result['Quantity'] * $result['UnitPrice'] . '</td>
+                 <td>' . $result['SaleDate'] . '</td>
+                 <td>' . $result['PaymentStatus'] . '</td>
                  <td style="text-align:center">
-                     <a href="viewInvoice.php?i=' . $result["InvoiceID"] . '&c=' . $result["ClientID"] . '" class="icon view"><img src="../img/eyeIcon.png" alt=""></a>
-                     <abbr title="download pdf"><a href="../controllers/generatepdf_contr.php?i=' . $result["InvoiceID"] . '&c=' . $result["ClientID"] . '" target="_blank" class="icon pdf"><img src="../img/pdfIcon.png" alt=""></a></abbr>
-                     <abbr title="print"><a href="../user/printInvoice.php?i=' . $result["InvoiceID"] . '&c=' . $result["ClientID"] . '" target="_blank" class="icon print"><img src="../img/printIcon.png" alt=""></a></abbr>
+                     <a href="viewProduct.php?i=' . $result["SaleID"] . '&c=' . $result["ClientID"] . '" class="icon view"><img src="../img/eyeIcon.png" alt=""></a>
+                     <abbr title="download pdf"><a href="../controllers/generateSalesInvoice_contr.php?i=' . $result["SaleID"] . '&c=' . $result["ClientID"] . '" target="_blank" class="icon pdf"><img src="../img/pdfIcon.png" alt=""></a></abbr>
+                     <abbr title="print"><a href="../views/printSaleInvoice.php?i=' . $result["SaleID"] . '&c=' . $result["ClientID"] . '" target="_blank" class="icon print"><img src="../img/printIcon.png" alt=""></a></abbr>
                  </td>
              </tr>
          ';

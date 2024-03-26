@@ -2,7 +2,7 @@
 <?php
 
 require_once  '../database/pdo.php';
-require_once  '../modals/addInvoice_mod.php';
+require_once  '../modals/addSale_mod.php';
 require_once  '../modals/viewSingleUser_mod.php';
 $connect = connectToDatabase($host, $dbname, $username, $password);
 
@@ -22,7 +22,7 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
 
     .invoiceContainer .status {
         position: absolute;
-        left: 60%;
+        left: 58%;
         top: 57%;
         font-size: 3em;
         rotate: -10deg;
@@ -257,17 +257,17 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
 
 <?php
 // Use $_GET to retrieve encoded parameters
-$invoiceID = isset($_GET['i']) ? $_GET['i'] : null;
+$SaleID = isset($_GET['i']) ? $_GET['i'] : null;
 $clientID = isset($_GET['c']) ? $_GET['c'] : null;
 
-if ($invoiceID !== null && $clientID !== null) :
-    $invoice = getInvoiceData($connect, $invoiceID);
+if ($SaleID !== null && $clientID !== null) :
+    $sales = getSalesByID($connect, $SaleID);
     //get clientInfo
     $clientData = getClientDataById($connect, $clientID);
 
 ?>
     <div class="invoiceContainer shadow-sm bg-body rounded">
-        <h1 class="status">Pending</h1>
+        <h1 class="status">Partial Paid</h1>
         <!-- header -->
         <div class="header">
 
@@ -295,85 +295,72 @@ if ($invoiceID !== null && $clientID !== null) :
             <div class="clientInfo">
                 <p>Billed To</p>
                 <?php if ($clientData) : ?>
-                    <h5 class="clientNames"><?= $clientData["FirstName"]; ?></h5>
+                    <h5 class="clientNames"><?= $clientData["FirstName"] . ' ' . $clientData["LastName"]; ?></h5>
                     <h5 class="address">Nakuru, Pipeline</h5>
                     <h5 class="City">Nakuru City</h5>
                     <h5 class="zipcode">20100</h5>
                     <h5 class="country">Kenya</h5>
                 <?php endif; ?>
             </div>
-            <?php if (!empty($invoice)) : ?>
-                <div class="invoiceInfo">
-                    <p>Invoice Number</p>
-                    <h5><?= $invoice["InvoiceNumber"]; ?></h5>
-                    <p class="issueDate">Date of Issue</p>
-                    <h5><?= date("Y-m-d", strtotime($invoice["paymentDate"])); ?></h5>
-                    <p class="issueDate">Start Date</p>
-                    <h5><?= date("Y-m-d", strtotime($invoice["StartDate"])); ?></h5>
-                </div>
-                <div class="invoiceTotal">
-                    <p class="issueDate">Expire Date</p>
-                    <h5><?= date("Y-m-d", strtotime($invoice["DueDate"])); ?></h5>
-                    <p>Invoice Total</p>
-                    <h4 class="topTotal"><span class="currency">$</span><?= number_format($invoice["TotalAmount"], 2); ?></h4>
-                </div>
-            <?php endif; ?>
+
+            <div class="invoiceInfo">
+                <p>Invoice Number</p>
+                <h5><?= $sales[0]["InvoiceNumber"]; ?></h5>
+                <p class="issueDate">Date of Issue</p>
+                <h5><?= date("Y-m-d", strtotime($sales[0]["SaleDate"])); ?></h5>
+            </div>
+            <div class="invoiceTotal">
+                <p>Invoice Total</p>
+                <h4 class="topTotal"><span class="currency">$</span><?= number_format($sales[0]["Total"], 2); ?></h4>
+            </div>
+
         </div>
 
         <table class="table" id="dataTable">
             <thead>
                 <tr>
                     <th>Product</th>
-                    <th>Volume</th>
-                    <th>Qty/Months</th>
+                    <th>Qty</th>
                     <th>Price</th>
                     <th>Amount</th>
                 </tr>
             </thead>
             <tbody>
-                <?php
-                $products = getInvoiceProducts($connect, $invoiceID);
-                $subtotal = 0; // Initialize subtotal
-
-                ?>
 
                 <!-- Check if $products is not empty -->
-                <?php if (!empty($products)) : ?>
-                    <!-- Loop through each product -->
-                    <?php foreach ($products as $product) : ?>
-                        <tr>
-                            <td><?= $product["Name"]; ?></td>
-                            <td><?= $product["Volume"]; ?></td>
-                            <td><?= $product["Qty"]; ?></td>
-                            <td><?= $product["Price"]; ?></td>
-                            <td><?= $product["Amount"]; ?></td>
-                        </tr>
-                        <?php
-                        // Update subtotal for each product
-                        $subtotal += $product["Amount"];
-                        ?>
-                    <?php endforeach; ?>
+                <?php if (!empty($sales)) : ?>
+                    <?php
+                    $subtotal = $sales[0]["Quantity"] * $sales[0]["UnitPrice"];
+
+                    ?>
+                    <tr>
+                        <td><?= $sales[0]["ProductName"]; ?></td>
+                        <td><?= $sales[0]["Quantity"]; ?></td>
+                        <td><?= $sales[0]["UnitPrice"]; ?></td>
+                        <td><?= number_format($subtotal, 2); ?></td>
+                    </tr>
                 <?php else : ?>
                     <!-- Handle the case where $products is empty -->
                     <tr>
+                        no data yet
                     </tr>
                 <?php endif; ?>
 
                 <tr>
-                    <td colspan="3" class="border-0"></td>
+                    <td colspan="2" class="border-0"></td>
                     <td colspan="" class="Subtotal">Subtotal</td>
                     <td class="subtotalAmount"><?= number_format($subtotal, 2); ?></td>
                 </tr>
 
                 <tr>
-                    <td colspan="3" class="border-0"></td>
-                    <td colspan="" id="Tax">Tax(<?= $invoice["TaxSymbol"]; ?>)</td>
-                    <td class="taxAmount"><?= $invoice["Taxamount"]; ?></td>
+                    <td colspan="2" class="border-0"></td>
+                    <td colspan="" id="Tax">Tax(<?= $sales[0]["TaxSymbol"]; ?>)</td>
+                    <td class="taxAmount"><?= $sales[0]["Tax"]; ?></td>
                 </tr>
                 <tr>
-                    <td colspan="3" class="border-0"></td>
+                    <td colspan="2" class="border-0"></td>
                     <td colspan="" class="Total">Total</td>
-                    <td class="totalPrice">$ <?= number_format($invoice["TotalAmount"], 2); ?></td>
+                    <td class="totalPrice">$ <?= number_format($sales[0]["Total"], 2); ?></td>
                 </tr>
             </tbody>
         </table>
@@ -394,6 +381,8 @@ if ($invoiceID !== null && $clientID !== null) :
 <script>
     window.onload = () => window.print();
 
+
+    // Attach an event listener to clean up and close the window after printing
     window.onafterprint = function() {
         // Close the current window
         window.close();

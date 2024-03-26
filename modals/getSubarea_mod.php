@@ -17,3 +17,17 @@ function getSubareasByAreaId($connect, $areaId)
     // Return the fetched data
     return $result;
 }
+
+
+function getAllSubareas($connect)
+{
+    $query = "SELECT * FROM subareas";
+    $statement = $connect->prepare($query);
+    $statement->execute();
+
+    // Fetch all rows as an associative array
+    $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+    // Return the fetched data
+    return $result;
+}
