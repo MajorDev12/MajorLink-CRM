@@ -1,4 +1,23 @@
 <?php
+function insertEmailTemplate($connect, $name, $subject, $body, $status)
+{
+    try {
+        $query = "INSERT INTO emailtemplate (Name, Subject, Body, Status) VALUES (:name, :subject, :body, :status)";
+        $statement = $connect->prepare($query);
+        $statement->bindParam(':name', $name);
+        $statement->bindParam(':subject', $subject);
+        $statement->bindParam(':body', $body);
+        $statement->bindParam(':status', $status);
+        $statement->execute();
+
+        return true;
+    } catch (PDOException $e) {
+        echo "Error: " . $e->getMessage();
+        return false;
+    }
+}
+
+
 
 
 function getEmailTemplate($connect)
@@ -101,5 +120,30 @@ function sendEmail($to, $name, $subject, $message)
         header("Location: ../views/index.php");
     } catch (Exception $e) {
         echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+    }
+}
+
+
+
+function deleteEmailTemplate($connect, $templateID)
+{
+    try {
+        // Prepare SQL query to delete the template by its ID
+        $deleteQuery = "DELETE FROM emailtemplate WHERE TemplateID = :templateID";
+        $deleteStatement = $connect->prepare($deleteQuery);
+        $deleteStatement->bindParam(':templateID', $templateID, PDO::PARAM_INT);
+
+        // Execute the deletion query
+        $deleteStatement->execute();
+
+        // Check if any rows were affected (template deleted)
+        if ($deleteStatement->rowCount() > 0) {
+            return true; // Template deleted successfully
+        } else {
+            return false; // Template not found or deletion failed
+        }
+    } catch (PDOException $e) {
+        echo "Error: " . $e->getMessage();
+        return false;
     }
 }

@@ -12,6 +12,16 @@ $emails = getEmailTemplate($connect);
 <?php require_once "../views/header.php"; ?>
 <?php require_once "../views/style.config.php"; ?>
 <style>
+    .content .header {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+    }
+
+    .modal-container {
+        width: 60%;
+    }
+
     .textContainer {
         background-color: white;
         padding: 20px;
@@ -91,7 +101,6 @@ $emails = getEmailTemplate($connect);
         margin-top: 10px;
         border: 1px solid #dddddd;
         padding: 20px;
-        height: 50vh;
     }
 
     /* .textContainer .bodyInput {
@@ -186,10 +195,6 @@ $emails = getEmailTemplate($connect);
                 </ul>
             </div>
 
-            <a href="#" class="btn-download">
-                <i class='bx bxs-cloud-download'></i>
-                <span class="text">Download PDF</span>
-            </a>
         </div>
 
         <!-- content-container -->
@@ -198,12 +203,44 @@ $emails = getEmailTemplate($connect);
 
             <!-- modal -->
             <div id="overlay"></div>
+            <div class="modal-container" id="deleteModal">
+                <input type="hidden" id="deltemplateID">
+                <div id="modalBackground"></div>
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <p id="title" class="modal-title">Delete Email Template</p>
+                        <button type="button" id="delcancelBtn" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body mt-3">
+                        <h2 style="text-align: center; ">Are You Sure?</h2>
+                    </div>
+                    <div class="modal-footer">
+                        <p id="modalerror"></p>
+                        <button type="button" id="deleteEmailBtn" class="btn btn-danger">Delete</button>
+
+                    </div>
+                </div>
+
+            </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
             <div class="modal-container" id="changeModal">
                 <input type="hidden" id="templateID">
                 <div id="modalBackground"></div>
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 id="title" class="modal-title"></h5>
+                        <h5 id="title" class="modal-title">Custom</h5>
                         <button type="button" id="cancel" class="close" data-dismiss="modal">&times;</button>
                     </div>
                     <div class="modal-body mt-3">
@@ -303,11 +340,139 @@ $emails = getEmailTemplate($connect);
                             </div>
                         </div>
                         <!-- <div id="bodyInput" contenteditable="true"></div> -->
-                        <textarea contenteditable="true" style="outline: none;" id="bodyInput" class="p-3 b-none" cols="50" rows="10"></textarea>
+                        <div class="form-floating">
+                            <textarea class="form-control" style="height: 400px;" id="bodyInput"></textarea>
+
+                        </div>
+                        <!-- <textarea contenteditable="true" style="outline: none;" id="bodyInput" class="p-3 b-none" cols="64" rows="15"></textarea> -->
                     </div>
                     <div class="modal-footer">
                         <p id="modalerror"></p>
                         <button type="button" id="updateEmailBtn" class="btn btn-info">Save Changes</button>
+
+                    </div>
+                </div>
+
+            </div>
+
+
+            <div class="modal-container" id="newModal">
+                <div id="modalBackground"></div>
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 id="title" class="modal-title">Custom</h5>
+                        <button type="button" id="cancelBtn" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body mt-3">
+                        <label for="Category">Category:</label>
+                        <input type="text" id="newcategory" class="form-control modalInput mb-3">
+                        <label for="nameInput">Name:</label>
+                        <input type="text" id="newnameInput" class="form-control modalInput mb-3">
+                        <label for="subjectInput">Subject:</label>
+                        <input type="text" id="newsubjectInput" class="form-control modalInput mb-3">
+                        <label for="bodyInput" class="mt-5">Message Body:</label>
+                        <div class="textContainer">
+                            <div class="options">
+                                <!-- Text Format -->
+                                <button id="bold" class="option-button format">
+                                    <i class="fa-solid fa-bold"></i>
+                                </button>
+                                <button id="italic" class="option-button format">
+                                    <i class="fa-solid fa-italic"></i>
+                                </button>
+                                <button id="underline" class="option-button format">
+                                    <i class="fa-solid fa-underline"></i>
+                                </button>
+                                <button id="strikethrough" class="option-button format">
+                                    <i class="fa-solid fa-strikethrough"></i>
+                                </button>
+                                <button id="superscript" class="option-button script">
+                                    <i class="fa-solid fa-superscript"></i>
+                                </button>
+                                <button id="subscript" class="option-button script">
+                                    <i class="fa-solid fa-subscript"></i>
+                                </button>
+
+                                <!-- List -->
+                                <button id="insertOrderedList" class="option-button">
+                                    <div class="fa-solid fa-list-ol"></div>
+                                </button>
+                                <button id="insertUnorderedList" class="option-button">
+                                    <i class="fa-solid fa-list"></i>
+                                </button>
+
+                                <!-- Undo/Redo -->
+                                <button id="undo" class="option-button">
+                                    <i class="fa-solid fa-rotate-left"></i>
+                                </button>
+                                <button id="redo" class="option-button">
+                                    <i class="fa-solid fa-rotate-right"></i>
+                                </button>
+
+                                <!-- Link -->
+                                <button id="createLink" class="adv-option-button">
+                                    <i class="fa fa-link"></i>
+                                </button>
+                                <button id="unlink" class="option-button">
+                                    <i class="fa fa-unlink"></i>
+                                </button>
+
+                                <!-- Alignment -->
+                                <button id="justifyLeft" class="option-button align">
+                                    <i class="fa-solid fa-align-left"></i>
+                                </button>
+                                <button id="justifyCenter" class="option-button align">
+                                    <i class="fa-solid fa-align-center"></i>
+                                </button>
+                                <button id="justifyRight" class="option-button align">
+                                    <i class="fa-solid fa-align-right"></i>
+                                </button>
+                                <button id="justifyFull" class="option-button align">
+                                    <i class="fa-solid fa-align-justify"></i>
+                                </button>
+                                <button id="indent" class="option-button spacing">
+                                    <i class="fa-solid fa-indent"></i>
+                                </button>
+                                <button id="outdent" class="option-button spacing">
+                                    <i class="fa-solid fa-outdent"></i>
+                                </button>
+
+                                <!-- Headings -->
+                                <select id="formatBlock" class="adv-option-button">
+                                    <option value="H1">H1</option>
+                                    <option value="H2">H2</option>
+                                    <option value="H3">H3</option>
+                                    <option value="H4">H4</option>
+                                    <option value="H5">H5</option>
+                                    <option value="H6">H6</option>
+                                </select>
+
+                                <!-- Font -->
+                                <select id="fontName" class="adv-option-button"></select>
+                                <select id="fontSize" class="adv-option-button"></select>
+
+                                <!-- Color -->
+                                <div class="input-wrapper">
+                                    <input type="color" id="foreColor" class="adv-option-button" />
+                                    <label for="foreColor">Font Color</label>
+                                </div>
+                                <div class="input-wrapper">
+                                    <input type="color" id="backColor" class="adv-option-button" />
+                                    <label for="backColor">Highlight Color</label>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- <div id="bodyInput" contenteditable="true"></div> -->
+                        <div class="form-floating">
+                            <textarea class="form-control newMessageInput" style="height: 200px;" id="bodyInput"></textarea>
+
+                        </div>
+                        <!-- <textarea contenteditable="true" style="outline: none;" id="bodyInput" class="p-3 b-none" cols="64" rows="15"></textarea> -->
+                    </div>
+                    <div class="modal-footer">
+                        <p id="newmodalerror"></p>
+                        <button type="button" id="addNewBtn" class="btn btn-info">Save Email</button>
+
                     </div>
                 </div>
 
@@ -317,9 +482,18 @@ $emails = getEmailTemplate($connect);
 
 
 
+
+
+
+
+
+
+
+
             <div class="content">
-                <div class="h4 pb-2 mt-2 mb-2 border-bottom">
+                <div class="h4 pb-2 mt-2 mb-2 border-bottom header">
                     <h3>Create Email Messages</h3>
+                    <button id="NewBtn" class="btn btn-primary">New Email</button>
                 </div>
 
                 <table class="mt-5">
@@ -334,27 +508,26 @@ $emails = getEmailTemplate($connect);
                     </thead>
                     <tbody id="tableBody" class="tableBody">
 
-
                         <?php $counter = 1; ?>
                         <?php if ($emails) : ?>
                             <?php foreach ($emails as $index => $email) : ?>
                                 <tr>
-                                    <td class="index pe-3"><?= $index + 1;  ?></td>
-                                    <td class=""><?php echo $email['Category']; ?></td>
-                                    <td style="text-align:center" class=""><?php echo $email['Name']; ?></td>
-                                    <td style="text-align:center" class=""><?php echo $email['Subject']; ?></td>
+                                    <td class="index pe-3"><?= $index + 1; ?></td>
+                                    <td class=""><?= $email['Category']; ?></td>
+                                    <td style="text-align:center" class=""><?= $email['Name']; ?></td>
+                                    <td style="text-align:center" class=""><?= $email['Subject']; ?></td>
                                     <td style="text-align:center">
                                         <a href="#" class="icon view" data-templateid="<?= $email["TemplateID"]; ?>"><img src="../img/eyeIcon.png" alt=""></a>
-                                        <abbr title="print"><a href="../user/printInvoice.php?t=<?= $email["TemplateID"]; ?>" target="_blank" class="icon print"><img src="../img/printIcon.png" alt=""></a></abbr>
+                                        <?php if ($email['Status'] === 'custom') : ?>
+                                            <abbr title="delete"><a href="#" data-deltemplateid="<?= $email["TemplateID"]; ?>" class="icon print"><img src="../img/deleteIcon.png" style="width: 18px; height: 20px;" alt=""></a></abbr>
+                                        <?php endif; ?>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
                         <?php else : ?>
-                            <?php echo '  
-                             <tr>
-                                <td colspan="8" style="text-center"> No Data Yet</td>
-                            </tr>'; ?>
+                            <?php echo '<tr><td colspan="8" style="text-center"> No Data Yet</td></tr>'; ?>
                         <?php endif; ?>
+
 
 
                     </tbody>
@@ -369,11 +542,137 @@ $emails = getEmailTemplate($connect);
             <script>
                 var updateEmailBtn = document.querySelector("#updateEmailBtn");
                 var bodyInput = document.querySelector("#bodyInput");
+                var newMessage = document.querySelector(".newMessageInput");
+                var newname = document.querySelector("#newnameInput");
+                var category = document.querySelector("#newcategory");
                 var subjectInput = document.querySelector("#subjectInput");
+                var newsubject = document.querySelector("#newsubjectInput");
                 var templateid = document.querySelector("#templateID");
+                var deltemplateid = document.querySelector("#deltemplateID");
+                var addNewBtn = document.querySelector("#addNewBtn");
+                var NewBtn = document.querySelector("#NewBtn");
+                var newModal = document.querySelector("#newModal");
+                var addEmailBtn = document.querySelector("#addEmailBtn");
+                var deleteModal = document.querySelector("#deleteModal");
                 var initialBodyValue;
                 var initialSubjectValue;
-                // the initial values of the input fields
+
+
+
+
+                NewBtn.addEventListener("click", function() {
+                    document.getElementById('overlay').style.display = 'block';
+                    document.getElementById('newModal').style.display = 'block';
+                })
+
+
+
+
+
+                addNewBtn.addEventListener("click", function() {
+                    if (!newname.value || !newsubject.value || !newMessage.value || !category.value) {
+                        displayMessage("newmodalerror", "all Inputs must be filled", true);
+                        return;
+                    }
+
+
+                    var formData = new FormData();
+                    formData.append("newname", newname.value);
+                    formData.append("newsubject", newsubject.value);
+                    formData.append("newMessage", newMessage.value);
+                    formData.append("category", category.value);
+
+                    fetch("../controllers/addEmailTemplate_contr.php", {
+                            method: 'POST',
+                            body: formData
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                // Handle the response from the server
+                                displayMessage("newmodalerror", "Added Successfully!!", false);
+                                // localStorage.setItem('AddNewClientPaymentToast', 'true');
+                                document.getElementById('overlay').style.display = 'none';
+                                document.getElementById('newModal').style.display = 'none';
+                                location.href = "Emailtemplate.php";
+                            } else {
+                                displayMessage("newmodalerror", "something went wrong!!", false);
+                                document.getElementById('overlay').style.display = 'none';
+                                document.getElementById('newModal').style.display = 'none';
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                        });
+
+
+                })
+
+
+
+                document.querySelectorAll('.print').forEach(function(link) {
+                    link.addEventListener("click", function(event) {
+                        event.preventDefault();
+
+                        document.getElementById('deleteModal').style.display = 'block';
+                        document.getElementById('overlay').style.display = 'block';
+
+                        var templateID = this.dataset.deltemplateid;
+                        // Set templateID in hidden input
+                        deltemplateid.value = templateID;
+
+                    })
+                })
+
+
+
+
+                var deleteEmailBtn = document.querySelector("#deleteEmailBtn");
+                deleteEmailBtn.addEventListener("click", function() {
+
+                    var templateId = document.querySelector("#deltemplateID").value;
+
+                    // Check if templateId is not empty
+                    if (!templateId) {
+                        displayMessage("deleteModal", "something went wrong!!", false);
+                        return;
+                    }
+
+
+                    var formData = new FormData();
+                    formData.append("templateId", templateId);
+
+                    fetch("../controllers/deleteEmailTemplate_contr.php", {
+                            method: 'POST',
+                            body: formData
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                // Handle the response from the server
+                                document.getElementById('overlay').style.display = 'none';
+                                document.getElementById('deleteModal').style.display = 'none';
+                                location.reload();
+                            } else {
+                                displayMessage("deleteModal", "something went wrong!!", false);
+                                document.getElementById('overlay').style.display = 'none';
+                                document.getElementById('changeModal').style.display = 'none';
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                        });
+
+                })
+
+
+
+
+
+
+
+
+
 
 
 
@@ -381,8 +680,6 @@ $emails = getEmailTemplate($connect);
                 document.querySelectorAll('.view').forEach(function(link) {
                     link.addEventListener('click', function(event) {
                         event.preventDefault();
-
-
 
                         var templateID = this.dataset.templateid;
                         // Set templateID in hidden input
@@ -404,8 +701,8 @@ $emails = getEmailTemplate($connect);
                                     document.getElementById('title').innerText = emailTemplate.Category;
 
                                     // Show modal
-                                    document.getElementById('overlay').style.display = 'block';
                                     document.getElementById('changeModal').style.display = 'block';
+                                    document.getElementById('overlay').style.display = 'block';
                                 } else {
                                     console.error('Failed to fetch email template data');
                                 }
@@ -420,6 +717,18 @@ $emails = getEmailTemplate($connect);
                 document.getElementById('cancel').addEventListener('click', function() {
                     document.getElementById('overlay').style.display = 'none';
                     document.getElementById('changeModal').style.display = 'none';
+                });
+
+                // Close modal when cancel button is clicked
+                document.getElementById('cancelBtn').addEventListener('click', function() {
+                    document.getElementById('overlay').style.display = 'none';
+                    document.getElementById('newModal').style.display = 'none';
+                });
+
+                // Close modal when cancel button is clicked
+                document.getElementById('delcancelBtn').addEventListener('click', function() {
+                    document.getElementById('overlay').style.display = 'none';
+                    document.getElementById('deleteModal').style.display = 'none';
                 });
 
 
