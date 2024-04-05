@@ -24,6 +24,7 @@ function sendPaymentReminders($connect)
             foreach ($clients as $client) {
                 $to = $client['PrimaryEmail'];
                 $name = $client['FirstName'];
+                $from = "MajorLink";
 
                 $templateID = 9;
                 $emails = getEmailTemplateById($connect, $templateID);
@@ -43,7 +44,7 @@ function sendPaymentReminders($connect)
                 $subject = replaceTemplateWords($Subject, $replacements);
 
 
-                sendEmail($to, $name, $subject, $message);
+                sendEmail($to, $from, $subject, $message);
             }
         } else {
             echo "no data";

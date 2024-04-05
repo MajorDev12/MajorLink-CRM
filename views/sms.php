@@ -2,204 +2,38 @@
 
 <?php
 require_once  '../database/pdo.php';
+require_once  '../modals/addArea_mod.php';
+require_once  '../modals/getSubarea_mod.php';
+require_once  '../modals/getSms_mod.php';
 require_once  '../modals/getClientsNames_mod.php';
-// require_once  '../modals/viewSingleUser_mod.php';
-// require_once  '../modals/addInvoice_mod.php';
-// require_once  '../modals/addSale_mod.php';
-// require_once  '../modals/addPlan_mod.php';
 $connect = connectToDatabase($host, $dbname, $username, $password);
 ?>
-<?php require_once "header.php"; ?>
 
 <style>
-    ::selection {
-        color: #fff;
-        background: #664AFF;
-    }
-
-    .wrapper {
-        max-width: 300px;
-        margin: 10px auto;
-    }
-
-    .wrapper .search-input {
-        background: #fff;
-        border-radius: 5px;
-        position: relative;
-        box-shadow: 0px 1px 5px 3px rgba(0, 0, 0, 0.12);
-    }
-
-    .search-input input {
-        height: 35px;
-        width: 100%;
-        outline: none;
-        border: none;
-        border-radius: 5px;
-        padding: 0 60px 0 20px;
-        font-size: 18px;
-        box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.1);
-    }
-
-    .search-input.active input {
-        border-radius: 5px 5px 0 0;
-    }
-
-    .search-input .autocom-box {
-        padding: 0;
-        opacity: 0;
-        pointer-events: none;
-        max-height: 280px;
-        overflow-y: auto;
-    }
-
-    .search-input.active .autocom-box {
-        padding: 10px 8px;
-        opacity: 1;
-        pointer-events: auto;
-    }
-
-    .autocom-box li {
-        list-style: none;
-        padding: 8px 12px;
-        display: none;
-        width: 100%;
-        cursor: default;
-        border-radius: 3px;
-    }
-
-    .search-input.active .autocom-box li {
-        display: block;
-    }
-
-    .autocom-box li:hover {
-        background: #efefef;
-    }
-
-    .search-input .icon {
-        position: absolute;
-        right: 0px;
-        top: 0px;
-        height: 55px;
-        width: 55px;
-        text-align: center;
-        line-height: 55px;
-        font-size: 20px;
-        color: #644bff;
-        cursor: pointer;
-    }
-
-    /* Styling for the dropdown container */
-    .dropdown {
-        display: inline-block;
-    }
-
-
-    .dropdown .dropbtn {
-        background-color: #f1f1f1;
-        padding: 10px;
-        border: 1px solid #ccc;
-        cursor: pointer;
-    }
-
-
-    .dropdown-content {
-        display: none;
-        background-color: #fff;
-        min-width: 160px;
-        border: 1px solid #ccc;
-        box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2);
-    }
-
-
-    .dropdown-content label {
-        display: block;
-        padding: 8px 12px;
-    }
-
-
-    .dropdown:hover .dropdown-content {
-        display: block;
-    }
-
-
-
-    /* textarea */
-
-    .textContainer {
-        background-color: #ffffff;
-        padding: 50px 30px;
-        border-radius: 10px;
-    }
-
-    .options {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        gap: 15px;
-    }
-
-    .options button {
-        height: 28px;
-        width: 28px;
-        display: grid;
-        place-items: center;
-        border-radius: 3px;
-        border: none;
-        background-color: #ffffff;
-        outline: none;
-        color: #020929;
-    }
-
-
-    .options select {
-        padding: 7px;
-        border: 1px solid #020929;
-        border-radius: 3px;
-    }
-
-    .options label,
-    .options select {
-        font-family: "Poppins", sans-serif;
-    }
-
-    .options .input-wrapper {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-
-    .options input[type="color"] {
-        -webkit-appearance: none;
-        -moz-appearance: none;
-        appearance: none;
-        background-color: transparent;
-        width: 40px;
-        height: 28px;
-        border: none;
-        cursor: pointer;
-    }
-
-    .options input[type="color"]::-webkit-color-swatch {
-        border-radius: 15px;
-        box-shadow: 0 0 0 2px #ffffff, 0 0 0 3px #020929;
-    }
-
-    .options input[type="color"]::-moz-color-swatch {
-        border-radius: 15px;
-        box-shadow: 0 0 0 2px #ffffff, 0 0 0 3px #020929;
-    }
-
     #text-input {
         margin-top: 10px;
         border: 1px solid #dddddd;
         padding: 20px;
-        height: 50vh;
+        min-height: 40vh;
     }
 
-    .options .active {
-        background-color: #e0e9ff;
+    #text-input1 {
+        margin-top: 10px;
+        border: 1px solid #dddddd;
+        padding: 20px;
+        min-height: 40vh;
+    }
+
+    #areacheckbox {
+        display: none;
+    }
+
+    #subareacheckbox {
+        display: none;
     }
 </style>
+<?php require_once "header.php"; ?>
+
 <!-- SIDEBAR -->
 <?php require_once "side_nav.php"; ?>
 <!-- SIDEBAR -->
@@ -224,7 +58,7 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                     </li>
                     <li><i class='bx bx-chevron-right'></i></li>
                     <li>
-                        <a class="active" href="#">Invoices</a>
+                        <a class="active" href="#">Sms</a>
                     </li>
                 </ul>
             </div>
@@ -243,380 +77,385 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                 <div class="row">
                     <div class="col-md-6">
                         <div class="dropdown">
-                            <button class="dropbtn">Select Area</button>
-                            <div class="dropdown-content">
-                                <label>
-                                    <input type="radio" name="options" value="option1"> Pipeline
-                                </label>
-                                <label>
-                                    <input type="radio" name="options" value="option2"> Lanet
-                                </label>
-                                <label>
-                                    <input type="radio" name="options" value="option3"> Mzee Wanyama
-                                </label>
-                                <!-- Add more options as needed -->
-                            </div>
+                            <label for="">Choose recipient</label>
+                            <select name="" id="recipientSelect" class="form-select">
+                                <option value="" selected disabled>filter</option>
+                                <option value="All">All Customers</option>
+                                <option value="Area">Area</option>
+                                <option value="SubArea">Sub Area</option>
+                                <option value="Active">Active</option>
+                                <option value="Inactive">Inactive</option>
+                            </select>
                         </div>
                     </div>
 
-                    <div class="col-md-6">
-                        <div class="dropdown">
-                            <button class="dropbtn">Select Sub Area</button>
-                            <div class="dropdown-content">
-                                <label>
-                                    <input type="checkbox" name="options" value="option1"> Pakawa
-                                </label>
-                                <label>
-                                    <input type="checkbox" name="options" value="option2"> Jb
-                                </label>
-                                <label>
-                                    <input type="radio" name="options" value="option3"> Trizer
-                                </label>
-                                <!-- Add more options as needed -->
+                    <?php $smsTemplates = getSmsTemplate($connect); ?>
+                    <?php if ($smsTemplates) : ?>
+                        <div class="col-md-6">
+                            <div class="dropdown">
+                                <label for="">Choose Message</label>
+                                <select id="templateSelect" class="form-select">
+                                    <option value="" selected disabled>Template Message</option>
+                                    <?php foreach ($smsTemplates as $template) : ?>
+                                        <option value="<?= $template["TemplateID"]; ?>"><?= $template["Name"]; ?></option>
+                                    <?php endforeach; ?>
+                                </select>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-md-6">
-                        <label for="">Send To All</label>
-                        <input type="radio" name="" id="">
-                    </div>
+                    <?php endif; ?>
+
                 </div>
-                <!-- Textarea -->
-                <div class="textContainer mt-5">
-                    <div class="options">
-                        <!-- Text Format -->
-                        <button id="bold" class="option-button format">
-                            <i class="fa-solid fa-bold"></i>
-                        </button>
-                        <button id="italic" class="option-button format">
-                            <i class="fa-solid fa-italic"></i>
-                        </button>
-                        <button id="underline" class="option-button format">
-                            <i class="fa-solid fa-underline"></i>
-                        </button>
-                        <button id="strikethrough" class="option-button format">
-                            <i class="fa-solid fa-strikethrough"></i>
-                        </button>
-                        <button id="superscript" class="option-button script">
-                            <i class="fa-solid fa-superscript"></i>
-                        </button>
-                        <button id="subscript" class="option-button script">
-                            <i class="fa-solid fa-subscript"></i>
-                        </button>
 
-                        <!-- List -->
-                        <button id="insertOrderedList" class="option-button">
-                            <div class="fa-solid fa-list-ol"></div>
-                        </button>
-                        <button id="insertUnorderedList" class="option-button">
-                            <i class="fa-solid fa-list"></i>
-                        </button>
 
-                        <!-- Undo/Redo -->
-                        <button id="undo" class="option-button">
-                            <i class="fa-solid fa-rotate-left"></i>
-                        </button>
-                        <button id="redo" class="option-button">
-                            <i class="fa-solid fa-rotate-right"></i>
-                        </button>
+                <?php $areas = getData($connect); ?>
+                <?php if ($areas) : ?>
 
-                        <!-- Link -->
-                        <button id="createLink" class="adv-option-button">
-                            <i class="fa fa-link"></i>
-                        </button>
-                        <button id="unlink" class="option-button">
-                            <i class="fa fa-unlink"></i>
-                        </button>
+                    <div id="areacheckbox" class="row mt-5">
+                        <?php foreach ($areas as $area) : ?>
+                            <div class="col-md-3 mt-2">
+                                <input type="checkbox" value="<?= $area["AreaID"]; ?>" id="">
+                                <span><?= $area["AreaName"]; ?></span>
+                            </div>
+                        <?php endforeach; ?>
+                    <?php else : "no data available"; ?>
+                    <?php endif; ?>
+                    </div>
 
-                        <!-- Alignment -->
-                        <button id="justifyLeft" class="option-button align">
-                            <i class="fa-solid fa-align-left"></i>
-                        </button>
-                        <button id="justifyCenter" class="option-button align">
-                            <i class="fa-solid fa-align-center"></i>
-                        </button>
-                        <button id="justifyRight" class="option-button align">
-                            <i class="fa-solid fa-align-right"></i>
-                        </button>
-                        <button id="justifyFull" class="option-button align">
-                            <i class="fa-solid fa-align-justify"></i>
-                        </button>
-                        <button id="indent" class="option-button spacing">
-                            <i class="fa-solid fa-indent"></i>
-                        </button>
-                        <button id="outdent" class="option-button spacing">
-                            <i class="fa-solid fa-outdent"></i>
-                        </button>
 
-                        <!-- Headings -->
-                        <select id="formatBlock" class="adv-option-button">
-                            <option value="H1">H1</option>
-                            <option value="H2">H2</option>
-                            <option value="H3">H3</option>
-                            <option value="H4">H4</option>
-                            <option value="H5">H5</option>
-                            <option value="H6">H6</option>
+
+                    <?php $subareas = getAllSubareas($connect); ?>
+                    <?php if ($subareas) : ?>
+
+                        <div id="subareacheckbox" class="row mt-5">
+                            <?php foreach ($subareas as $area) : ?>
+                                <div class="col-md-3 mt-2">
+                                    <input type="checkbox" value="<?= $area["SubAreaID"]; ?>" id="">
+                                    <span><?= $area["SubAreaName"]; ?></span>
+                                </div>
+                            <?php endforeach; ?>
+                        <?php else : "no data available"; ?>
+                        <?php endif; ?>
+                        </div>
+
+
+
+
+
+
+                        <!-- Textarea -->
+                        <label class="mt-5" for="backColor">Message</label>
+                        <div id="text-input" class="massmessage" contenteditable="true"></div>
+                        <select class="form-select mt-3" id="smsMode">
+                            <option value="" disabled selected>Select Mode of Sending</option>
+                            <option value="Nexmo">Nexmo</option>
+                            <option value="Twillio">Twillio</option>
+                            <option value="Infobip">Infobip</option>
                         </select>
-
-                        <!-- Font -->
-                        <select id="fontName" class="adv-option-button"></select>
-                        <select id="fontSize" class="adv-option-button"></select>
-
-                        <!-- Color -->
-                        <div class="input-wrapper">
-                            <input type="color" id="foreColor" class="adv-option-button" />
-                            <label for="foreColor">Font Color</label>
-                        </div>
-                        <div class="input-wrapper">
-                            <input type="color" id="backColor" class="adv-option-button" />
-                            <label for="backColor">Highlight Color</label>
-                        </div>
-                    </div>
-                    <div id="text-input" contenteditable="true"></div>
-                </div>
-                <!-- Textarea -->
-                <button class="btn btn-primary">Send</button>
+                        <div id="errorMsg"></div>
+                        <button id="massSend" class="btn btn-primary mt-3">Send</button>
             </div>
 
             <div class="content">
                 <h3 class="mb-5">Single User</h3>
-                <label for="">Search Client</label>
-                <input type="search" name="" id="">
-                <button class="btn btn-primary">Search</button>
-                <!-- Textarea -->
-                <div class="textContainer mt-5">
-                    <div class="options">
-                        <!-- Text Format -->
-                        <button id="bold" class="option-button format">
-                            <i class="fa-solid fa-bold"></i>
-                        </button>
-                        <button id="italic" class="option-button format">
-                            <i class="fa-solid fa-italic"></i>
-                        </button>
-                        <button id="underline" class="option-button format">
-                            <i class="fa-solid fa-underline"></i>
-                        </button>
-                        <button id="strikethrough" class="option-button format">
-                            <i class="fa-solid fa-strikethrough"></i>
-                        </button>
-                        <button id="superscript" class="option-button script">
-                            <i class="fa-solid fa-superscript"></i>
-                        </button>
-                        <button id="subscript" class="option-button script">
-                            <i class="fa-solid fa-subscript"></i>
-                        </button>
+                <div class="row">
 
-                        <!-- List -->
-                        <button id="insertOrderedList" class="option-button">
-                            <div class="fa-solid fa-list-ol"></div>
-                        </button>
-                        <button id="insertUnorderedList" class="option-button">
-                            <i class="fa-solid fa-list"></i>
-                        </button>
-
-                        <!-- Undo/Redo -->
-                        <button id="undo" class="option-button">
-                            <i class="fa-solid fa-rotate-left"></i>
-                        </button>
-                        <button id="redo" class="option-button">
-                            <i class="fa-solid fa-rotate-right"></i>
-                        </button>
-
-                        <!-- Link -->
-                        <button id="createLink" class="adv-option-button">
-                            <i class="fa fa-link"></i>
-                        </button>
-                        <button id="unlink" class="option-button">
-                            <i class="fa fa-unlink"></i>
-                        </button>
-
-                        <!-- Alignment -->
-                        <button id="justifyLeft" class="option-button align">
-                            <i class="fa-solid fa-align-left"></i>
-                        </button>
-                        <button id="justifyCenter" class="option-button align">
-                            <i class="fa-solid fa-align-center"></i>
-                        </button>
-                        <button id="justifyRight" class="option-button align">
-                            <i class="fa-solid fa-align-right"></i>
-                        </button>
-                        <button id="justifyFull" class="option-button align">
-                            <i class="fa-solid fa-align-justify"></i>
-                        </button>
-                        <button id="indent" class="option-button spacing">
-                            <i class="fa-solid fa-indent"></i>
-                        </button>
-                        <button id="outdent" class="option-button spacing">
-                            <i class="fa-solid fa-outdent"></i>
-                        </button>
-
-                        <!-- Headings -->
-                        <select id="formatBlock" class="adv-option-button">
-                            <option value="H1">H1</option>
-                            <option value="H2">H2</option>
-                            <option value="H3">H3</option>
-                            <option value="H4">H4</option>
-                            <option value="H5">H5</option>
-                            <option value="H6">H6</option>
+                    <div class="col-md-6">
+                        <label for="customer">Customer</label>
+                        <select id="customer" class="form-select">
+                            <option value="" selected hidden>--Search--</option>
                         </select>
-
-                        <!-- Font -->
-                        <select id="fontName2" class="adv-option-button"></select>
-                        <select id="fontSize2" class="adv-option-button"></select>
-
-                        <!-- Color -->
-                        <div class="input-wrapper">
-                            <input type="color" id="foreColor" class="adv-option-button" />
-                            <label for="foreColor">Font Color</label>
-                        </div>
-                        <div class="input-wrapper">
-                            <input type="color" id="backColor" class="adv-option-button" />
-                            <label for="backColor">Highlight Color</label>
-                        </div>
                     </div>
-                    <div id="text-input" contenteditable="true"></div>
+
+
+
+                    <?php $smsTemplates = getSmsTemplate($connect); ?>
+                    <?php if ($smsTemplates) : ?>
+                        <div class="col-md-6">
+                            <div class="dropdown">
+                                <label for="">Choose Message</label>
+                                <select id="templateSelect1" class="form-select">
+                                    <option value="" selected disabled>Template Message</option>
+                                    <?php foreach ($smsTemplates as $template) : ?>
+                                        <option value="<?= $template["TemplateID"]; ?>"><?= $template["Name"]; ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                        </div>
+                    <?php endif; ?>
                 </div>
                 <!-- Textarea -->
-                <button class="btn btn-primary">Send</button>
+                <label class="mt-5" for="backColor">Message</label>
+                <div id="text-input1" class="singlemessage" contenteditable="true"></div>
+                <select class="form-select mt-3" id="provider">
+                    <option value="" disabled selected>Select Mode of Sending</option>
+                    <option value="Nexmo">Nexmo</option>
+                    <option value="Twillio">Twillio</option>
+                    <option value="Infobip">Infobip</option>
+                </select>
+                <div id="errorMsg1"></div>
+                <button id="singleSend" class="btn btn-primary mt-3">Send</button>
             </div>
 
+            <?php require_once "footer.php"; ?>
+
             <script>
-                let optionsButtons = document.querySelectorAll(".option-button");
-                let advancedOptionButton = document.querySelectorAll(".adv-option-button");
-                let fontName = document.getElementById("fontName");
-                let fontName2 = document.getElementById("fontName2");
-                let fontSizeRef = document.getElementById("fontSize");
-                let fontSizeRef2 = document.getElementById("fontSize2");
-                let writingArea = document.getElementById("text-input");
-                let linkButton = document.getElementById("createLink");
-                let alignButtons = document.querySelectorAll(".align");
-                let spacingButtons = document.querySelectorAll(".spacing");
-                let formatButtons = document.querySelectorAll(".format");
-                let scriptButtons = document.querySelectorAll(".script");
+                var recipientSelect = document.querySelector("#recipientSelect");
+                var customerSelect = document.querySelector("#customer");
+                var areacheckbox = document.querySelector("#areacheckbox");
+                var subareacheckbox = document.querySelector("#subareacheckbox");
+                var massSend = document.querySelector("#massSend");
+                var singleSend = document.querySelector("#singleSend");
+                var singlemessage = document.querySelector("#text-input1");
+                var massmessage = document.querySelector(".massmessage");
+                var smsMode = document.querySelector("#smsMode");
+                var provider = document.querySelector("#provider");
 
-                //List of fontlist
-                let fontList = [
-                    "Arial",
-                    "Verdana",
-                    "Times New Roman",
-                    "Garamond",
-                    "Georgia",
-                    "Courier New",
-                    "cursive",
-                ];
 
-                //Initial Settings
-                const initializer = () => {
-                    //function calls for highlighting buttons
-                    //No highlights for link, unlink,lists, undo,redo since they are one time operations
-                    highlighter(alignButtons, true);
-                    highlighter(spacingButtons, true);
-                    highlighter(formatButtons, false);
-                    highlighter(scriptButtons, true);
 
-                    //create options for font names
-                    fontList.map((value) => {
-                        let option = document.createElement("option");
-                        option.value = value;
-                        option.innerHTML = value;
-                        fontName.appendChild(option);
-                    });
+                massSend.addEventListener("click", function() {
+                    const selectedValue = recipientSelect.value;
 
-                    //create options for font names
-                    fontList.map((value) => {
-                        let option = document.createElement("option");
-                        option.value = value;
-                        option.innerHTML = value;
-                        fontName2.appendChild(option);
-                    });
-
-                    //fontSize allows only till 7
-                    for (let i = 1; i <= 7; i++) {
-                        let option = document.createElement("option");
-                        option.value = i;
-                        option.innerHTML = i;
-                        fontSizeRef.appendChild(option);
+                    if (!selectedValue) {
+                        displayMessage("errorMsg", "Choose a recipient", true);
+                        return;
+                    }
+                    if (!massmessage.innerText) {
+                        displayMessage("errorMsg", "Fill in the Subject and message first", true);
+                        return;
                     }
 
-                    //default size
-                    fontSizeRef.value = 3;
 
-                    //fontSize allows only till 7
-                    for (let i = 1; i <= 7; i++) {
-                        let option = document.createElement("option");
-                        option.value = i;
-                        option.innerHTML = i;
-                        fontSizeRef2.appendChild(option);
+
+                    if (selectedValue === "Area") {
+                        // Get all checkboxes inside the areacheckbox div
+                        const checkboxes = areacheckbox.querySelectorAll('input[type="checkbox"]:checked');
+
+                        // If no checkboxes are checked, display an alert
+                        if (checkboxes.length === 0) {
+                            displayMessage("errorMsg", "Choose atleast one Area", true);
+                            return; // Exit the function
+                        }
+
+                        // Extract the values of the checked checkboxes and store them in an array
+                        var checkedValues = Array.from(checkboxes).map(checkbox => checkbox.value);
+                        // console.log(checkedValues);
                     }
 
-                    //default size
-                    fontSizeRef2.value = 3;
-                };
 
-                //main logic
-                const modifyText = (command, defaultUi, value) => {
-                    //execCommand executes command on selected text
-                    document.execCommand(command, defaultUi, value);
-                };
+                    if (selectedValue === "SubArea") {
+                        // Get all checkboxes inside the areacheckbox div
+                        const checkboxes = subareacheckbox.querySelectorAll('input[type="checkbox"]:checked');
+                        // If no checkboxes are checked, display an alert
+                        if (checkboxes.length === 0) {
+                            displayMessage("errorMsg", "Choose atleast one Sub Area", true);
+                            return; // Exit the function
+                        }
 
-                //For basic operations which don't need value parameter
-                optionsButtons.forEach((button) => {
-                    button.addEventListener("click", () => {
-                        modifyText(button.id, false, null);
-                    });
-                });
-
-                //options that require value parameter (e.g colors, fonts)
-                advancedOptionButton.forEach((button) => {
-                    button.addEventListener("change", () => {
-                        modifyText(button.id, false, button.value);
-                    });
-                });
-
-                //link
-                linkButton.addEventListener("click", () => {
-                    let userLink = prompt("Enter a URL");
-                    //if link has http then pass directly else add https
-                    if (/http/i.test(userLink)) {
-                        modifyText(linkButton.id, false, userLink);
-                    } else {
-                        userLink = "http://" + userLink;
-                        modifyText(linkButton.id, false, userLink);
+                        // Extract the values of the checked checkboxes and store them in an array
+                        var checkedValues = Array.from(checkboxes).map(checkbox => checkbox.value);
+                        // console.log(checkedValues);
                     }
-                });
 
-                //Highlight clicked button
-                const highlighter = (className, needsRemoval) => {
-                    className.forEach((button) => {
-                        button.addEventListener("click", () => {
-                            //needsRemoval = true means only one button should be highlight and other would be normal
-                            if (needsRemoval) {
-                                let alreadyActive = false;
+                    if (!smsMode.value) {
+                        displayMessage("errorMsg", "Choose Mode of Sending", true);
+                        return; // Exit the function
+                    }
 
-                                //If currently clicked button is already active
-                                if (button.classList.contains("active")) {
-                                    alreadyActive = true;
-                                }
+                    // console.log(selectedValue);
+                    // console.log(checkedValues);
+                    // console.log(massmessage.innerText);
+                    // return
 
-                                //Remove highlight from other buttons
-                                highlighterRemover(className);
-                                if (!alreadyActive) {
-                                    //highlight clicked button
-                                    button.classList.add("active");
-                                }
+                    var formData = new FormData();
+                    formData.append("selectedValue", selectedValue);
+                    formData.append("checkedValues", checkedValues);
+                    formData.append("massmessage", massmessage.innerText);
+                    formData.append("smsMode", smsMode.value);
+
+                    fetch("../controllers/massSms_contr.php", {
+                            method: 'POST',
+                            body: formData
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                // Handle the response from the server
+                                displayMessage("errorMsg", data.message, false);
+                                // localStorage.setItem('AddNewClientPaymentToast', 'true');
+                                setTimeout(() => {
+                                    location.reload();
+                                }, 2000);
                             } else {
-                                //if other buttons can be highlighted
-                                button.classList.toggle("active");
+                                displayMessage("errorMsg", data.message, true);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                        });
+
+                });
+
+
+
+                // Add a change event listener
+                recipientSelect.addEventListener("change", function() {
+                    // Get the selected value
+                    var selectedValue = recipientSelect.value;
+                    // Check the selected value and show/hide checkboxes accordingly
+                    if (selectedValue === "Area") {
+                        areacheckbox.style.display = 'flex';
+                        subareacheckbox.style.display = 'none';
+                    }
+                    if (selectedValue === "SubArea") {
+                        subareacheckbox.style.display = 'flex';
+                        areacheckbox.style.display = 'none';
+                    }
+                    if (selectedValue === "All") {
+                        subareacheckbox.style.display = 'none';
+                        areacheckbox.style.display = 'none';
+                    }
+                    if (selectedValue === "Active") {
+                        subareacheckbox.style.display = 'none';
+                        areacheckbox.style.display = 'none';
+                    }
+                    if (selectedValue === "Inactive") {
+                        subareacheckbox.style.display = 'none';
+                        areacheckbox.style.display = 'none';
+                    }
+                });
+
+
+
+
+                document.getElementById('templateSelect').addEventListener('change', function() {
+                    var templateId = this.value;
+                    if (!templateId) return;
+
+                    // Fetch the email template data
+                    fetchSmsTemplate(templateId)
+                        .then(data => {
+                            // Populate the subject and body inputs with template data
+                            document.getElementById('text-input').innerText = data.Body;
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                        });
+                });
+
+
+                document.getElementById('templateSelect1').addEventListener('change', function() {
+                    var templateId = this.value;
+                    if (!templateId) return;
+
+                    // Fetch the email template data
+                    fetchSmsTemplate(templateId)
+                        .then(data => {
+                            // Populate the subject and body inputs with template data
+                            document.getElementById('text-input1').innerText = data.Body;
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                        });
+                });
+
+
+                function fetchSmsTemplate(templateId) {
+                    return fetch('../controllers/getSmsTemplate_contr.php?t=' + templateId)
+                        .then(response => response.json());
+                }
+
+
+
+
+                singleSend.addEventListener("click", function() {
+                    const selectedCustomer = customerSelect.value;
+                    const message = singlemessage.innerText;
+
+                    if (!selectedCustomer) {
+                        displayMessage("errorMsg1", "Choose a recipient", true);
+                        return;
+                    }
+                    if (!message) {
+                        displayMessage("errorMsg1", "Fill in the message first", true);
+                        return;
+                    }
+                    if (!provider.value) {
+                        displayMessage("errorMsg1", "Choose the mode to send", true);
+                        return;
+                    }
+
+
+                    var formData = new FormData();
+                    formData.append("selectedCustomer", selectedCustomer);
+                    formData.append("provider", provider.value);
+                    formData.append("message", message);
+
+                    fetch("../controllers/singleSms_contr.php", {
+                            method: 'POST',
+                            body: formData
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                // Handle the response from the server
+                                displayMessage("errorMsg1", data.message, false);
+                                // localStorage.setItem('AddNewClientPaymentToast', 'true');
+                                setTimeout(() => {
+                                    location.reload();
+                                }, 2000);
+                            } else {
+                                displayMessage("errorMsg1", data.message, true);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                        });
+
+                });
+
+
+
+
+
+                $(document).ready(function() {
+                    var customerList = [];
+
+                    <?php $clientData = getClientsNames($connect); ?>
+                    <?php foreach ($clientData as $client) : ?>
+                        customerList.push({
+                            id: "<?php echo $client['ClientID']; ?>",
+                            text: "<?php echo $client['FirstName'] . ' ' . $client['LastName']; ?>"
+                        });
+                    <?php endforeach; ?>
+
+                    $("#customer").select2({
+                        data: customerList
+                    });
+
+
+
+                    // Attach change event listener
+                    $("#customer").on("change", function() {
+                        selectedClientId = $(this).val();
+
+
+                        // Make an AJAX request to get client data
+                        $.ajax({
+                            url: '../controllers/getClientInfo_contr.php',
+                            type: 'GET',
+                            data: {
+                                clientId: selectedClientId
+                            },
+                            success: function(response) {
+                                // Update the client information based on the response
+                                $('.clientNames').text(response.FirstName + ' ' + response.LastName);
+                            },
+                            error: function(error) {
+                                console.error('Error fetching client data:', error);
                             }
                         });
                     });
-                };
 
-                const highlighterRemover = (className) => {
-                    className.forEach((button) => {
-                        button.classList.remove("active");
-                    });
-                };
 
-                window.onload = initializer();
+                });
             </script>

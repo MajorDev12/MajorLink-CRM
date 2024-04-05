@@ -364,3 +364,28 @@ function exportToCSV(tableHeader, tableBody) {
 	document.body.removeChild(link);
 
 }
+
+
+
+
+
+
+function displayMessage(messageElement, message, isError, ) {
+	// Get the HTML element where the message should be displayed
+	var targetElement = document.getElementById(messageElement);
+
+	// Set the message text
+	targetElement.innerText = message;
+
+	// Add styling based on whether it's an error or success
+	if (isError) {
+		targetElement.style.color = 'red';
+	} else {
+		targetElement.style.color = 'green';
+	}
+
+	// Set a timeout to hide the message with the fade-out effect
+	setTimeout(function() {
+		targetElement.innerText = '';
+	}, 1000);
+}

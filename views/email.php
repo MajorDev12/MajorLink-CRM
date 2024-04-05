@@ -2,14 +2,12 @@
 
 <?php
 require_once  '../database/pdo.php';
-// require_once  '../modals/getClientsNames_mod.php';
 require_once  '../modals/addArea_mod.php';
 require_once  '../modals/getSubarea_mod.php';
-// require_once  '../modals/addSale_mod.php';
-// require_once  '../modals/addPlan_mod.php';
+require_once  '../modals/getEmail_mod.php';
+require_once  '../modals/getClientsNames_mod.php';
 $connect = connectToDatabase($host, $dbname, $username, $password);
-// $clientData = getClientsNames($connect);
-// $invoicesData = getAllInvoices($connect);
+
 ?>
 <?php require_once "header.php"; ?>
 
@@ -22,6 +20,10 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
         display: inline-block;
     }
 
+    /* #customer {
+        margin-top: 20%;
+        padding: 70px;
+    } */
 
     .dropdown .dropbtn {
         background-color: #f1f1f1;
@@ -120,7 +122,14 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
         margin-top: 10px;
         border: 1px solid #dddddd;
         padding: 20px;
-        height: 50vh;
+        min-height: 50vh;
+    }
+
+    #text-input1 {
+        margin-top: 10px;
+        border: 1px solid #dddddd;
+        padding: 20px;
+        min-height: 50vh;
     }
 
     .options .active {
@@ -163,7 +172,7 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                     </li>
                     <li><i class='bx bx-chevron-right'></i></li>
                     <li>
-                        <a class="active" href="#">Invoices</a>
+                        <a class="active" href="#">Email</a>
                     </li>
                 </ul>
             </div>
@@ -194,21 +203,24 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                         </div>
                     </div>
 
-                    <div class="col-md-6">
-                        <div class="dropdown">
-                            <label for="">Choose Message</label>
-                            <select name="" id="" class="form-select">
-                                <option value="" selected disabled>Template Message</option>
-                                <option value="">New Password</option>
-                                <option value="">Password Change Request</option>
-                                <option value="">Signup Email</option>
-                                <option value="">Invoice Overdue Notice</option>
-                                <option value="">Invoice Payment Confirmation</option>
-                                <option value="">Invoice Payment Reminder</option>
-                            </select>
-                        </div>
-                    </div>
 
+
+
+
+                    <?php $emailTemplates = getEmailTemplate($connect); ?>
+                    <?php if ($emailTemplates) : ?>
+                        <div class="col-md-6">
+                            <div class="dropdown">
+                                <label for="">Choose Message</label>
+                                <select id="templateSelect" class="form-select">
+                                    <option value="" selected disabled>Template Message</option>
+                                    <?php foreach ($emailTemplates as $template) : ?>
+                                        <option value="<?= $template["TemplateID"]; ?>"><?= $template["Name"]; ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                        </div>
+                    <?php endif; ?>
 
                 </div>
 
@@ -344,33 +356,48 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                                 </div>
                             </div>
                             <label class="mt-5" for="backColor">Subject</label>
-                            <input type="text" class="p-2" style="width: 100%;">
-                            <label class="mt-5" for="backColor">Message Body</label>
-                            <div id="text-input" contenteditable="true"></div>
+                            <input id="subjectInput" type="text" class="p-2 masssubject" style="width: 100%;">
+                            <label class="mt-5" for="backColor">Message</label>
+                            <div id="text-input" class="massmessage" contenteditable="true"></div>
                         </div>
                         <!-- Textarea -->
                         <p id="errorMsg"></p>
                         <button id="massSend" class="btn btn-primary">Send</button>
             </div>
 
+
+
+
+
+
+
+
             <div class="content">
                 <h3 class="mb-5">Single User</h3>
                 <div class="row">
 
                     <div class="col-md-6">
-                        <div class="dropdown">
-                            <label for="">Choose Message</label>
-                            <select name="" id="" class="form-select">
-                                <option value="" selected disabled>Template Message</option>
-                                <option value="">New Password</option>
-                                <option value="">Password Change Request</option>
-                                <option value="">Signup Email</option>
-                                <option value="">Invoice Overdue Notice</option>
-                                <option value="">Invoice Payment Confirmation</option>
-                                <option value="">Invoice Payment Reminder</option>
-                            </select>
-                        </div>
+                        <label for="customer">Customer</label>
+                        <select id="customer" class="form-select">
+                            <option value="" selected hidden>--Search--</option>
+                        </select>
                     </div>
+
+
+
+                    <?php if ($emailTemplates) : ?>
+                        <div class="col-md-6">
+                            <div class="dropdown">
+                                <label for="">Choose Message</label>
+                                <select id="templateSelect1" class="form-select">
+                                    <option value="" selected disabled>Template Message</option>
+                                    <?php foreach ($emailTemplates as $template) : ?>
+                                        <option value="<?= $template["TemplateID"]; ?>"><?= $template["Name"]; ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                        </div>
+                    <?php endif; ?>
 
                 </div>
                 <!-- Textarea -->
@@ -464,19 +491,29 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                             <label for="backColor">Highlight Color</label>
                         </div>
                     </div>
-                    <div id="text-input" contenteditable="true"></div>
+
+                    <label class="mt-5" for="backColor">Subject</label>
+                    <input id="subjectInput1" type="text" class="p-2" style="width: 100%;">
+                    <label class="mt-5" for="backColor">Message</label>
+                    <div id="text-input1" contenteditable="true"></div>
                 </div>
                 <!-- Textarea -->
-                <p id="errorMsg"></p>
-                <button class="btn btn-primary">Send</button>
+                <p id="errorMsg1"></p>
+                <button id="singleSend" class="btn btn-primary">Send</button>
             </div>
-
+            <?php require_once "footer.php"; ?>
 
             <script>
                 var recipientSelect = document.querySelector("#recipientSelect");
+                var customerSelect = document.querySelector("#customer");
                 var areacheckbox = document.querySelector("#areacheckbox");
                 var subareacheckbox = document.querySelector("#subareacheckbox");
                 var massSend = document.querySelector("#massSend");
+                var singleSend = document.querySelector("#singleSend");
+                var singlesubject = document.querySelector("#subjectInput1");
+                var masssubject = document.querySelector(".masssubject");
+                var singlemessage = document.querySelector("#text-input1");
+                var massmessage = document.querySelector(".massmessage");
 
 
                 massSend.addEventListener("click", function() {
@@ -486,6 +523,12 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                         displayMessage("errorMsg", "Choose a recipient", true);
                         return;
                     }
+                    if (!masssubject.value || !massmessage.innerText) {
+                        displayMessage("errorMsg", "Fill in the Subject and message first", true);
+                        return;
+                    }
+
+
 
                     if (selectedValue === "Area") {
                         // Get all checkboxes inside the areacheckbox div
@@ -498,9 +541,10 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                         }
 
                         // Extract the values of the checked checkboxes and store them in an array
-                        const checkedValues = Array.from(checkboxes).map(checkbox => checkbox.value);
-                        console.log(checkedValues);
+                        var checkedValues = Array.from(checkboxes).map(checkbox => checkbox.value);
+                        // console.log(checkedValues);
                     }
+
 
                     if (selectedValue === "SubArea") {
                         // Get all checkboxes inside the areacheckbox div
@@ -512,15 +556,9 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                         }
 
                         // Extract the values of the checked checkboxes and store them in an array
-                        const checkedValues = Array.from(checkboxes).map(checkbox => checkbox.value);
-                        console.log(checkedValues);
+                        var checkedValues = Array.from(checkboxes).map(checkbox => checkbox.value);
+                        // console.log(checkedValues);
                     }
-
-
-
-
-
-
 
 
 
@@ -528,8 +566,10 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                     var formData = new FormData();
                     formData.append("selectedValue", selectedValue);
                     formData.append("checkedValues", checkedValues);
+                    formData.append("masssubject", masssubject.value);
+                    formData.append("massmessage", massmessage.innerText);
 
-                    fetch("../controllers/email_contr.php", {
+                    fetch("../controllers/massEmail_contr.php", {
                             method: 'POST',
                             body: formData
                         })
@@ -537,22 +577,119 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                         .then(data => {
                             if (data.success) {
                                 // Handle the response from the server
-                                displayMessage("errorMsg", "Successfuly updated", false);
+                                displayMessage("errorMsg", data.message, false);
                                 // localStorage.setItem('AddNewClientPaymentToast', 'true');
                                 setTimeout(() => {
                                     window.location.href = "email.php";
                                 }, 2000);
+                            } else {
+                                displayMessage("errorMsg", data.message, true);
                             }
                         })
                         .catch(error => {
                             console.error('Error:', error);
                         });
 
+                });
 
 
+
+
+
+                singleSend.addEventListener("click", function() {
+                    const selectedCustomer = customerSelect.value;
+                    const subject = singlesubject.value;
+                    const message = singlemessage.innerText;
+
+                    if (!selectedCustomer) {
+                        displayMessage("errorMsg1", "Choose a recipient", true);
+                        return;
+                    }
+                    if (!subject || !message) {
+                        displayMessage("errorMsg1", "Fill in the Subject and message first", true);
+                        return;
+                    }
+
+
+
+                    var formData = new FormData();
+                    formData.append("selectedCustomer", selectedCustomer);
+                    formData.append("subject", subject);
+                    formData.append("message", message);
+
+                    fetch("../controllers/singleEmail_contr.php", {
+                            method: 'POST',
+                            body: formData
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                // Handle the response from the server
+                                displayMessage("errorMsg1", data.message, false);
+                                // localStorage.setItem('AddNewClientPaymentToast', 'true');
+                                setTimeout(() => {
+                                    window.location.href = "email.php";
+                                }, 2000);
+                            } else {
+                                displayMessage("errorMsg1", data.message, true);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                        });
+
+                });
+
+
+
+
+
+
+
+
+
+                $(document).ready(function() {
+                    var customerList = [];
+
+                    <?php $clientData = getClientsNames($connect); ?>
+                    <?php foreach ($clientData as $client) : ?>
+                        customerList.push({
+                            id: "<?php echo $client['ClientID']; ?>",
+                            text: "<?php echo $client['FirstName'] . ' ' . $client['LastName']; ?>"
+                        });
+                    <?php endforeach; ?>
+
+                    $("#customer").select2({
+                        data: customerList
+                    });
+
+
+
+                    // Attach change event listener
+                    $("#customer").on("change", function() {
+                        selectedClientId = $(this).val();
+
+
+                        // Make an AJAX request to get client data
+                        $.ajax({
+                            url: '../controllers/getClientInfo_contr.php',
+                            type: 'GET',
+                            data: {
+                                clientId: selectedClientId
+                            },
+                            success: function(response) {
+                                // Update the client information based on the response
+                                $('.clientNames').text(response.FirstName + ' ' + response.LastName);
+                            },
+                            error: function(error) {
+                                console.error('Error fetching client data:', error);
+                            }
+                        });
+                    });
 
 
                 });
+
 
 
 
@@ -593,11 +730,50 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
 
 
 
+                document.getElementById('templateSelect').addEventListener('change', function() {
+                    var templateId = this.value;
+                    if (!templateId) return;
+
+                    // Fetch the email template data
+                    fetchEmailTemplate(templateId)
+                        .then(data => {
+                            // Populate the subject and body inputs with template data
+                            document.getElementById('subjectInput').value = data.Subject;
+                            document.getElementById('text-input').innerText = data.Body;
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                        });
+                });
+
+
+
+
+                document.getElementById('templateSelect1').addEventListener('change', function() {
+                    var templateId = this.value;
+                    if (!templateId) return;
+
+                    // Fetch the email template data
+                    fetchEmailTemplate(templateId)
+                        .then(data => {
+                            // Populate the subject and body inputs with template data
+                            document.getElementById('subjectInput1').value = data.Subject;
+                            document.getElementById('text-input1').innerText = data.Body;
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                        });
+                });
 
 
 
 
 
+
+                function fetchEmailTemplate(templateId) {
+                    return fetch('../controllers/getEmailTemplate_contr.php?t=' + templateId)
+                        .then(response => response.json());
+                }
 
 
 

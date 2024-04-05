@@ -296,14 +296,22 @@ CREATE TABLE emails (
 
 CREATE TABLE emailTemplate (
     TemplateID INT PRIMARY KEY AUTO_INCREMENT,
-    Category VARCHAR(50),
-    Name VARCHAR(255),
-    Subject VARCHAR(255),
-    Body TEXT,
-    Status VARCHAR(50)
+    Category VARCHAR(50) NOT NULL,
+    Name VARCHAR(255) NOT NULL,
+    Subject VARCHAR(255) NOT NULL,
+    Body TEXT NOT NULL,
+    Status VARCHAR(50) NOT NULL
 );
 
 
+CREATE TABLE smsTemplate (
+    TemplateID INT AUTO_INCREMENT PRIMARY KEY,
+    Category VARCHAR(255) NOT NULL,
+    Name VARCHAR(255) NOT NULL,
+    Body TEXT NOT NULL,
+    Status VARCHAR(50) NOT NULL
+    -- Status ENUM('Active', 'Inactive') NOT NULL
+);
 
 
 
@@ -359,3 +367,11 @@ VALUES
     ('Promotion', 'Promotional Email', 'Special Offer Inside!', 'Dear Customer, Check out our latest offers. Don\'t miss out!', 'Active'),
     ('Reminder', 'Payment Reminder', 'Reminder: Payment Due', 'Dear Customer, This is a friendly reminder that your payment is due soon. Please ensure timely payment. Thank you.', 'Active'),
     ('Welcome', 'Welcome Email', 'Welcome to Our Platform', 'Dear New User, Welcome to our platform! We are thrilled to have you with us. If you have any questions, feel free to reach out.', 'Active');
+
+
+
+INSERT INTO smsTemplate (Category, Name, Body, Status) 
+VALUES 
+    ('Promotion', 'Holiday Sale', 'Get 20% off on all items this weekend! Limited time offer.', 'Active'),
+    ('Reminder', 'Payment Due', 'Friendly reminder: Your payment is due tomorrow. Please make sure to submit it on time.', 'Active'),
+    ('Welcome', 'New User Greeting', 'Welcome to our platform! Get started with our amazing features today.', 'Active');

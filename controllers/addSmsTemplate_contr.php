@@ -3,19 +3,22 @@
 require_once "../controllers/session_Config.php";
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (isset($_POST["templateId"])) {
+    if (isset($_POST["newMessage"])) {
         require_once '../database/pdo.php';
-        require_once '../modals/getEmail_mod.php';
+        require_once '../modals/getSms_mod.php';
 
-        $templateID = $_POST["templateId"];
+        $message = $_POST["newMessage"];
+        $status = "Custom";
+        $category = "Custom";
+
 
         $connect = connectToDatabase($host, $dbname, $username, $password);
 
         // Call the function to insert the email template
-        $deleted = deleteEmailTemplate($connect, $templateID);
+        $inserted =  insertSmsTemplate($connect, $category, $message, $status);
 
         $output = array(
-            'success'  =>   $deleted ? true : false
+            'success'  =>   $inserted ? true : false
         );
         echo json_encode($output);
     }

@@ -30,3 +30,19 @@ function insertSubarea($subArea, $areaId, $connect)
     // Execute the prepared statement with the provided data
     $statement->execute($data);
 }
+
+
+function getSubAreaData($connect)
+{
+    $query = "SELECT * FROM subareas";
+
+    $statement = $connect->prepare($query);
+
+    $statement->execute();
+
+    // Fetch all rows as an associative array
+    $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+    // Return the fetched data
+    return $result;
+}

@@ -1,11 +1,11 @@
 <?php
-function insertEmailTemplate($connect, $name, $subject, $body, $status)
+
+function insertSmsTemplate($connect, $category, $body, $status)
 {
     try {
-        $query = "INSERT INTO emailtemplate (Name, Subject, Body, Status) VALUES (:name, :subject, :body, :status)";
+        $query = "INSERT INTO smstemplate (Category, Body, Status) VALUES (:category, :body, :status)";
         $statement = $connect->prepare($query);
-        $statement->bindParam(':name', $name);
-        $statement->bindParam(':subject', $subject);
+        $statement->bindParam(':category', $category);
         $statement->bindParam(':body', $body);
         $statement->bindParam(':status', $status);
         $statement->execute();
@@ -20,10 +20,10 @@ function insertEmailTemplate($connect, $name, $subject, $body, $status)
 
 
 
-function getEmailTemplate($connect)
+function getSmsTemplate($connect)
 {
     try {
-        $emailQuery = "SELECT * FROM emailtemplate";
+        $emailQuery = "SELECT * FROM smstemplate";
         $emailStatement = $connect->prepare($emailQuery);
         $emailStatement->execute();
 
@@ -37,11 +37,12 @@ function getEmailTemplate($connect)
 }
 
 
-function getEmailTemplateById($connect, $templateID)
+
+function getSmsTemplateById($connect, $templateID)
 {
     try {
         // Prepare SQL query with a WHERE clause to filter by templateID
-        $emailQuery = "SELECT * FROM emailtemplate WHERE TemplateID = :templateID";
+        $emailQuery = "SELECT * FROM smstemplate WHERE TemplateID = :templateID";
         $emailStatement = $connect->prepare($emailQuery);
         $emailStatement->bindParam(':templateID', $templateID, PDO::PARAM_INT);
         $emailStatement->execute();
@@ -59,14 +60,13 @@ function getEmailTemplateById($connect, $templateID)
 
 
 
-function updateEmailTemplate($connect, $templateID, $subject, $body)
+function updateSmsTemplate($connect, $templateID, $body)
 {
     try {
         // Prepare SQL query to update the email template
-        $emailQuery = "UPDATE emailtemplate SET Subject = :subject, Body = :body WHERE TemplateID = :templateID";
+        $emailQuery = "UPDATE smstemplate SET Body = :body WHERE TemplateID = :templateID";
         $emailStatement = $connect->prepare($emailQuery);
         $emailStatement->bindParam(':templateID', $templateID, PDO::PARAM_INT);
-        $emailStatement->bindParam(':subject', $subject, PDO::PARAM_STR);
         $emailStatement->bindParam(':body', $body, PDO::PARAM_STR);
 
         // Execute the query
@@ -87,50 +87,14 @@ function updateEmailTemplate($connect, $templateID, $subject, $body)
     }
 }
 
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\SMTP;
-
-
-function sendEmail($to, $name, $subject, $message)
-{
-
-    $mail = new PHPMailer(true);
-
-    try {
-        // $mail->SMTPDebug = SMTP::DEBUG_SERVER;
-
-        $mail->isSMTP();
-        $mail->SMTPAuth = true;
-
-        $mail->Host = "smtp.gmail.com";
-        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-        $mail->Port = 587;
-
-        $mail->Username = "majordev12@gmail.com";
-        $mail->Password = "jhdi bxqh tlfh bgwp";
-
-        $mail->setFrom($to, $name);
-        $mail->addAddress($to, $name);
-
-        $mail->Subject = $subject;
-        $mail->Body = $message;
-
-        $mail->send();
-        // Redirect or any other action after successful email sending
-        return true;
-    } catch (Exception $e) {
-        echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
-        return false;
-    }
-}
 
 
 
-function deleteEmailTemplate($connect, $templateID)
+function deleteSmsTemplate($connect, $templateID)
 {
     try {
         // Prepare SQL query to delete the template by its ID
-        $deleteQuery = "DELETE FROM emailtemplate WHERE TemplateID = :templateID";
+        $deleteQuery = "DELETE FROM smstemplate WHERE TemplateID = :templateID";
         $deleteStatement = $connect->prepare($deleteQuery);
         $deleteStatement->bindParam(':templateID', $templateID, PDO::PARAM_INT);
 

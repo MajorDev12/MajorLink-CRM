@@ -118,6 +118,14 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                     </div>
 
                     <div class="setting shadow-sm p-3 mb-2 bg-body-tertiary rounded">
+                        <h5>Sms Templates</h5>
+                        <p>Create and send your desired message here</p>
+                        <div class="actions">
+                            <button type="button"><a href="smsTemplate.php">Setup</a></button>
+                        </div>
+                    </div>
+
+                    <div class="setting shadow-sm p-3 mb-2 bg-body-tertiary rounded">
                         <h5>Import Data</h5>
                         <p>You can use upto 24 international currency</p>
                         <div class="actions">

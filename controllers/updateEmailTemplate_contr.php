@@ -1,6 +1,4 @@
 <?php
-$errors = array();
-
 // Check if the form was submitted
 if (isset($_POST['subjectInput']) && isset($_POST['bodyInput'])) {
     sleep(1);
