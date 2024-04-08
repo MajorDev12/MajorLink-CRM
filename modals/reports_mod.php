@@ -965,3 +965,35 @@ function getTotalExpenseByYear($connect, $year)
         return false;
     }
 }
+
+
+
+
+function getTotalExpenseSummary($connect)
+{
+    try {
+        // Prepare the SQL query
+        $sql = "SELECT COALESCE(SUM(ExpenseAmount), 0) AS TotalExpense FROM expenses";
+
+        // Prepare the statement
+        $stmt = $connect->prepare($sql);
+
+        // Execute the query
+        $stmt->execute();
+
+        // Fetch the result
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        // Close the cursor
+        $stmt->closeCursor();
+
+        // Ensure that total expense is not null
+        $totalExpense = (float) $result['TotalExpense']; // Explicitly cast to float
+
+        return $totalExpense;
+    } catch (PDOException $e) {
+        // Handle PDO exceptions
+        echo "Error: " . $e->getMessage();
+        return false;
+    }
+}
