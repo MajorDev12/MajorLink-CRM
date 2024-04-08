@@ -804,3 +804,164 @@ function getClientTotalAmount($connect, $clientId)
         return false;
     }
 }
+
+
+
+
+
+
+
+
+
+//      expenses
+function getTotalExpenseByType($connect)
+{
+    try {
+        $sql = "SELECT et.ExpenseTypeName, COALESCE(SUM(e.ExpenseAmount), 0) AS TotalExpense
+                FROM expensetypes et
+                LEFT JOIN expenses e ON et.ExpenseTypeID = e.ExpenseTypeID
+                GROUP BY et.ExpenseTypeName";
+
+        $stmt = $connect->prepare($sql);
+        $stmt->execute();
+
+        $expensesByType = [];
+
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $expensesByType[] = $row;
+        }
+
+        $stmt->closeCursor();
+
+        return $expensesByType;
+    } catch (PDOException $e) {
+        // Handle PDO exceptions
+        echo "Error: " . $e->getMessage();
+        return false;
+    }
+}
+
+
+
+
+
+function getTotalExpenseByDate($connect, $expenseDate)
+{
+    try {
+        // Prepare the SQL query
+        $sql = "SELECT DATE(ExpenseDate) AS ExpenseDate, COALESCE(SUM(ExpenseAmount), 0) AS TotalExpense
+                FROM expenses
+                WHERE DATE(ExpenseDate) = :expenseDate";
+
+        // Prepare the statement
+        $stmt = $connect->prepare($sql);
+
+        // Bind parameters
+        $stmt->bindParam(':expenseDate', $expenseDate, PDO::PARAM_STR);
+
+        // Execute the query
+        $stmt->execute();
+
+        // Fetch the result
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        // Close the cursor
+        $stmt->closeCursor();
+
+        return $result;
+    } catch (PDOException $e) {
+        // Handle PDO exceptions
+        echo "Error: " . $e->getMessage();
+        return false;
+    }
+}
+
+
+
+
+function getTotalExpenseByMonthYear($connect, $month, $year)
+{
+    try {
+        // Prepare the SQL query
+        $sql = "SELECT YEAR(ExpenseDate) AS Year, MONTH(ExpenseDate) AS Month, COALESCE(SUM(ExpenseAmount), 0) AS TotalExpense
+                FROM expenses
+                WHERE YEAR(ExpenseDate) = :year AND MONTH(ExpenseDate) = :month";
+
+        // Prepare the statement
+        $stmt = $connect->prepare($sql);
+
+        // Bind parameters
+        $stmt->bindParam(':year', $year, PDO::PARAM_INT);
+        $stmt->bindParam(':month', $month, PDO::PARAM_INT);
+
+        // Execute the query
+        $stmt->execute();
+
+        // Fetch the result
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        // Close the cursor
+        $stmt->closeCursor();
+
+        // Ensure that total expense is not null
+        if ($result['TotalExpense'] === null) {
+            $result['TotalExpense'] = 0; // Set default value to 0 if total expense is null
+        }
+
+        // Convert numeric month to month name
+        $monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+        if ($result['Month'] != null) {
+            $result['Month'] = $monthNames[$result['Month'] - 1]; // Adjust index to match month numbering (0-indexed)
+        }
+
+
+        return $result;
+    } catch (PDOException $e) {
+        // Handle PDO exceptions
+        echo "Error: " . $e->getMessage();
+        return false;
+    }
+}
+
+
+
+
+function getTotalExpenseByYear($connect, $year)
+{
+    try {
+        // Prepare the SQL query
+        $sql = "SELECT YEAR(ExpenseDate) AS Year, COALESCE(SUM(ExpenseAmount), 0) AS TotalExpense
+                FROM expenses
+                WHERE YEAR(ExpenseDate) = :year";
+
+        // Prepare the statement
+        $stmt = $connect->prepare($sql);
+
+        // Bind parameter
+        $stmt->bindParam(':year', $year, PDO::PARAM_INT);
+
+        // Execute the query
+        $stmt->execute();
+
+        // Fetch the result
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        // Close the cursor
+        $stmt->closeCursor();
+
+        // Ensure that total expense is not null
+        if ($result['TotalExpense'] === null) {
+            $result['TotalExpense'] = 0; // Set default value to 0 if total expense is null
+        }
+
+        // Set the year name
+        $result['YearName'] = date('Y', strtotime($year));
+
+        return $result;
+    } catch (PDOException $e) {
+        // Handle PDO exceptions
+        echo "Error: " . $e->getMessage();
+        return false;
+    }
+}

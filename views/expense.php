@@ -4,6 +4,7 @@
 require_once  '../database/pdo.php';
 require_once  '../modals/addProduct_mod.php';
 require_once  '../modals/setup_mod.php';
+require_once  '../modals/reports_mod.php';
 
 $connect = connectToDatabase($host, $dbname, $username, $password);
 $products = getProductData($connect);
@@ -180,146 +181,54 @@ $symbol = $settings[0]["CurrencySymbol"];
 
                         <div class="active page">
                             <h4>Expense Summary By Category</h4>
+
                             <label for="expensecategory">Choose Category</label>
-                            <select class="form-select form-select-md mb-3" id="ProductSelect" aria-label="Default select example">
+                            <select class="form-select form-select-md mb-3" id="ProductSelected" aria-label="Default select example">
                                 <option value="" disabled selected>Choose...</option>
                                 <?php foreach ($products as $product) : ?>
                                     <option value="<?= $product["ProductID"]; ?>" data-price="<?= $product["Price"]; ?>"><?= $product["ProductName"]; ?></option>
                                 <?php endforeach; ?>
                             </select>
                             <p id="productErrorMsg"></p>
-                            <button id="getProduct" class="btn btn-primary">Check</button>
-
+                            <button id="getProductBtn" class="btn btn-primary">Check</button>
                             <p id="totalIncomeByProduct" class="text">Total Income This Month: <span class="number"><?= $symbol; ?> <span id="totalProduct">0.00</span></span></p>
-
                             <canvas id="expensecategoryChart" class="canvasChart"></canvas>
 
-                            <div class="content">
-                                <h4>All Expense Summary</h4>
-                                <p>Total Expense for Salaries: $ 0.00</p>
 
+
+                            <div class="content">
+                                <?php
+                                $expenseOfAllProducts = getTotalExpenseByType($connect);
+                                $allTypeExpenses = [];
+                                $allExpenses = [];
+                                $allTotalExpenses = 0;
+
+                                foreach ($expenseOfAllProducts as $expenseType) {
+                                    $allExpenses[] = $expenseType['ExpenseTypeName'];
+                                    $allTypeExpenses[] = $expenseType['TotalExpense'];
+                                    $allTotalExpenses += $expenseType['TotalExpense'];
+                                }
+                                ?>
+
+                                <h4>All Expense Summary</h4>
+                                <p class="text">Total Income: <span class="number"><?= $symbol; ?> <?= number_format($allTotalExpenses, 2); ?></span></p>
                                 <canvas id="allexpensecategoryChart" class="canvasChart"></canvas>
 
                             </div>
+
+
                         </div>
-
-
-
-
-                        <script>
-                            var getCustomerBtn = document.querySelector("#getCustomerBtn");
-
-                            getCustomerBtn.addEventListener("click", function() {
-                                var clientSelected = document.getElementById("user_select").value;
-
-                                if (!clientSelected) {
-                                    displayMessage("customererrorMsg", "Choose a Customer First", true);
-                                    return;
-                                }
-                                var formData = new FormData();
-                                formData.append("clientSelected", clientSelected);
-
-                                fetch("../controllers/Income_contr.php", {
-                                        method: 'POST',
-                                        body: formData
-                                    })
-                                    .then(response => response.json())
-                                    .then(data => {
-                                        if (data.success) {
-                                            let totalInvoices = parseFloat(data.results.totalInvoices);
-                                            let totalSales = parseFloat(data.results.totalSales);
-                                            let customerName = data.results.clientName;
-                                            let total = totalInvoices + totalSales;
-
-                                            if (totalInvoices === null) {
-                                                totalInvoices = "0.00";
-                                            }
-                                            if (totalSales === null) {
-                                                totalSales = "0.00";
-                                            }
-                                            if (total === null) {
-                                                total = "0.00";
-                                            }
-                                            if (customerName === null) {
-                                                customerName = "No Data";
-                                            }
-                                            document.getElementById('totalCustomerIncome').innerText = total;
-
-                                            // Update the chart with the new data
-                                            updateCustomerChart(totalInvoices, total, customerName);
-                                        } else {
-                                            console.error("Error: " + data.message);
-                                            updateCustomerChart(0, 0, "");
-                                        }
-                                    })
-                                    .catch(error => {
-                                        console.error('Error:', error);
-                                    });
-                            });
-
-
-                            var customerChart = null;
-
-                            function updateCustomerChart(totalInvoices, total, customerName) {
-                                var ctx = document.getElementById('customerchart').getContext('2d');
-
-                                if (customerChart) {
-                                    // If a Chart instance exists, destroy it
-                                    customerChart.destroy();
-                                }
-
-
-                                customerChart = new Chart(ctx, {
-                                    type: 'bar',
-                                    data: {
-                                        labels: ['Income Summary For ' + customerName],
-                                        datasets: [{
-                                            label: 'Total Income',
-                                            data: [total],
-                                            backgroundColor: ['rgba(75, 192, 192, 0.5)', 'rgba(255, 99, 132, 0.5)'],
-                                            borderWidth: 1
-                                        }]
-                                    },
-                                    options: {
-                                        scales: {
-                                            y: {
-                                                beginAtZero: true,
-                                                title: {
-                                                    display: true,
-                                                    text: 'Amount (' + CurrencyCode + ')'
-                                                }
-                                            },
-                                            x: {
-                                                title: {
-                                                    display: false
-                                                }
-                                            }
-                                        }
-                                    }
-                                });
-                            }
-                        </script>
-
-
-
-
 
 
                         <div class="page">
                             <h4>Expense Summary By Day</h4>
                             <label for="form-data">Choose Day</label>
-                            <input type="date" name="" id="">
-                            <p>Total Income This Day: $ 0.00</p>
+                            <input type="date" name="" id="expenseDateInput">
+                            <p id="errorMsg"></p>
+                            <button id="getExpenseByDateBtn" class="btn btn-primary">Check</button>
+                            <p id="totalIncomeByProduct" class="text">Total Income: <span class="number"><?= $symbol; ?> <span id="totalExpenseByDate">0.00</span></span></p>
                             <canvas id="expenseday" class="canvasChart"></canvas>
-
-
-
                         </div>
-
-
-
-
-
 
 
 
@@ -329,15 +238,16 @@ $symbol = $settings[0]["CurrencySymbol"];
                             <div class="row mb-3">
                                 <div class="col-md-6">
                                     <label for="expensemonth">Choose Month</label>
-                                    <select name="expensemonth" id="expensemonth"></select>
+                                    <select id="expensemonth"></select>
                                 </div>
                                 <div class="col-md-6">
-                                    <label for="expenseyear">Choose Year</label>
-                                    <select name="expenseyear" id="expenseyear"></select>
+                                    <label for="expenseYear">Choose Year</label>
+                                    <select id="expenseYear"></select>
                                 </div>
                             </div>
-                            <button class="btn btn-primary mb-5">Check</button>
-                            <p>Total Expense This Month: $ 0.00</p>
+                            <p id="expenseYearErrorMsg"></p>
+                            <button id="getmonthYearBtn" class="btn btn-primary mb-5">Check</button>
+                            <p id="totalIncomeByProduct" class="text">Total Income: <span class="number"><?= $symbol; ?> <span id="totalExpenseByMonthYear">0.00</span></span></p>
                             <canvas id="expensemonthChart" class="canvasChart"></canvas>
                         </div>
 
@@ -345,23 +255,20 @@ $symbol = $settings[0]["CurrencySymbol"];
 
 
 
+
+
+
                         <div class="page">
                             <h4>Income Summary By Year</h4>
-                            <label for="expenseyear1">Choose Year</label>
-                            <select name="expenseyear1" id="expenseyear1"></select>
-                            <button class="btn btn-primary">Check</button>
-                            <p class=" mt-5">Total Income This Day: $ 0.00</p>
+                            <label for="expenseyearOne">Choose Year</label>
+                            <select id="expenseyearOne"></select>
+                            <p id="expenseyearErrorMsg"></p>
+                            <button id="getexpenseyearBtn" class="btn btn-primary">Check</button>
+                            <p id="totalIncomeByProduct" class="text">Total Income: <span class="number"><?= $symbol; ?> <span id="totalExpenseByYear">0.00</span></span></p>
                             <canvas id="expenseyear1Chart" class="canvasChart"></canvas>
 
 
                         </div>
-
-
-
-
-
-
-
 
                     </div>
                 </div>
@@ -374,6 +281,21 @@ $symbol = $settings[0]["CurrencySymbol"];
 
 
             <script>
+                document.addEventListener("DOMContentLoaded", function() {
+                    updateProductChart(0.00, "");
+                    updateExpenseDateChart(0.00, "");
+                    updatemonthyearChart(0.00, "", "");
+                    updateYearExpenseChart(0.00, "")
+                    populateDropdown("expenseYear", yearOptions);
+                    populateDropdown("expenseyearOne", yearOptions);
+                    populateDropdown("expensemonth", monthOptions);
+                })
+
+
+
+
+
+
                 // tabs functionality
                 let tabs = document.querySelectorAll(".tabs h3");
                 let tabContents = document.querySelectorAll(".tab-content .page");
@@ -404,24 +326,16 @@ $symbol = $settings[0]["CurrencySymbol"];
                     });
                 }
 
+                // Populate the year dropdown
+                var yearOptions = [];
+                for (var year = 2010; year <= 2024; year++) {
+                    yearOptions.push({
+                        value: year,
+                        text: year.toString()
+                    });
+                }
 
 
-                // Populate the expense dropdowns
-                var expenseOptions = [{
-                        value: 1,
-                        text: "Salaries"
-                    },
-                    {
-                        value: 2,
-                        text: "Rent"
-                    },
-                    {
-                        value: 3,
-                        text: "Utilities"
-                    }
-                ];
-
-                populateDropdown("expensecategory", expenseOptions);
 
 
                 // Populate the month dropdowns
@@ -474,19 +388,102 @@ $symbol = $settings[0]["CurrencySymbol"];
                         text: "December"
                     }
                 ];
-                populateDropdown("expensemonth", monthOptions);
 
 
-                // Populate the year dropdown
-                var yearOptions = [];
-                for (var year = 2010; year <= 2023; year++) {
-                    yearOptions.push({
-                        value: year,
-                        text: year.toString()
+
+
+
+
+
+
+
+
+                var getProductBtn = document.querySelector("#getProductBtn");
+
+                getProductBtn.addEventListener("click", function() {
+                    var ProductSelected = document.getElementById("ProductSelected").value;
+
+                    if (!ProductSelected) {
+                        displayMessage("productErrorMsg", "Choose a Customer First", true);
+                        return;
+                    }
+                    var formData = new FormData();
+                    formData.append("ProductSelected", ProductSelected);
+
+                    fetch("../controllers/expense_contr.php", {
+                            method: 'POST',
+                            body: formData
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                let totalIncome = parseFloat(data.results.total_income);
+                                let productName = data.results.ProductName;
+
+                                if (totalIncome === null) {
+                                    totalIncome = "0.00";
+                                }
+
+                                if (productName === null) {
+                                    productName = "No Data";
+                                }
+                                document.getElementById('totalProduct').innerText = totalIncome;
+
+                                // Update the chart with the new data
+                                updateProductChart(totalIncome, productName);
+                            } else {
+                                console.error("Error: " + data.message);
+                                updateProductChart(0.00, "");
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                        });
+                });
+
+
+                var customerChart = null;
+
+
+                function updateProductChart(totalIncome, productName) {
+                    const CurrencyCode = <?= json_encode($code); ?>;
+                    var ctx = document.getElementById('expensecategoryChart').getContext('2d');
+
+                    if (customerChart) {
+                        // If a Chart instance exists, destroy it
+                        customerChart.destroy();
+                    }
+
+
+                    customerChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: ['Income Summary For ' + productName],
+                            datasets: [{
+                                label: 'Total Income',
+                                data: [totalIncome],
+                                backgroundColor: ['rgba(75, 192, 192, 0.5)', 'rgba(255, 99, 132, 0.5)'],
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    title: {
+                                        display: true,
+                                        text: 'Amount (' + CurrencyCode + ')'
+                                    }
+                                },
+                                x: {
+                                    title: {
+                                        display: false
+                                    }
+                                }
+                            }
+                        }
                     });
                 }
-                populateDropdown("expenseyear", yearOptions);
-                populateDropdown("expenseyear1", yearOptions);
 
 
 
@@ -494,120 +491,354 @@ $symbol = $settings[0]["CurrencySymbol"];
 
 
 
-                var ctx = document.getElementById('allexpensecategoryChart');
 
-                new Chart(ctx, {
-                    type: 'pie',
+
+
+
+
+
+
+
+
+                const allExpenses = <?= json_encode($allExpenses); ?>;
+                const allTypeExpenses = <?= json_encode($allTypeExpenses); ?>;
+                const CurrencyCode = <?= json_encode($code); ?>;
+                var combinedLabels = [];
+                for (var i = 0; i < allExpenses.length; i++) {
+                    combinedLabels.push([allExpenses[i], allTypeExpenses[i]]); // Push an array containing area name and income
+                }
+
+                var ctx = document.getElementById('allexpensecategoryChart').getContext('2d');
+                var myChart = new Chart(ctx, {
+                    type: 'bar',
                     data: {
-                        labels: ['Salary', 'Rent', 'Utilities'],
+                        labels: combinedLabels,
                         datasets: [{
-                            label: '# of Votes',
-                            data: [12, 19, 3, 5, 2, 3],
+                            label: 'Refresh',
+                            data: allTypeExpenses,
+                            backgroundColor: [
+                                'rgb(255, 99, 132)',
+                                'rgb(75, 192, 192)',
+                                'rgb(255, 205, 86)',
+                                'rgb(201, 203, 207)',
+                                'rgb(54, 162, 235)'
+                            ],
                             borderWidth: 5
                         }]
                     },
                     options: {
                         scales: {
                             y: {
-                                beginAtZero: true
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Amount (' + CurrencyCode + ')'
+                                }
+                            },
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: ''
+                                }
+                            }
+                        },
+                        plugins: {
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        var label = context.label || '';
+                                        if (label.length > 1) {
+                                            return [label[0] + ':', label[1]];
+                                        }
+                                        return label;
+                                    }
+                                }
                             }
                         }
                     }
                 });
-
 
 
 
 
 
                 // chart.js
-                var ctx = document.getElementById('expensecategoryChart');
+                var getExpenseByDateBtn = document.querySelector("#getExpenseByDateBtn");
 
-                new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: ['Salaries'],
-                        datasets: [{
-                            label: '# of Votes',
-                            data: [9600],
-                            borderWidth: 5
-                        }]
-                    },
-                    options: {
-                        scales: {
-                            y: {
-                                beginAtZero: true
-                            }
-                        }
+                getExpenseByDateBtn.addEventListener("click", function() {
+                    var expenseDateInput = document.getElementById("expenseDateInput").value;
+
+                    if (!expenseDateInput) {
+                        displayMessage("errorMsg", "Choose a Date First", true);
+                        return;
                     }
+                    var formData = new FormData();
+                    formData.append("expenseDateInput", expenseDateInput);
+
+                    fetch("../controllers/expense_contr.php", {
+                            method: 'POST',
+                            body: formData
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                let total = data.results.TotalExpense;
+                                let expenseDate = data.results.ExpenseDate;
+                                if (total === null) {
+                                    total = "0.00";
+                                }
+                                if (expenseDate === null) {
+                                    expenseDate = "No Data";
+                                }
+                                document.getElementById('totalExpenseByDate').innerText = total;
+
+                                // Update the chart with the new data
+                                updateExpenseDateChart(total, expenseDate);
+                            } else {
+                                console.error("Error: " + data.message);
+                                updateExpenseDateChart(0.00, "");
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                        });
                 });
 
 
-                var ctx = document.getElementById('expenseday');
+                var expenseChart = null;
 
-                new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: ['12-july-2023'],
-                        datasets: [{
-                            label: '# of Votes',
-                            data: [1200],
-                            borderWidth: 5
-                        }]
-                    },
-                    options: {
-                        scales: {
-                            y: {
-                                beginAtZero: true
+                function updateExpenseDateChart(totalIncome, expenseDate) {
+                    const CurrencyCode = <?= json_encode($code); ?>;
+                    var ctx = document.getElementById('expenseday').getContext('2d');
+
+                    if (expenseChart) {
+                        // If a Chart instance exists, destroy it
+                        expenseChart.destroy();
+                    }
+
+
+                    expenseChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: ['Income For ' + expenseDate],
+                            datasets: [{
+                                label: 'Total Income',
+                                data: [totalIncome],
+                                backgroundColor: '#3C91E6',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    title: {
+                                        display: true,
+                                        text: 'Amount (' + CurrencyCode + ')'
+                                    }
+                                },
+                                x: {
+                                    title: {
+                                        display: false
+                                    }
+                                }
                             }
                         }
+                    });
+                }
+
+
+
+
+
+
+
+
+
+                var getmonthYearBtn = document.getElementById("getmonthYearBtn");
+
+
+                getmonthYearBtn.addEventListener("click", function() {
+                    var month = document.getElementById("expensemonth").value;
+                    var year = document.getElementById("expenseYear").value;
+
+                    if (!month || !year) {
+                        displayMessage("expenseYearErrorMsg", "Choose a month and year First", true);
+                        return;
                     }
+
+                    var formData = new FormData();
+                    formData.append("month", month);
+                    formData.append("year", year);
+
+                    fetch("../controllers/expense_contr.php", {
+                            method: 'POST',
+                            body: formData
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                let total = data.results.TotalExpense;
+                                let month = data.results.Month;
+                                let year = data.results.Year;
+                                if (total === null) {
+                                    total = "0.00";
+                                }
+
+                                if (month === null) {
+                                    month = "";
+                                }
+                                if (year === null) {
+                                    year = "No Record";
+                                }
+                                // Display the total income in the HTML element
+                                // document.getElementById('totalIncomeMonth').innerText = "Total Income: $" + total;
+                                document.getElementById('totalExpenseByMonthYear').innerText = total;
+
+                                // Update the chart with the new data
+                                updatemonthyearChart(total, month, year);
+                            } else {
+                                console.error("Error: " + data.message);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                        });
+
+                })
+
+
+
+
+
+                var expensemonthyearChart = null;
+
+                function updatemonthyearChart(totalIncome, month, year) {
+                    var ctx = document.getElementById('expensemonthChart').getContext('2d');
+
+                    if (expensemonthyearChart) {
+                        // If a Chart instance exists, destroy it
+                        expensemonthyearChart.destroy();
+                    }
+
+
+                    expensemonthyearChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: ['Income Summary For ' + month + ' ' + year],
+                            datasets: [{
+                                label: 'Total Income',
+                                data: [totalIncome],
+                                backgroundColor: '#3C91E6',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    title: {
+                                        display: true,
+                                        text: 'Amount (' + CurrencyCode + ')'
+                                    }
+                                },
+                                x: {
+                                    title: {
+                                        display: false
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+
+
+
+
+                var getexpenseyearBtn = document.querySelector("#getexpenseyearBtn");
+
+                getexpenseyearBtn.addEventListener("click", function() {
+                    var expenseyearSelected = document.getElementById("expenseyearOne").value;
+
+                    if (!expenseyearSelected) {
+                        displayMessage("expenseyearErrorMsg", "Choose a Year First", true);
+                        return;
+                    }
+                    var formData = new FormData();
+                    formData.append("expenseyearSelected", expenseyearSelected);
+
+                    fetch("../controllers/expense_contr.php", {
+                            method: 'POST',
+                            body: formData
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                let TotalExpense = parseFloat(data.results.TotalExpense);
+                                let Year = data.results.Year;
+
+                                if (TotalExpense === null) {
+                                    TotalExpense = "0.00";
+                                }
+
+                                if (Year === null) {
+                                    Year = "No Data";
+                                }
+                                document.getElementById('totalExpenseByYear').innerText = TotalExpense;
+
+                                // Update the chart with the new data
+                                updateYearExpenseChart(TotalExpense, Year);
+                            } else {
+                                console.error("Error: " + data.message);
+                                updateYearExpenseChart(0.00, "");
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                        });
                 });
 
 
+                var yearChart = null;
 
 
-                var ctx = document.getElementById('expensemonthChart');
+                function updateYearExpenseChart(TotalExpense, Year) {
+                    const CurrencyCode = <?= json_encode($code); ?>;
+                    var ctx = document.getElementById('expenseyear1Chart').getContext('2d');
 
-                new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: ['January'],
-                        datasets: [{
-                            label: '# of Votes',
-                            data: [132444],
-                            borderWidth: 5
-                        }]
-                    },
-                    options: {
-                        scales: {
-                            y: {
-                                beginAtZero: true
+                    if (yearChart) {
+                        // If a Chart instance exists, destroy it
+                        yearChart.destroy();
+                    }
+
+
+                    yearChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: ['Income Summary For ' + Year],
+                            datasets: [{
+                                label: 'Total Income',
+                                data: [TotalExpense],
+                                backgroundColor: ['rgba(75, 192, 192, 0.5)', 'rgba(255, 99, 132, 0.5)'],
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    title: {
+                                        display: true,
+                                        text: 'Amount (' + CurrencyCode + ')'
+                                    }
+                                },
+                                x: {
+                                    title: {
+                                        display: false
+                                    }
+                                }
                             }
                         }
-                    }
-                });
-
-
-
-                var ctx = document.getElementById('expenseyear1Chart');
-
-                new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: ['2010'],
-                        datasets: [{
-                            label: '# of Votes',
-                            data: [12, 19, 3, 5, 2, 3],
-                            borderWidth: 5
-                        }]
-                    },
-                    options: {
-                        scales: {
-                            y: {
-                                beginAtZero: true
-                            }
-                        }
-                    }
-                });
+                    });
+                }
             </script>

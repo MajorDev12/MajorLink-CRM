@@ -981,46 +981,6 @@ $symbol = $settings[0]["CurrencySymbol"];
                 ];
 
 
-                // Populate the plan dropdowns
-                var planOptions = [{
-                        value: 1,
-                        text: "5mbps"
-                    },
-                    {
-                        value: 2,
-                        text: "10mbps"
-                    },
-                    {
-                        value: 3,
-                        text: "15mbps"
-                    },
-                    {
-                        value: 4,
-                        text: "25mbps"
-                    },
-                    {
-                        value: 5,
-                        text: "40mbps"
-                    }
-                ];
-
-
-                // Populate the product dropdowns
-                var productOptions = [{
-                        value: 1,
-                        text: "Router"
-                    },
-                    {
-                        value: 2,
-                        text: "Dish"
-                    },
-                    {
-                        value: 3,
-                        text: "Cable"
-                    }
-                ];
-
-
 
 
 
