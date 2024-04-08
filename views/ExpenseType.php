@@ -7,7 +7,34 @@ require_once  '../modals/addExpenseType_mod.php';
 $connect = connectToDatabase($host, $dbname, $username, $password);
 ?>
 <?php require_once "header.php"; ?>
+<style>
+    .icon {
+        background-color: var(--blue);
+        border-radius: 5px;
+        padding: 4px;
+        cursor: pointer;
+    }
 
+    .icon img {
+        width: 30px;
+    }
+
+    #delImg {
+        width: 25px;
+    }
+
+    .view {
+        background-color: var(--blue);
+    }
+
+    .pdf {
+        background-color: var(--yellow);
+    }
+
+    .print {
+        background-color: var(--red);
+    }
+</style>
 
 <!-- SIDEBAR -->
 <?php require_once "side_nav.php"; ?>
@@ -46,30 +73,29 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
 
         <!-- content-container -->
         <div id="loader" class="loader">Loading...</div>
+        <div id="overlay"></div>
+
         <div class="main-content">
             <div class="content">
 
 
 
 
-
                 <!-- Add this to your HTML for the modal -->
-                <div class="modal-plan" id="delModal">
-                    <div id="modalBackground"></div>
-                    <div class="modal-dialog-plan">
-                        <div class="modal-content-plan">
-                            <div class="modal-header-plan">
-                                <h5 class="modal-title-plan">Confirm Delete</h5>
-                                <button type="button" id="closeDelModal" class="close" data-dismiss="modal">&times;</button>
-                            </div>
-                            <div class="modal-body-plan">
-                                <p class="mt-3">Are you sure you want to delete this plan?</p>
-                                <input type="hidden" id="hiddenExpenseTypeId" value="">
-                            </div>
-                            <div class="modal-footer-plan">
-                                <p id="errordelmodal"></p>
-                                <button type="button" id="delButton" class="btn btn-danger ml-3" onclick="deleteExpenseTypeConfirmed()">Delete</button>
-                            </div>
+                <div class="modal-container" id="delModal">
+
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Confirm Delete</h5>
+                            <button type="button" id="closeDelModal" class="close" data-dismiss="modal">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <p class="mt-3">Are you sure you want to delete this plan?</p>
+                            <input type="hidden" id="hiddenExpenseTypeId" value="">
+                        </div>
+                        <div class="modal-footer">
+                            <p id="errordelmodal"></p>
+                            <button type="button" id="delButton" class="btn btn-danger ml-3" onclick="deleteExpenseTypeConfirmed()">Delete</button>
                         </div>
                     </div>
                 </div>
@@ -81,26 +107,24 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
 
 
 
+                <div class="modal-container" id="expenseTypeModal">
 
-                <div class="modal-plan" id="expenseTypeModal">
-                    <div id="modalBackground"></div>
-                    <div class="modal-dialog-plan">
-                        <div class="modal-content-plan">
-                            <div class="modal-header-plan">
-                                <h5 class="modal-title-plan">Edit </h5>
-                                <button type="button" id="closeModal" class="close" data-dismiss="modal">&times;</button>
-                            </div>
-                            <div class="modal-body-plan">
-                                <input type="hidden" id="expenseTypeId" value="">
-                                <label for="editPlanPrice">Expense:</label>
-                                <input type="text" id="edit-expenseType" class="form-control">
-                            </div>
-                            <div class="modal-footer-plan">
-                                <p id="modalerror"></p>
-                                <button type="button" class="btn btn-info" data-plan-id="<?= $plan['PlanID'] ?>" onclick="updatePlanData(this)">Save Changes</button>
-                            </div>
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Edit </h5>
+                            <button type="button" id="closeModal" class="close" data-dismiss="modal">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <input type="hidden" id="expenseTypeId" value="">
+                            <label for="editPlanPrice">Expense:</label>
+                            <input type="text" id="edit-expenseType" class="form-control">
+                        </div>
+                        <div class="modal-footer">
+                            <p id="modalerror"></p>
+                            <button type="button" class="btn btn-info" data-plan-id="<?= $plan['PlanID'] ?>" onclick="updatePlanData(this)">Save Changes</button>
                         </div>
                     </div>
+
                 </div>
 
 
@@ -136,8 +160,17 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
 
                                 echo '<div class="d-flex justify-content-between align-items-center">';
                                 echo '<span class="list-group-item list-group-item-action area" aria-current="true" data-area-name="' . $expenseTypeName . '" data-area-id="' . $expenseTypeID . '">' . $expenseTypeName . '</span>';
-                                echo '<button type="button" class="btn btn-info me-3" data-area-id="' . $expenseTypeID . '" onclick="editPlan(' . $expenseTypeID . ', \'' . $expenseTypeName . '\')">Edit</button>';
-                                echo '<button type="button" class="btn btn-danger" data-area-id="' . $expenseTypeID . '" onclick="confirmDelete(' . $expenseTypeID . ')">Del</button>';
+
+
+
+
+                                echo '<a href="#" class="icon view me-3" data-area-id="' . $expenseTypeID . '" onclick="editPlan(' . $expenseTypeID . ', \'' . $expenseTypeName . '\')"><img src="../img/eyeIcon.png" alt=""></a>';
+
+
+
+
+                                echo '<a href="#" class="icon print"  data-area-id="' . $expenseTypeID . '" onclick="confirmDelete(' . $expenseTypeID . ')"><img id="delImg" src="../img/deleteIcon.png" alt=""></a>';
+
                                 echo '</div>';
                             }
                             ?>
@@ -152,6 +185,7 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
             <script>
                 var loader = document.getElementById("loader");
                 var closeModal = document.getElementById("closeModal");
+                var closeDelModal = document.getElementById("closeDelModal");
 
                 function addExpense() {
                     var expenseType = document.getElementById("expenseType").value.trim();
@@ -244,8 +278,9 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
 
                     // Check if changes are made
                     if (updatedexpenseType !== initialexpenseType) {
+                        document.getElementById('expenseTypeModal').style.display = 'none';
                         loader.style.display = "flex";
-                        console.log("it loads");
+
                         // Changes detected, send data for update
                         // Perform your AJAX request here
                         // You can use the Fetch API for this purpose
@@ -261,7 +296,6 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                             .then(data => {
                                 if (data.success) {
                                     location.reload();
-                                    hideModal();
                                     loader.style.display = "none";
                                     // displayMessage("modalerror", "Updated Successfuly", false);
                                 } else {
@@ -394,10 +428,17 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                     hideModal();
                 })
 
+
+                closeDelModal.addEventListener('click', function() {
+                    hideDeleteModal();
+                })
+
+
+
                 // Show modal and overlay
                 function showModal() {
                     document.getElementById('expenseTypeModal').style.display = 'block';
-                    document.getElementById('overlay').style.display = 'block';
+                    document.getElementById('overlay').style.display = 'flex';
                     document.getElementById('overlay').style.transition = '.3s';
                 }
 
@@ -409,7 +450,7 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
 
                 function showDeleteModal() {
                     document.getElementById('delModal').style.display = 'block';
-                    document.getElementById('overlay').style.display = 'block';
+                    document.getElementById('overlay').style.display = 'flex';
                 }
 
 

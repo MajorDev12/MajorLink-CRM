@@ -1,4 +1,5 @@
 <?php require_once "../controllers/session_Config.php"; ?>
+<?php require_once "header.php"; ?>
 <style>
     .container {
         width: 100%;
@@ -89,6 +90,48 @@
         background-color: #f2f2f2;
     }
 </style>
+
+
+
+
+
+<!-- SIDEBAR -->
+<?php require_once "side_nav.php"; ?>
+<!-- SIDEBAR -->
+
+
+
+<!-- CONTENT -->
+<section id="content">
+    <!-- TOP-NAVBAR -->
+    <?php require_once "top_nav.php"; ?>
+    <!-- TOP-NAVBAR -->
+
+    <!-- MAIN -->
+    <main>
+        <div class="head-title">
+
+            <div class="left">
+                <h1>Dashboard</h1>
+                <ul class="breadcrumb">
+                    <li>
+                        <a href="#">Dashboard</a>
+                    </li>
+                    <li><i class='bx bx-chevron-right'></i></li>
+                    <li>
+                        <a class="active" href="#">Home</a>
+                    </li>
+                </ul>
+            </div>
+
+            <a href="#" class="btn-download">
+                <i class='bx bxs-cloud-download'></i>
+                <span class="text">Download PDF</span>
+            </a>
+        </div>
+
+        <!-- content-container -->
+        <div class="main-content">
 
 
 <div class="content">

@@ -111,10 +111,9 @@ label {
 	border: 1px solid var(--grey);
 	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 	min-width: 30%;
-	height: 90%;
+	min-height: 50%;
 	padding: 20px;
 	z-index: 1000;
-	overflow-y: scroll;
 }
 .modal-dialog{
 	position: relative;
@@ -325,6 +324,17 @@ label {
 	opacity: 1;
 }
 
+.view {
+	background-color: var(--blue);
+}
+
+.pdf {
+	background-color: var(--yellow);
+}
+
+.print {
+	background-color: var(--orange);
+}
 
 
 
