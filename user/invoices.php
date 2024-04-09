@@ -14,12 +14,14 @@ require_once  '../modals/addPlan_mod.php';
 require_once  '../modals/setup_mod.php';
 require_once  '../modals/viewSingleUser_mod.php';
 require_once  '../modals/config.php';
+require_once  '../modals/addInvoice_mod.php';
 
 $connect = connectToDatabase($host, $dbname, $username, $password);
 
 $clientID = $_SESSION["clientID"];
 
 $clientData = getClientDataById($connect, $clientID);
+$invoicesData = getInvoicesByClientID($connect, $clientID);
 ?>
 
 <?php require_once "../views/header.php"; ?>
@@ -132,6 +134,7 @@ $clientData = getClientDataById($connect, $clientID);
                     <thead>
                         <tr>
                             <th>#</th>
+                            <th>Invoice Number</th>
                             <th>Amount</th>
                             <th>Start Date</th>
                             <th>Due Date</th>
@@ -140,30 +143,29 @@ $clientData = getClientDataById($connect, $clientID);
                         </tr>
                     </thead>
                     <tbody id="tableBody">
-                        <tr>
-                            <td>INV0001</td>
-                            <td>2000</td>
-                            <td>13/03/24</td>
-                            <td>13/02/24</td>
-                            <td>Paid</td>
-                            <td class="actions">
-                                <abbr title="View"><a href="viewInvoice.php" target="_blank" class="icon view"><img src="../img/eyeIcon.png" alt=""></a></abbr>
-                                <abbr title="download pdf"><a href="../controllers/generatepdf_contr.php" target="_blank" class="icon pdf"><img src="../img/pdfIcon.png" alt=""></a></abbr>
-                                <abbr title="print"><a href="printInvoice.php" target="_blank" class="icon print"><img src="../img/printIcon.png" alt=""></a></abbr>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>INV0002</td>
-                            <td>1500</td>
-                            <td>12/02/23</td>
-                            <td>12/01/23</td>
-                            <td>Paid</td>
-                            <td class="actions">
-                                <abbr title="View"><a href="viewInvoice.php" target="_blank" class="icon view"><img src="../img/eyeIcon.png" alt=""></a></abbr>
-                                <abbr title="download pdf"><a href="../controllers/generatepdf_contr.php" target="_blank" class="icon pdf"><img src="../img/pdfIcon.png" alt=""></a></abbr>
-                                <abbr title="print"><a href="printInvoice.php" target="_blank" class="icon print"><img src="../img/printIcon.png" alt=""></a></abbr>
-                            </td>
-                        </tr>
+                        <?php $counter = 1; ?>
+                        <?php if ($invoicesData) : ?>
+                            <?php foreach ($invoicesData as $index => $invoice) : ?>
+                                <tr>
+                                    <td class="index pe-3"><?= $index + 1;  ?></td>
+                                    <td class=""><?php echo $invoice['InvoiceNumber']; ?></td>
+                                    <td><span class=""><?php echo $invoice['TotalAmount']; ?></span></td>
+                                    <td><span class=""><?php echo $invoice['StartDate']; ?></span></td>
+                                    <td><span class=""><?php echo $invoice['DueDate']; ?></span></td>
+                                    <td><span class=""><?php echo $invoice['Status']; ?></span></td>
+                                    <td>
+                                        <a href="viewInvoice.php?i=<?= $invoice["InvoiceID"]; ?>&c=<?= $invoice["ClientID"]; ?>" class="icon view"><img src="../img/eyeIcon.png" alt=""></a>
+                                        <abbr title="download pdf"><a href="../controllers/generatepdf_contr.php?i=<?= $invoice["InvoiceID"]; ?>&c=<?= $invoice["ClientID"]; ?>" target="_blank" class="icon pdf"><img src="../img/pdfIcon.png" alt=""></a></abbr>
+                                        <abbr title="print"><a href="printInvoice.php?i=<?= $invoice["InvoiceID"]; ?>&c=<?= $invoice["ClientID"]; ?>" target="_blank" class="icon print"><img src="../img/printIcon.png" alt=""></a></abbr>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php else : ?>
+                            <?php echo '  
+                             <tr>
+                                <td colspan="8" style="text-center"> No Data Yet</td>
+                            </tr>'; ?>
+                        <?php endif; ?>
                     </tbody>
                 </table>
 

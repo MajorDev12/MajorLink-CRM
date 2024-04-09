@@ -84,24 +84,6 @@ function insertDefaultClientPayments($connect, $ClientID, $PlanID, $PaymentAmoun
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // Check if the flag file exists
 $flagFilePath = __DIR__ . '/script_executed.flag';
 
@@ -116,5 +98,5 @@ if (!file_exists($flagFilePath)) {
 
     echo "Script executed successfully.";
 } else {
-    echo "Script already executed.";
+    echo "";
 }

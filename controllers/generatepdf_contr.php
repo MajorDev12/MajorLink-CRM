@@ -40,6 +40,7 @@ $taxSymbol = $invoice["TaxSymbol"];
 $paymentDate = date("Y-m-d", strtotime($invoice["paymentDate"]));
 $StartDate = date("Y-m-d", strtotime($invoice["StartDate"]));
 $expireDate = date("Y-m-d", strtotime($invoice["DueDate"]));
+$status = $invoice["Status"];
 
 $totalAmount = number_format($invoice["TotalAmount"], 2);
 $tax = number_format($invoice["Taxamount"], 2);
@@ -90,7 +91,7 @@ foreach ($products as $product) {
 // Load the HTML and replace placeholders with values from the form
 $html = file_get_contents("../views/pdfTemplate.php");
 
-$html = str_replace(["{{ firstName }}", "{{ LastName }}", "{{ invoiceNumber }}", "{{ paymentDate }}", "{{ StartDate }}", "{{ expireDate }}", "{{ totalAmount }}", "{{ tax }}", "{{ taxSymbol }}", "{{ htmlProducts }}", "{{ subtotal }}"], [$firstName, $LastName, $invoiceNumber, $paymentDate, $StartDate, $expireDate, $totalAmount, $tax, $taxSymbol, $htmlProducts, number_format($subtotal, 2)], $html);
+$html = str_replace(["{{ firstName }}", "{{ LastName }}", "{{ invoiceNumber }}", "{{ paymentDate }}", "{{ StartDate }}", "{{ expireDate }}", "{{ totalAmount }}", "{{ Status }}", "{{ tax }}", "{{ taxSymbol }}", "{{ htmlProducts }}", "{{ subtotal }}"], [$firstName, $LastName, $invoiceNumber, $paymentDate, $StartDate, $expireDate, $totalAmount, $status, $tax, $taxSymbol, $htmlProducts, number_format($subtotal, 2)], $html);
 
 
 
@@ -99,7 +100,7 @@ $dompdf->loadHtml($html);
 //Create the PDF and set attributes
 $dompdf->render();
 
-$dompdf->addInfo("Title", "An Example PDF"); // "add_info" in earlier versions of Dompdf
+$dompdf->addInfo("Title", "Billing Invoice"); // "add_info" in earlier versions of Dompdf
 
 
 //Send the PDF to the browser

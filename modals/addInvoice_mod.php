@@ -1,6 +1,5 @@
 <?php
 
-
 function addInvoice($connect, $clientID, $invoiceNumber, $totalAmount, $paymentDate, $startDate, $dueDate, $status, $taxSymbol, $taxAmount)
 {
     try {
@@ -268,6 +267,28 @@ function searchProductsData($connect, $searchInput)
         return $results;
     } catch (PDOException $e) {
         // Handle the exception as needed
+        echo "Error: " . $e->getMessage();
+        return false;
+    }
+}
+
+
+
+function getInvoicesByClientID($connect, $clientID)
+{
+    try {
+        $query = "SELECT invoices.*, clients.FirstName, clients.LastName 
+                  FROM invoices 
+                  INNER JOIN clients ON invoices.ClientID = clients.ClientID 
+                  WHERE invoices.ClientID = :clientID";
+        $statement = $connect->prepare($query);
+        $statement->bindParam(':clientID', $clientID);
+        $statement->execute();
+
+        $results = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        return $results;
+    } catch (PDOException $e) {
         echo "Error: " . $e->getMessage();
         return false;
     }

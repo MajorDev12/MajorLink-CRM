@@ -1,13 +1,4 @@
-<?php
-session_start();
-
-// Check if the user is not logged in
-if (!isset($_SESSION['clientID']) || !isset($_SESSION['FirstName'])) {
-    // Redirect to the login page
-    header("location: ../views/login.php");
-    exit();
-}
-?>
+<?php require_once "../controllers/session_Config.php"; ?>
 <?php
 
 require_once  '../database/pdo.php';

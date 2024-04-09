@@ -56,6 +56,9 @@
                 </a>
             </div>
         </li>
+
+
+
         <li>
             <div class="iocn-link">
                 <a href="invoices.php">
@@ -63,7 +66,27 @@
                     <span class="link_name">Invoices</span>
                 </a>
             </div>
+            <ul class="sub-menu blank">
+                <li><a class="link_name" href="transaction.php">Invoices</a></li>
+            </ul>
         </li>
+
+
+        <li>
+            <div class="iocn-link">
+                <a href="settings.php">
+                    <i class='bx bx-plug'></i>
+                    <span class="link_name">Settings</span>
+                </a>
+            </div>
+            <ul class="sub-menu blank">
+                <li><a class="link_name" href="settings.php">Settings</a></li>
+            </ul>
+        </li>
+
+
+
+
 
         <script>
             let arrow = document.querySelectorAll(".arrow");

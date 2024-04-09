@@ -142,7 +142,7 @@ $invoiceID = $_SESSION["invoiceID"];
 
 
 <div class="invoiceContainer">
-    <h1 class="status">Pending</h1>
+    <h1 class="status">{{ Status }}</h1>
     <!-- header -->
 
     <div class="header">
