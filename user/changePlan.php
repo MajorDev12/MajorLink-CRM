@@ -127,7 +127,7 @@ $PaymentMethods = getPaymentMethods($connect);
                         <form action="">
                             <div class="row">
                                 <div class="form-group">
-                                    <div class="close">X</div>
+                                    <div id="closestripeModal" class="close">X</div>
                                     <label for="Date" class="form-label">Payment Date</label>
                                     <input type="text" class="form-control" readonly id="PaymentDate" name="PaymentDate" value="<?php echo date('Y-m-d'); ?>">
                                     <label for="Date" class="form-label">Start Date</label>
@@ -167,17 +167,18 @@ $PaymentMethods = getPaymentMethods($connect);
                     <div id="paypalModal" class="modal shadow-sm p-3 mb-5 bg-body rounded">
 
                         <p class="note p-2">
-                            note that changing subscription plan will remove any past payment and start afresh
+                            note that changing subscription plan will remove any past payment
                         </p>
                         <form action="">
                             <div class="row">
                                 <div class="form-group">
+                                    <button type="button" id="closepaypalModal" class="close" data-dismiss="modal">&times;</button>
                                     <label for="Plan" class="form-label">Payment Date</label>
-                                    <input type="text" class="form-control" readonly id="Plan" name="Plan" value="<?php echo date('Y-m-d'); ?>">
+                                    <input type="text" class="form-control" readonly value="<?php echo date('Y-m-d'); ?>">
                                     <label for="Plan" class="form-label">Start Date</label>
-                                    <input type="text" class="form-control" readonly id="Plan" name="Plan" value="<?php echo date('Y-m-d'); ?>">
+                                    <input type="text" class="form-control" readonly value="<?php echo date('Y-m-d'); ?>">
                                     <label for="Plan" class="form-label">Amount</label>
-                                    <input type="text" class="form-control" readonly id="Plan" name="Plan">
+                                    <input type="text" class="form-control" readonly id="paypalAmount" name="Plan">
                                     <label for="Plan" class="form-label">Months</label>
                                     <select id="selectedMonths" class="form-select">
                                         <option selected value="1">1 - month</option>
@@ -193,6 +194,10 @@ $PaymentMethods = getPaymentMethods($connect);
                                         <option value="11">11 - months</option>
                                         <option value="12">12 - months</option>
                                     </select>
+                                    <input type="hidden" id="currencyCode" value="">
+                                    <input type="hidden" id="currencySymbol" value="">
+                                    <input type="hidden" id="PlanName" value="">
+                                    <input type="hidden" id="PlanID" value="">
                                     <input type="hidden" class="">
                                 </div>
 
@@ -252,6 +257,23 @@ $PaymentMethods = getPaymentMethods($connect);
             <?php require_once "../views/footer.php"; ?>
             <script src="https://js.stripe.com/v3/"></script>
             <script>
+                document.querySelector("#closestripeModal").addEventListener('click', () => {
+                    console.log('eee')
+                    document.querySelector(".modal").style.display = "none";
+                    document.getElementById("overlay").style.display = "none";
+                })
+
+                document.querySelector("#closepaypalModal").addEventListener('click', () => {
+                    console.log('eee')
+                    document.querySelector("#paypalModal").style.display = "none";
+                    document.getElementById("overlay").style.display = "none";
+                })
+
+
+
+
+
+
                 document.addEventListener('click', function(event) {
                     if (event.target.classList.contains('apply')) {
                         var form = event.target.closest('form');
@@ -277,7 +299,7 @@ $PaymentMethods = getPaymentMethods($connect);
                                                 // Set the display property of the PayPal modal to block
                                                 document.getElementById('paypalModal').style.display = 'flex';
                                                 document.getElementById('overlay').style.display = 'flex';
-                                                document.getElementById('Amount').value = price;
+                                                document.getElementById('paypalAmount').value = price;
                                                 document.getElementById('currencyCode').value = currencyCode;
                                                 document.getElementById('PlanName').value = PlanName;
                                                 break;
@@ -430,11 +452,4 @@ $PaymentMethods = getPaymentMethods($connect);
             <span role="status">Please wait...</span>
         `;
                 }
-
-
-
-                document.querySelector(".close").addEventListener('click', () => {
-                    document.querySelector(".modal").style.display = "none";
-                    document.getElementById("overlay").style.display = "none";
-                })
             </script>

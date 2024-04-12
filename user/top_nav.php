@@ -1,3 +1,10 @@
+<?php
+require_once  '../modals/viewSingleUser_mod.php';
+$connect = connectToDatabase($host, $dbname, $username, $password);
+$clientID = $_SESSION["clientID"];
+$clientData = getClientDataById($connect, $clientID);
+?>
+
 <nav class="top-nav">
     <i class='bx bx-menu'></i>
 
@@ -6,13 +13,16 @@
     <div class="date">
         <?php
         require_once  '../modals/setup_mod.php';
+        require_once  '../modals/getTime_mod.php';
         $settings = get_Settings($connect);
         $timezone = $settings[0]["TimeZone"];
-        date_default_timezone_set($timezone);
-        $currentDate = date('d-F-Y' . ' -  -' . 'H:i:s');
-
+        $datetime = getTime($timezone);
+        // Create a DateTime object from the formatted date
+        $dateObj = DateTime::createFromFormat('Y-m-d H:i:s', $datetime);
+        // Format the date to day, month, year
+        $DateTime = $dateObj->format('d F Y H:i:s'); // Example: 01 January 2023
         // Display the formatted date
-        echo "<p id='date' class='text-center'>" . $currentDate . "</p>";
+        echo "<p id='date' class='text-center'>" . $DateTime . "</p>";
         ?>
     </div>
 
@@ -29,7 +39,7 @@
         <span class="num"><?= $numUnreadMsgs ?></span>
     </a>
 
-    <ul class="dropdown-menu border mt-4">
+    <ul id="notificationDropdown" class="dropdown-menu border mt-4 custom-dropdown">
         <?php if ($numUnreadMsgs > 0) : ?>
             <?php foreach ($unreadMsgs as $unRead) : ?>
                 <li class="not">
@@ -56,7 +66,7 @@
         <label for="switch-mode" class="switch-mode"></label>
 
         <a href="#" class="profile dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-            <img src="../img/people.png">
+            <img src="../img/<?= $clientData['ProfilePictureURL']; ?>">
         </a>
         <ul class="dropdown-menu border mt-3">
             <li><a class="dropdown-item" href="profile.php">Profile</a></li>
@@ -74,7 +84,29 @@
 
 
 
+<script>
+    function updateTime() {
+        // Get the current date and time
+        var now = new Date();
 
+        // Format the date and time
+        var formattedDate = now.toLocaleDateString('en-US', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric'
+        });
+        var formattedTime = now.toLocaleTimeString();
+
+        // Display the formatted date and time
+        document.getElementById('date').textContent = formattedDate + ' - ' + formattedTime;
+    }
+
+    // Update the time initially
+    updateTime();
+
+    // Update the time every second
+    setInterval(updateTime, 1000);
+</script>
 
 
 

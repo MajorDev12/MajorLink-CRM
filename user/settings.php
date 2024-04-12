@@ -210,7 +210,7 @@ $clientID = $_SESSION['clientID'];
                                     }
                                     ?>
                                     <h5><?php echo ($expireDate < new DateTime()) ? "Pay to continue Browsing" : (!empty($clientData["PlanName"]) ? $clientData["PlanName"] : "Not Subscribed Yet"); ?></h5>
-                                    <p><?php echo ($expireDate < new DateTime()) ? "😪😪" : "Best ay to get started"; ?></p>
+                                    <p><?php echo ($expireDate < new DateTime()) ? "😪😪" : "Best way to get started"; ?></p>
                             </div>
                             <div class="planPrice">
                                 <h3 class="">

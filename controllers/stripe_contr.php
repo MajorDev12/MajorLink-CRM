@@ -38,6 +38,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Set the value in the session
     $_SESSION["selectedMonths"] = $selectedMonths;
     $_SESSION["startDate"] = $startDate;
+    $_SESSION["paymentDate"] = $paymentDate;
+    $_SESSION["currencySymbol"] = $currencySymbol;
 
     if (empty($PlanAmount)) {
         $response = array(
@@ -124,7 +126,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     'quantity' => 1
                 ]],
                 'mode' => 'payment',
-                'success_url' => STRIPE_SUCCESS_URL . '?session_id={CHECKOUT_SESSION_ID}&' . $request->PlanID,
+                'success_url' => STRIPE_SUCCESS_URL . '?session_id={CHECKOUT_SESSION_ID}&p=' . $request->PlanID,
                 'cancel_url' => STRIPE_CANCEL_URL,
             ]);
         } catch (Exception $e) {

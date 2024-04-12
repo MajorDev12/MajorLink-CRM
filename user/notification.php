@@ -11,15 +11,17 @@ if (!isset($_SESSION['clientID']) || !isset($_SESSION['FirstName'])) {
 
 <?php
 require_once  '../database/pdo.php';
-
+require_once  '../modals/notification_mod.php';
 $connect = connectToDatabase($host, $dbname, $username, $password);
 $clientID = $_SESSION['clientID'];
+$messages = getMessagesByClientId($connect, $clientID);
 
 
 ?>
 
 <?php require_once "../views/header.php"; ?>
 <?php require_once "../views/style.config.php"; ?>
+
 <style>
     .messageTitle {
         width: 70vw;
@@ -39,6 +41,23 @@ $clientID = $_SESSION['clientID'];
         border-left: 5px solid var(--green);
         border-top-left-radius: 10px;
         text-align: left;
+    }
+
+    .main-content .content table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+
+    .main-content .content table th {
+        padding-bottom: 12px;
+        font-size: 13px;
+        text-align: left;
+        border-bottom: 1px solid var(--grey);
+    }
+
+    .main-content .content table td {
+        padding: 16px 0;
     }
 </style>
 
@@ -81,61 +100,35 @@ $clientID = $_SESSION['clientID'];
                     <h3>All Notifications</h3>
                 </div>
 
+                <table class="mt-5">
+                    <thead class="tablehead">
+                        <tr>
+                            <th>#</th>
+                            <th>Message Type</th>
+                            <th style="text-align: center;">Message</th>
+                            <th>Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php $counter = 1; ?>
+                        <?php if ($messages) : ?>
+                            <?php foreach ($messages as $index => $message) : ?>
+                                <tr>
+                                    <td class="index pe-3"><?= $index + 1;  ?></td>
+                                    <td class=""><?php echo $message['MessageType']; ?></td>
+                                    <td><span class=""><?php echo $message['MessageContent']; ?></span></td>
+                                    <td><span class=""><?php echo $message['Timestamp']; ?></span></td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php else : ?>
+                            <?php echo '  
+                             <tr>
+                                <td colspan="8" style="text-center"> No Data Yet</td>
+                            </tr>'; ?>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
 
-                <p>
-                    <button class="messageTitle" type="button" data-bs-toggle="collapse" data-bs-target="#collapseWidthExample" aria-expanded="false" aria-controls="collapseWidthExample">
-                        Toggle width collapse
-                    </button>
-                </p>
-                <div style="min-height: 20px; width: 100%;">
-                    <div class="collapse collapse-horizontal" id="collapseWidthExample">
-                        <div class="card card-body" style="width: 900px;">
-                            This is some placeholder content for a horizontal collapse. It's hidden by default and shown when triggered.
-                        </div>
-                    </div>
-                </div>
-
-
-                <p>
-                    <button class="messageTitle" type="button" data-bs-toggle="collapse" data-bs-target="#collapseWidthExample" aria-expanded="false" aria-controls="collapseWidthExample">
-                        Toggle width collapse
-                    </button>
-                </p>
-                <div style="min-height: 20px; width: 100%;">
-                    <div class="collapse collapse-horizontal" id="collapseWidthExample">
-                        <div class="card card-body" style="width: 900px;">
-                            This is some placeholder content for a horizontal collapse. It's hidden by default and shown when triggered.
-                        </div>
-                    </div>
-                </div>
-
-
-                <p>
-                    <button class="trans" type="button" data-bs-toggle="collapse" data-bs-target="#collapseWidthExample" aria-expanded="false" aria-controls="collapseWidthExample">
-                        Toggle width collapse
-                    </button>
-                </p>
-                <div style="min-height: 20px; width: 100%;">
-                    <div class="collapse collapse-horizontal" id="collapseWidthExample">
-                        <div class="card card-body" style="width: 900px;">
-                            This is some placeholder content for a horizontal collapse. It's hidden by default and shown when triggered.
-                        </div>
-                    </div>
-                </div>
-
-
-                <p>
-                    <button class="trans" type="button" data-bs-toggle="collapse" data-bs-target="#collapseWidthExample" aria-expanded="false" aria-controls="collapseWidthExample">
-                        Toggle width collapse
-                    </button>
-                </p>
-                <div style="min-height: 20px; width: 100%;">
-                    <div class="collapse collapse-horizontal" id="collapseWidthExample">
-                        <div class="card card-body" style="width: 900px;">
-                            This is some placeholder content for a horizontal collapse. It's hidden by default and shown when triggered.
-                        </div>
-                    </div>
-                </div>
 
             </div>
 

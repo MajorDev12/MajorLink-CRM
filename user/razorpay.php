@@ -12,8 +12,11 @@ if (!isset($_SESSION['clientID']) || !isset($_SESSION['FirstName'])) {
 require_once  '../database/pdo.php';
 require_once  '../modals/addPlan_mod.php';
 require_once  '../modals/setup_mod.php';
+require_once  '../modals/viewSingleUser_mod.php';
 
 $connect = connectToDatabase($host, $dbname, $username, $password);
+$clientID = $_SESSION['clientID'];
+$clientData = getClientDataById($connect, $clientID);
 ?>
 
 <?php require_once "../views/header.php"; ?>
@@ -74,30 +77,36 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                 <div id="paymentForm" class="offset-md-3 mt-5">
                     <form id="paymentDetailsForm">
 
-                        <div class="row">
-                            <div class="form-group col-md-4">
-                                <label for="paymentDate">Start Date</label>
-                                <input type="date" class="form-control" id="paymentDate" disabled value="<?php echo date('Y-m-d'); ?>">
-                            </div>
+                        <div class="row mt-2">
 
                             <div class="form-group col-md-4">
-                                <label for="Plan" class="form-label">Select Plan</label>
-                                <select id="Plan" name="Plan" class="form-select">
-                                    <option value="" selected>Choose...</option>
-                                    <?php
-                                    $plans = getPlanData($connect);
-                                    foreach ($plans as $plan) {
-                                        echo '<option value="' . $plan['PlanID'] . '" data-price="' . $plan['Price'] . '">' . $plan['Name'] . ' ' . ' - ' . $plan['Volume'] . '</option>';
-                                    }
-                                    ?>
-                                </select>
+                                <label for="paymentDate">Payment Date</label>
+                                <input type="date" class="form-control" id="paymentDate" readonly value="<?php echo date('Y-m-d'); ?>">
                             </div>
+
+
+
+                            <div class="form-group col-md-4">
+                                <label for="startDate">Start Date</label>
+                                <?php
+                                // Convert $clientData['ExpireDate'] to a DateTime object
+                                $startDate = new DateTime($clientData['ExpireDate']);
+
+                                // Add one day to the start date
+                                $startDate->add(new DateInterval('P1D'));
+                                ?>
+                                <input type="date" class="form-control" id="startDate" name="startDate" readonly value="<?= ($startDate != null) ? $startDate->format('Y-m-d') : date('Y-m-d') ?>">
+                            </div>
+
+
                         </div>
 
-                        <div class="row">
+                        <div class="row mt-2">
+
                             <div class="form-group col-md-4">
-                                <label for="PlanAmount" class="form-label">PhoneNumber</label>
-                                <input type="tel" name="PhoneNumber" id="PhoneNumber" class="form-control" value="">
+                                <label for="Plan" class="form-label">Subscribed Plan</label>
+                                <input type="text" class="form-control" readonly id="Plan" name="Plan" value="<?= $clientData['PlanName'] . ' ' . ' - ' . $clientData['Plan'] ?>">
+
                             </div>
 
                             <div class="form-group col-md-4">
@@ -109,10 +118,40 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                                         echo $settings[0]["CurrencySymbol"];
                                         ?>
                                     </span>
-                                    <input type="text" name="PlanAmount" id="PlanAmount" class="form-control" value="" disabled aria-label="Amount (to the nearest dollar)">
+                                    <input type="text" name="PlanAmount" id="PlanAmount" readonly class="form-control" value="<?= $clientData['PlanPrice'] ?>" aria-label="Amount (to the nearest dollar)">
                                 </div>
                             </div>
                         </div>
+
+                        <div class="row mt-2">
+
+                            <div class="form-group col-md-4">
+                                <label for="PlanAmount" class="form-label">PhoneNumber</label>
+                                <input type="tel" name="PhoneNumber" id="PhoneNumber" class="form-control" value="<?= $clientData['PrimaryNumber'] ?>">
+                            </div>
+
+
+
+                            <div class="form-group col-md-4">
+                                <label for="selectedMonths" class="form-label">Months</label>
+                                <select id="selectedMonths" class="form-select">
+                                    <option selected value="1">1 - month</option>
+                                    <option value="2">2 - months</option>
+                                    <option value="3">3 - months</option>
+                                    <option value="4">4 - months</option>
+                                    <option value="5">5 - months</option>
+                                    <option value="6">6 - months</option>
+                                    <option value="7">7 - months</option>
+                                    <option value="8">8 - months</option>
+                                    <option value="9">9 - months</option>
+                                    <option value="10">10 - months</option>
+                                    <option value="11">11 - months</option>
+                                    <option value="12">12 - months</option>
+                                </select>
+                            </div>
+                        </div>
+
+
                         <div id="errorMsg"></div>
 
                         <div class="form-group col-md-8 mt-4 text-center">
@@ -124,19 +163,4 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                 </div>
             </div>
 
-            <script>
-                $(document).ready(function() {
-                    $('#Plan').change(function() {
-                        var selectedPlan = $(this).find(':selected');
-                        var planAmountInput = $('#PlanAmount');
-
-                        if (!isNaN(selectedPlan.val())) {
-                            var planPrice = selectedPlan.data('price');
-                            planAmountInput.val(planPrice);
-                        } else {
-                            planAmountInput.val(''); // Clear the input if "Choose..." is selected
-                        }
-                    });
-                });
-            </script>
             <?php require_once "../views/footer.php"; ?>

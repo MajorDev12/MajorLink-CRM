@@ -22,6 +22,7 @@ require_once  '../modals/viewSingleUser_mod.php';
 require_once  '../modals/addPayment_mod.php';
 require_once  '../modals/notification_mod.php';
 require_once  '../modals/addInvoice_mod.php';
+require_once  '../modals/addPlan_mod.php';
 require_once  '../views/header.php';
 
 
@@ -36,8 +37,21 @@ $initialCurrency = $settings[0]["CurrencyCode"];
 //get client details
 $clientID = $_SESSION['clientID'];
 $clientData = getClientDataById($connect, $clientID);
-
-
+$invoiceProducts = [];
+$planID = $_GET["p"];
+$paidMonths = intval($_SESSION["selectedMonths"]);
+$planData = getPlanDataByID($connect, $planID);
+$invoiceNumber = "INV0000TEST";
+$subtotal = $paidMonths * $clientData['PlanPrice'];
+// get plan data
+if (isset($_GET["p"])) {
+    $invoiceProducts[] = [
+        'product' => $planData['Name'],
+        'volume' => $planData['Volume'],
+        'qty' => $paidMonths,
+        'price' => $planData['Price']
+    ];
+}
 
 // get left days
 $expiredate = new DateTime($clientData["ExpireDate"]);
@@ -164,6 +178,7 @@ if (!empty($_GET['session_id'])) {
 
                     if (empty($result)) {
                         $activeStatus = 1;
+                        $paymentStatus = "Paid";
                         $expireDate = new DateTime($expireDate);
 
                         if ($daysRemaining > 0) {
@@ -174,14 +189,30 @@ if (!empty($_GET['session_id'])) {
                             $last_paymentDate = $createdDate;
                         }
 
+
+                        $planAmount = $clientData['PlanPrice'];
+                        $paymentMethodID = 3;
+                        $InstallationFees = 0;
+                        if ($paidAmount <= 0) {
+                            $paymentStatus = "Pending";
+                        } elseif ($paidAmount > 0 && $paidAmount < $planAmount) {
+                            $paymentStatus = "Partially Paid";
+                        } elseif ($paidAmount >= $planAmount) {
+                            $paymentStatus = "Paid";
+                        } else {
+                            // Handle any other cases
+                            $paymentStatus = "Cancelled";
+                        }
+
                         $expireDate = $expireDate->format('Y-m-d');
                         // Insert transaction data into the database 
+                        insertPaymentData($ClientID, $PlanID, $planAmount, $paymentStatus, $createdDate, $paymentMethodID, $InstallationFees, $connect);
                         updatePlan($ClientID, $PlanID, $expireDate, $last_paymentDate, $connect);
                         changeStatus($ClientID, $activeStatus, $connect);
                         setStripeTransaction($connect, $ClientID, $customer_name, $customer_email, $paidAmount, $paidCurrency, $createdDate, $payment_id, $payment_status, $session_id);
                         $SenderName = 'system';
                         $MessageType = 'Transaction-success';
-                        $MessageContent = 'Your payment has been successful';
+                        $MessageContent = 'Your payment has been recieved successfully';
                         $Status = 0;
                         insertMessage($connect, $SenderName, $clientID, $MessageType, $MessageContent, $createdDate, $Status);
                         $prefix = "INV";
@@ -190,9 +221,13 @@ if (!empty($_GET['session_id'])) {
 
                         $totalAmount =  $paidAmount;
                         $startDate =  $_SESSION['startDate'];
+                        $paymentDate = $_SESSION["paymentDate"];
+                        $taxSymbol = $_SESSION["currencySymbol"];
+                        $taxAmount = 0;
                         $dueDate =  $expireDate;
                         $status =  "Paid";
-                        addInvoice($connect, $clientID, $invoiceNumber, $totalAmount, $startDate, $dueDate, $status);
+                        addInvoice($connect, $clientID, $invoiceNumber, $totalAmount, $paymentDate, $startDate, $dueDate, $status, $taxSymbol, $taxAmount);
+                        saveInvoiceProducts($connect, $invoiceNumber, $subtotal, $invoiceProducts);
                     }
 
                     $status = 'success';

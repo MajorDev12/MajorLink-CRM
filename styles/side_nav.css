@@ -73,7 +73,7 @@
 	display: block;
   }
   #sidebar .nav-links li .iocn-link a{
-	cursor: default;
+	cursor: pointer;
   }
 #sidebar .nav-links li i{
 	height: 50px;
@@ -101,10 +101,9 @@
   }
 #sidebar .nav-links li a .link_name{
 	font-size: 18px;
-	font-weight: 400;
+	font-weight: 500;
 	color: var(--dark);
 	transition: all 0.4s ease;
-	cursor: default;
   }
 #sidebar.hide .nav-links li a .link_name{
 	opacity: 1;

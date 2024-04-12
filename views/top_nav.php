@@ -41,6 +41,29 @@
 
 
 
+<script>
+    function updateTime() {
+        // Get the current date and time
+        var now = new Date();
+
+        // Format the date and time
+        var formattedDate = now.toLocaleDateString('en-US', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric'
+        });
+        var formattedTime = now.toLocaleTimeString();
+
+        // Display the formatted date and time
+        document.getElementById('date').textContent = formattedDate + ' - ' + formattedTime;
+    }
+
+    // Update the time initially
+    updateTime();
+
+    // Update the time every second
+    setInterval(updateTime, 1000);
+</script>
 
 
 

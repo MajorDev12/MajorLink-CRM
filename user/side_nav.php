@@ -23,7 +23,7 @@
         <li>
             <div class="iocn-link">
                 <a href="../controllers/choosepaymentPage_contr.php">
-                    <i class='bx bx-grid-alt'></i>
+                    <i class='bx bx-money'></i>
                     <span class="link_name">Make Payment</span>
                 </a>
             </div>
@@ -37,7 +37,7 @@
         <li>
             <div class="iocn-link">
                 <a href="transaction.php">
-                    <i class='bx bx-book-alt'></i>
+                    <i class='bx bx-wallet'></i>
                     <span class="link_name">Transactions</span>
                 </a>
             </div>
@@ -51,7 +51,7 @@
         <li>
             <div class="iocn-link">
                 <a href="notification.php">
-                    <i class='bx bx-plug'></i>
+                    <i class='bx bxs-bell'></i>
                     <span class="link_name">Notifications</span>
                 </a>
             </div>
@@ -62,7 +62,7 @@
         <li>
             <div class="iocn-link">
                 <a href="invoices.php">
-                    <i class='bx bx-plug'></i>
+                    <i class='bx bx-bar-chart-alt-2'></i>
                     <span class="link_name">Invoices</span>
                 </a>
             </div>
@@ -75,7 +75,7 @@
         <li>
             <div class="iocn-link">
                 <a href="settings.php">
-                    <i class='bx bx-plug'></i>
+                    <i class='bx bx-cog'></i>
                     <span class="link_name">Settings</span>
                 </a>
             </div>

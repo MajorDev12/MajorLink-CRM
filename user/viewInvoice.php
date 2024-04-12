@@ -249,21 +249,6 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
 
                     <div class="col-md-2">
                         <?php $status = $invoice["Status"]; ?>
-                        <select name="status" class="form-select" style="border: 1px solid black;" onchange="openChangeModal(this)">
-                            <option value="" disabled selected>Mark as</option>
-                            <?php if ($status !== "Paid") : ?>
-                                <option value="Paid">Paid</option>
-                            <?php endif; ?>
-                            <?php if ($status !== "Partially Paid") : ?>
-                                <option value="Partially Paid">Partially Paid</option>
-                            <?php endif; ?>
-                            <?php if ($status !== "Pending") : ?>
-                                <option value="Pending">Pending</option>
-                            <?php endif; ?>
-                            <?php if ($status !== "Cancelled") : ?>
-                                <option value="Cancelled">Cancelled</option>
-                            <?php endif; ?>
-                        </select>
                     </div>
 
                     <a href="invoices.php" class="btn active">Go Back</a>

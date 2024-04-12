@@ -119,6 +119,29 @@ $clientData = getClientDataById($connect, $clientID);
                             </div>
 
                         </div>
+
+
+                        <div class="row mt-3">
+                            <div class="form-group col-md-4">
+                                <label for="selectedMonths" class="form-label">Months</label>
+                                <select id="selectedMonths" class="form-select">
+                                    <option selected value="1">1 - month</option>
+                                    <option value="2">2 - months</option>
+                                    <option value="3">3 - months</option>
+                                    <option value="4">4 - months</option>
+                                    <option value="5">5 - months</option>
+                                    <option value="6">6 - months</option>
+                                    <option value="7">7 - months</option>
+                                    <option value="8">8 - months</option>
+                                    <option value="9">9 - months</option>
+                                    <option value="10">10 - months</option>
+                                    <option value="11">11 - months</option>
+                                    <option value="12">12 - months</option>
+                                </select>
+                            </div>
+                        </div>
+
+
                         <div id="errorMsg"></div>
 
                         <div class="form-group col-md-8 mt-4 text-center">

@@ -96,6 +96,7 @@ function saveInvoiceProducts($connect, $invoiceNumber, $subtotal, $invoiceProduc
 
         return true;
     } else {
+        echo "No such Invoice";
         return false; // No matching InvoiceNumber found
     }
 }

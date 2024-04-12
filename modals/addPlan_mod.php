@@ -29,3 +29,19 @@ function getPlanData($connect)
         return false;
     }
 }
+
+
+
+function getPlanDataByID($connect, $planID)
+{
+    try {
+        $query = "SELECT * FROM plans WHERE PlanID = :planID";
+        $statement = $connect->prepare($query);
+        $statement->bindParam(':planID', $planID, PDO::PARAM_INT);
+        $statement->execute();
+        return $statement->fetch(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        echo "Error: " . $e->getMessage();
+        return false;
+    }
+}

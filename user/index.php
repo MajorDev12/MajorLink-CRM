@@ -10,8 +10,11 @@ if (!isset($_SESSION['clientID']) || !isset($_SESSION['FirstName'])) {
 ?>
 <?php
 require_once  '../database/pdo.php';
+require_once  '../modals/viewSingleUser_mod.php';
 
 $connect = connectToDatabase($host, $dbname, $username, $password);
+$clientID = $_SESSION['clientID'];
+$clientData = getClientDataById($connect, $clientID);
 ?>
 <?php require_once "../views/header.php"; ?>
 
@@ -79,6 +82,57 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
         background: var(--grey);
     }
 
+    #profileCard {
+        background-color: var(--light);
+        padding: 20px;
+        border-radius: 10px;
+    }
+
+    #profileCard #bioCard {
+        box-shadow: 4px 4px 4px var(--grey) inset;
+    }
+
+    #profileCard #cardpic {
+        box-shadow: 4px 4px 4px var(--grey);
+    }
+
+    #profileCard div {
+        color: var(--dark-grey);
+    }
+
+    #profileCard span,
+    #profileCard h5 {
+        color: var(--dark);
+    }
+
+
+
+    .planDetails {
+        width: 100%;
+        /* background-color: grey; */
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+    }
+
+    .timelinebar .days {
+        margin-top: 20px;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+
+    }
+
+    .timelinebar .days .day {
+        font-weight: 900;
+        color: var(--green);
+    }
+
+    .timelinebar .days .daysLeft {
+        font-weight: 900;
+        color: var(--orange);
+    }
+
 
 
     @media screen and (max-width: 920px) {
@@ -111,18 +165,30 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
     <!-- MAIN -->
     <main>
         <div class="head-title">
+            <?php
+            // Get the current hour
+            $currentHour = date('H');
 
+            // Define greeting messages based on the time of the day
+            if ($currentHour >= 5 && $currentHour < 12) {
+                $greeting = "Good Morning";
+            } elseif ($currentHour >= 12 && $currentHour < 17) {
+                $greeting = "Afternoon";
+            } elseif ($currentHour >= 17 && $currentHour < 20) {
+                $greeting = "Good Evening";
+            } else {
+                $greeting = "Good Night";
+            }
+            ?>
             <div class="left">
-                <h1>Hi, <?= $_SESSION['FirstName']; ?></h1>
+                <h1><?= $greeting ?>, <?= $_SESSION['FirstName']; ?></h1>
                 <!-- <p style="color: var(--dark);">You are running Low!!!</p> -->
                 <ul class="breadcrumb">
                     <li>
-                        <a href="viewClient.php">List Customers</a>
+                        <a href="viewClient.php">Dashboard</a>
                     </li>
                     <li><i class='bx bx-chevron-right'></i></li>
-                    <li>
-                        <a class="active" href="#">View Client</a>
-                    </li>
+
                 </ul>
             </div>
 
@@ -144,7 +210,140 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
         <!-- content-container -->
         <div class="main-content">
             <div class="content.main">
-                <ul class="box-info">
+
+
+
+                <div id="profileCard" class="mb-3">
+                    <div class="row g-0">
+                        <div id="cardpic" class="col-md-4 pb-5">
+                            <div class="col text-center">
+                                <img src="../img/<?= $clientData['ProfilePictureURL']; ?>" class="img-fluid rounded-start" alt="..." width="200px" height="200px">
+                                <h5 class="mt-4">Edit Profile</h5>
+                                <a href="profile.php" class="">Click Here</a>
+                            </div>
+
+
+
+                            <?php
+                            $status = '';
+                            if ($clientData["ActiveStatus"] === 0) {
+                                $status = "Inactive";
+                            } elseif ($clientData["ActiveStatus"] === 1) {
+                                $status = "Active";
+                            }
+                            $datetime = $clientData['ExpireDate'];
+                            $dateObj = DateTime::createFromFormat('Y-m-d H:i:s', $datetime);
+                            // Format the date to day, month, year
+                            $DateTime = $dateObj->format('d F Y H:i:s');
+                            ?>
+                            <div class="col mt-5">
+                                <div class="col mb-3">Current Plan: <span style="font-weight: 900;"><?= $clientData["Plan"]; ?></span> </div>
+                                <div class="col mb-3">Status: <span style="font-weight: 900;"><?= $status; ?></span> </div>
+
+                                <div class="col mb-3">Expire Date: <span style="font-weight: 900;"><?= $DateTime; ?></span></div>
+                            </div>
+
+                        </div>
+
+
+
+                        <div id="bioCard" class="col-md-8">
+                            <div class="p-3">
+                                <h5 class="mb-5">Bio Graph</h5>
+                                <div class="row mb-4">
+                                    <div class="col-md-5">First Name: <span style="font-weight: 900;"><?= $clientData['FirstName']; ?></span> </div>
+                                    <div class="col-md-5">Last Name: <span style="font-weight: 900;"><?= $clientData['LastName']; ?></span></div>
+                                </div>
+                                <div class="row mb-5">
+                                    <div class="col-md-5">Phone Number: <span style="font-weight: 900;"><?= $clientData['PrimaryNumber']; ?></span> </div>
+                                    <div class="col-md-7">Email Address: <span style="font-weight: 900;"><?= $clientData['PrimaryEmail']; ?></span></div>
+                                </div>
+
+
+
+
+
+
+                                <div class="planDetails">
+                                    <?php $clientData = getClientDataById($connect, $clientID); ?>
+                                    <div class="planName">
+                                        <?php if ($clientData) : ?>
+                                            <?php
+                                            // Convert expireDate to a DateTime object
+                                            $expireDate = new DateTime($clientData["ExpireDate"]);
+
+                                            // Check if expireDate has passed today
+                                            if ($expireDate < new DateTime()) {
+                                                // Set everything to 0
+                                                $totalDays = 0;
+                                                $daysRemaining = 0;
+                                                $percentageLeft = 0;
+                                            } else {
+                                                // Calculate total days
+                                                $expireDate = new DateTime($clientData["ExpireDate"]);
+                                                $lastPaymentDate = new DateTime($clientData["LastPayment"]);
+                                                // Calculate the difference between the two dates
+                                                $dateInterval = $expireDate->diff($lastPaymentDate);
+
+                                                // Get the total number of days from the DateInterval object
+                                                $totalDays = $dateInterval->days;
+
+                                                // // Calculate left days
+                                                $today = new DateTime();
+                                                $daysRemaining = max(0, $today->diff($expireDate)->days); // Ensure daysRemaining is not negative
+
+                                                // Calculate percentage of time left
+                                                $percentageLeft = ($totalDays > 0) ? max(0, ($daysRemaining / $totalDays) * 100) : 0; // Check if $totalDays is greater than 0
+                                            }
+                                            ?>
+                                            <h5><?php echo ($expireDate < new DateTime()) ? "Pay to continue Browsing" : (!empty($clientData["PlanName"]) ? "" : "Not Subscribed Yet"); ?></h5>
+                                            <p><?php echo ($expireDate < new DateTime()) ? "Without Internet Is Boring😪😪" : ""; ?></p>
+                                    </div>
+
+
+
+                                </div>
+                                <div class="timelinebar mb-5">
+                                    <div class="timelinebar">
+                                        <div class="days">
+                                            <?php
+                                            if ($totalDays > 30) {
+                                                // Calculate the number of months
+                                                $totalMonths = floor($totalDays / 30);
+                                                echo "<p class='day'>$totalMonths months</p>";
+                                            } else {
+                                                echo "<p class='day'>$totalDays days</p>";
+                                            }
+                                            ?>
+                                            <p class="daysLeft"><?php echo $daysRemaining; ?> days Left</p>
+                                        </div>
+                                        <!-- ... Other HTML code ... -->
+                                    </div>
+                                    <div class="progress" role="progressbar" aria-label="Animated striped Time Left" aria-valuenow="<?php echo $percentageLeft; ?>" aria-valuemin="0" aria-valuemax="100">
+                                        <div class="progress-bar text-bg-warning progress-bar-striped progress-bar-animated" style="width: <?php echo $percentageLeft; ?>%"></div>
+                                    </div>
+                                </div>
+                                <a href="../controllers/choosepaymentPage_contr.php" class="mt-3" style="font-weight: 900;">PAY HERE</a>
+
+                            <?php endif; ?>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+
+
+
+
+
+
+
+
+
+                <!-- <ul class="box-info">
                     <li>
                         <i class='bx bxs-calendar-check'></i>
                         <span class="text">
@@ -176,7 +375,7 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                             <h3>Invoices</h3>
                         </span>
                     </li>
-                </ul>
+                </ul> -->
             </div>
 
 

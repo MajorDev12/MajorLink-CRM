@@ -167,75 +167,6 @@ $clientData = getClientDataById($connect, $clientID);
                                         </div>
                                     </form>
                                 </div>
-                                <script>
-                                    document.getElementById("fileImage").onchange = function(event) {
-                                        var editProfilePicture = document.getElementById("editprofilePicture");
-
-                                        // Set new image source with transition
-                                        editProfilePicture.style.opacity = "0";
-                                        setTimeout(function() {
-                                            editProfilePicture.src = URL.createObjectURL(event.target.files[0]);
-                                            editProfilePicture.style.opacity = "1";
-                                        }, 300);
-
-                                        // Show buttons and hide upload button
-                                        document.getElementById("cancel").style.display = "block";
-                                        document.getElementById("confirm").style.display = "block";
-                                        document.getElementById("upload").style.display = "none";
-                                    };
-
-                                    var userImage = document.getElementById("editprofilePicture").src;
-                                    document.getElementById("cancel").onclick = function() {
-                                        var editProfilePicture = document.getElementById("editprofilePicture");
-
-                                        // Set back to the original image with transition
-                                        editProfilePicture.style.opacity = "0";
-                                        setTimeout(function() {
-                                            editProfilePicture.src = userImage;
-                                            editProfilePicture.style.opacity = "1";
-                                        }, 300);
-
-                                        // Hide buttons and show the upload button
-                                        document.getElementById("cancel").style.display = "none";
-                                        document.getElementById("confirm").style.display = "none";
-                                        document.getElementById("upload").style.display = "block";
-                                    };
-
-                                    // Add an event listener for form submission
-                                    document.getElementById("editForm").addEventListener("submit", function(event) {
-                                        event.preventDefault();
-
-
-                                        // Your existing code for image transition
-                                        var editProfilePicture = document.getElementById("editprofilePicture");
-                                        var fileInput = document.getElementById("fileImage");
-
-                                        var formData = new FormData();
-                                        formData.append("id", document.getElementById("id").value);
-                                        formData.append("fileImage", fileInput.files[0]);
-
-                                        // Fetch API to send data to updateUserProfilePic_mod.php
-                                        fetch("../modals/updateUserProfilePic_mod.php", {
-                                                method: "POST",
-                                                body: formData
-                                            })
-                                            .then(response => response.json())
-                                            .then(data => {
-                                                document.getElementById("cancel").style.display = "none";
-                                                document.getElementById("confirm").style.display = "none";
-                                                document.getElementById("upload").style.display = "block";
-                                                localStorage.setItem('updateClientProfileToast', 'true');
-                                                location.reload();
-                                            })
-                                            .catch(error => {
-                                                console.error("Error:", error);
-                                            });
-
-
-
-                                    });
-                                </script>
-
 
 
 
@@ -298,3 +229,73 @@ $clientData = getClientDataById($connect, $clientID);
 
 
             <?php require_once "../views/footer.php"; ?>
+
+
+            <script>
+                document.getElementById("fileImage").onchange = function(event) {
+                    var editProfilePicture = document.getElementById("editprofilePicture");
+
+                    // Set new image source with transition
+                    editProfilePicture.style.opacity = "0";
+                    setTimeout(function() {
+                        editProfilePicture.src = URL.createObjectURL(event.target.files[0]);
+                        editProfilePicture.style.opacity = "1";
+                    }, 300);
+
+                    // Show buttons and hide upload button
+                    document.getElementById("cancel").style.display = "block";
+                    document.getElementById("confirm").style.display = "block";
+                    document.getElementById("upload").style.display = "none";
+                };
+
+                var userImage = document.getElementById("editprofilePicture").src;
+                document.getElementById("cancel").onclick = function() {
+                    var editProfilePicture = document.getElementById("editprofilePicture");
+
+                    // Set back to the original image with transition
+                    editProfilePicture.style.opacity = "0";
+                    setTimeout(function() {
+                        editProfilePicture.src = userImage;
+                        editProfilePicture.style.opacity = "1";
+                    }, 300);
+
+                    // Hide buttons and show the upload button
+                    document.getElementById("cancel").style.display = "none";
+                    document.getElementById("confirm").style.display = "none";
+                    document.getElementById("upload").style.display = "block";
+                };
+
+                // Add an event listener for form submission
+                document.getElementById("editForm").addEventListener("submit", function(event) {
+                    event.preventDefault();
+
+
+                    // Your existing code for image transition
+                    var editProfilePicture = document.getElementById("editprofilePicture");
+                    var fileInput = document.getElementById("fileImage");
+
+                    var formData = new FormData();
+                    formData.append("id", document.getElementById("id").value);
+                    formData.append("fileImage", fileInput.files[0]);
+
+                    // Fetch API to send data to updateUserProfilePic_mod.php
+                    fetch("../modals/updateUserProfilePic_mod.php", {
+                            method: "POST",
+                            body: formData
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            document.getElementById("cancel").style.display = "none";
+                            document.getElementById("confirm").style.display = "none";
+                            document.getElementById("upload").style.display = "block";
+                            localStorage.setItem('updateClientProfileToast', 'true');
+                            location.reload();
+                        })
+                        .catch(error => {
+                            console.error("Error:", error);
+                        });
+
+
+
+                });
+            </script>

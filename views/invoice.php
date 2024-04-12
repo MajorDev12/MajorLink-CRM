@@ -1357,7 +1357,6 @@ $invoicesData = getAllInvoices($connect);
                         var volume = cells[1].querySelector('input').value;
                         var qty = cells[2].querySelector('input').value;
                         var price = cells[3].querySelector('input').value;
-                        var price = cells[3].querySelector('input').value;
 
                         // Get the amount from the last td
                         var amount = cells[4].textContent;

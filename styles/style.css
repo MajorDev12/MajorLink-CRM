@@ -6,6 +6,7 @@
 	box-sizing: border-box;
 }
 
+
 a {
 	text-decoration: none;
 }
@@ -36,7 +37,25 @@ abbr {
 	--orange: #FD7238;
 	--light-orange: #FFE0D3;
 }
+/* Define scrollbar styles */
+::-webkit-scrollbar {
+    width: 4px; /* Width of the scrollbar */
+}
 
+/* Track */
+::-webkit-scrollbar-track {
+    background: var(--light); /* Color of the track */
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: var(--grey); /* Color of the scrollbar handle */
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: var(--blue); /* Color of the scrollbar handle on hover */
+}
 html {
 	overflow-x: hidden;
 }
