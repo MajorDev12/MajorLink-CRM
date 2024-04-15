@@ -33,16 +33,20 @@ $clientID = $_SESSION['clientID'];
         align-items: center;
     }
 
-    .changePlan,
-    .changePaymentMethod,
-    .changePassword,
-    .acceptEmail {
+    #div {
         margin: 5%;
         width: 70%;
         min-height: 20vh;
         background-color: var(--light);
+        color: var(--dark);
         padding: 20px;
+        border: 1px solid var(--grey);
         border-radius: 10px;
+        box-shadow: 4px 4px 4px var(--grey);
+    }
+
+    #div p {
+        color: var(--light-dark);
     }
 
     .changePlan .planDetails {
@@ -176,7 +180,7 @@ $clientID = $_SESSION['clientID'];
                 </div>
 
                 <div class="content-container">
-                    <div class="changePlan shadow-sm p-3 mb-2 bg-body-tertiary rounded">
+                    <div id="div" class="changePlan shadow-sm p-3 mb-2 rounded">
                         <div class="planDetails">
                             <?php $clientData = getClientDataById($connect, $clientID); ?>
                             <div class="planName">
@@ -250,7 +254,7 @@ $clientID = $_SESSION['clientID'];
 
 
 
-                    <div class="changePaymentMethod shadow-sm p-3 mb-2 bg-body-tertiary rounded">
+                    <div id="div" class="changePaymentMethod shadow-sm p-3 mb-2 rounded">
                         <h5>Payment Method</h5>
                         <p class="mb-3">Your Prefered Payment Option</p>
                         <?php $PaymentMethods = getPaymentMethods($connect); ?>
@@ -274,7 +278,7 @@ $clientID = $_SESSION['clientID'];
                         </div>
                     </div>
 
-                    <div class="changePassword shadow-sm p-3 mb-2 bg-body-tertiary rounded">
+                    <div id="div" class="changePassword shadow-sm p-3 mb-2 rounded">
                         <h5>Change Password</h5>
                         <p>Make sure your password is strong</p>
                         <div class="actions">
@@ -282,7 +286,7 @@ $clientID = $_SESSION['clientID'];
                         </div>
                     </div>
 
-                    <div class="acceptEmail shadow-sm p-3 mb-2 bg-body-tertiary rounded">
+                    <div id="div" class="acceptEmail shadow-sm p-3 mb-2 rounded">
                         <h5>Send my Email</h5>
                         <p>This means you will get instant notifications in your email</p>
                         <div class="form-check">

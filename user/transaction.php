@@ -32,14 +32,12 @@ $payments = getPayments($connect, $clientID);
         font-size: 13px;
         text-align: left;
         border-bottom: 1px solid var(--grey);
+        color: var(--dark);
     }
 
     .main-content .content table td {
         padding: 16px 0;
-    }
-
-    .main-content .content table tbody tr:hover {
-        background: var(--grey);
+        color: var(--light-dark);
     }
 
     .tablenav {

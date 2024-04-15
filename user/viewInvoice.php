@@ -62,8 +62,19 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
         line-height: 10px;
     }
 
+    .invoiceContainer .header .companyInfo {
+        color: #F9F9F9;
+    }
+
     .invoiceContainer .header .companyInfo .first {
         padding-bottom: 10px;
+        color: #F9F9F9;
+    }
+
+    .invoiceContainer .header .companyInfo .first p,
+    .invoiceContainer .header .companyInfo .second p,
+    .invoiceContainer .header .companyInfo h1 {
+        color: #F9F9F9;
     }
 
     .invoiceContainer .secondContainer {
@@ -74,12 +85,11 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
     }
 
     .invoiceContainer .secondContainer p {
-        color: var(--dark-grey);
         font-size: 14px;
     }
 
     .invoiceContainer .secondContainer h5 {
-        color: var(--dark);
+        color: #342E37;
         font-size: 16px;
     }
 
@@ -102,17 +112,20 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
         color: var(--blue);
     }
 
-    .invoiceContainer table {
+    .invoiceContainer .table {
         margin-top: 10%;
+        background-color: var(--light);
+        width: 100%;
     }
 
     .invoiceContainer .table thead {
         margin-bottom: 10px;
-        background-color: transparent;
+        background-color: var(--light);
+
     }
 
     .invoiceContainer .table thead tr th {
-        color: var(--blue);
+        color: #3C91E6;
         border-bottom: 2px solid var(--blue);
 
     }
@@ -136,11 +149,13 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
         display: flex;
         flex-direction: row;
         justify-content: end;
+        color: var(--light-dark);
     }
 
     .actions a {
         margin-left: 5px;
         background-color: transparent;
+        color: var(--light-dark);
     }
 
     .invoiceContainer footer {

@@ -91,6 +91,18 @@ label {
 	margin: 10px;
 	color: var(--light-dark) !important;
 }
+table{
+	background-color: var(--light);
+}
+table th{
+	color: var(--dark);
+}
+table td{
+	color: var(--light-dark);
+}
+table tbody tr:hover {
+	background: var(--grey);
+}
 #loader {
 	position: absolute;
 	top: 0;

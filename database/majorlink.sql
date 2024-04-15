@@ -280,6 +280,14 @@ CREATE TABLE invoiceProducts (
 
 
 
+CREATE TABLE plan_change_schedule (
+    ScheduleID INT AUTO_INCREMENT PRIMARY KEY,
+    ClientID INT NOT NULL,
+    NewPlanID INT NOT NULL,
+    ScheduledDate DATETIME,
+    FOREIGN KEY (ClientID) REFERENCES clients(ClientID),
+    FOREIGN KEY (NewPlanID) REFERENCES plans(PlanID)
+);
 
 
 

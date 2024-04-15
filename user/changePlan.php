@@ -124,11 +124,12 @@ $PaymentMethods = getPaymentMethods($connect);
 
 
 
+
                     <!-- stripe modal -->
                     <div id="stripeModal" class="modal shadow-sm p-3 mb-5 rounded">
 
                         <p class="note p-2">
-                            note that changing subscription plan will remove any past payment
+                            note that changing subscription Now plan will remove any past payment
                         </p>
                         <form action="">
                             <div class="row">
@@ -136,8 +137,7 @@ $PaymentMethods = getPaymentMethods($connect);
                                     <div id="closestripeModal" class="close">X</div>
                                     <label for="Date" class="form-label">Payment Date</label>
                                     <input type="text" class="form-control" readonly id="PaymentDate" name="PaymentDate" value="<?php echo date('Y-m-d'); ?>">
-                                    <label for="Date" class="form-label">Start Date</label>
-                                    <input type="text" class="form-control StartDate" readonly id="StartDate" name="StartDate" value="<?php echo date('Y-m-d'); ?>">
+                                    <input type="hidden" class="form-control StartDate" readonly id="StartDate" name="StartDate" value="<?php echo date('Y-m-d'); ?>">
                                     <label for="Amount" class="form-label">Amount</label>
                                     <input type="text" class="form-control Amount" readonly id="Amount" name="Amount">
                                     <label for="selectedMonths" class="form-label">Months</label>
@@ -161,7 +161,8 @@ $PaymentMethods = getPaymentMethods($connect);
                                     <input type="hidden" id="PlanID" value="">
                                 </div>
 
-                                <button type="button" id="pay" class="btn btn-success mt-4">Change Now</button>
+                                <button type="button" id="payNow" class="btn btn-success mt-4">Change Now</button>
+                                <button type="button" id="payLater" class="btn btn-success mt-2">Change Later</button>
                             </div>
 
                         </form>
@@ -173,7 +174,7 @@ $PaymentMethods = getPaymentMethods($connect);
                     <div id="paypalModal" class="modal shadow-sm p-3 mb-5 rounded">
 
                         <p class="note p-2">
-                            note that changing subscription plan will remove any past payment
+                            note that changing subscription plan Now will remove any past payment
                         </p>
                         <form action="">
                             <div class="row">
@@ -181,8 +182,7 @@ $PaymentMethods = getPaymentMethods($connect);
                                     <button type="button" id="closepaypalModal" class="close" data-dismiss="modal">&times;</button>
                                     <label for="Plan" class="form-label">Payment Date</label>
                                     <input type="text" class="form-control" readonly value="<?php echo date('Y-m-d'); ?>">
-                                    <label for="Plan" class="form-label">Start Date</label>
-                                    <input type="text" class="form-control" readonly value="<?php echo date('Y-m-d'); ?>">
+                                    <input type="hidden" class="form-control" readonly value="<?php echo date('Y-m-d'); ?>">
                                     <label for="Plan" class="form-label">Amount</label>
                                     <input type="text" class="form-control" readonly id="paypalAmount" name="Plan">
                                     <label for="Plan" class="form-label">Months</label>
@@ -207,7 +207,9 @@ $PaymentMethods = getPaymentMethods($connect);
                                     <input type="hidden" class="">
                                 </div>
 
-                                <button type="button" id="pay" class="btn btn-success mt-4">Change Now</button>
+                                <button type="button" id="payNow" class="btn btn-success mt-4">Change Now</button>
+                                <button type="button" id="payLater" class="btn btn-success mt-2">Change Later</button>
+
                             </div>
 
                         </form>
@@ -264,13 +266,11 @@ $PaymentMethods = getPaymentMethods($connect);
             <script src="https://js.stripe.com/v3/"></script>
             <script>
                 document.querySelector("#closestripeModal").addEventListener('click', () => {
-                    console.log('eee')
                     document.querySelector(".modal").style.display = "none";
                     document.getElementById("overlay").style.display = "none";
                 })
 
                 document.querySelector("#closepaypalModal").addEventListener('click', () => {
-                    console.log('eee')
                     document.querySelector("#paypalModal").style.display = "none";
                     document.getElementById("overlay").style.display = "none";
                 })
@@ -357,12 +357,16 @@ $PaymentMethods = getPaymentMethods($connect);
                 // Set Stripe publishable key to initialize Stripe.js
                 const stripe = Stripe('<?= STRIPE_PUBLISHABLE_KEY; ?>');
                 // Select payment button
-                const payBtn = document.querySelector("#pay");
+                const payNow = document.getElementById("payNow");
+                const payLater = document.getElementById("payLater");
 
 
-                payBtn.addEventListener("click", (e) => {
+                payNow.addEventListener("click", (e) => {
                     e.preventDefault();
-                    payBtn.disabled = true;
+
+
+
+
                     months = document.querySelector("#selectedMonths").value;
                     // Assign values to the global variables
                     paymentDate = document.querySelector("#PaymentDate").value;
@@ -373,11 +377,14 @@ $PaymentMethods = getPaymentMethods($connect);
                     currency = document.querySelector("#currencySymbol").value;
                     PlanAmount = document.getElementById("Amount").value;
                     selectedMonths = document.getElementById("selectedMonths").value;
+                    changing = 1;
+                    changingNow = 1;
 
 
                     if (PlanAmount === '') {
                         displayMessage("errorMsg", "Amount Cannot Be Empty", true);
-                        payBtn.disabled = false;
+                        payNow.disabled = false;
+                        payLater.disabled = false;
                         return;
                     }
 
@@ -397,6 +404,58 @@ $PaymentMethods = getPaymentMethods($connect);
                 })
 
 
+
+
+
+
+
+
+                payLater.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    months = document.querySelector("#selectedMonths").value;
+                    // Assign values to the global variables
+                    paymentDate = document.querySelector("#PaymentDate").value;
+                    startDate = document.querySelector("#StartDate").value;
+                    PlanName = document.querySelector("#PlanName").value;
+                    PlanID = document.querySelector("#PlanID").value;
+                    currencyCode = document.querySelector("#currencyCode").value;
+                    currency = document.querySelector("#currencySymbol").value;
+                    PlanAmount = document.getElementById("Amount").value;
+                    selectedMonths = document.getElementById("selectedMonths").value;
+                    changing = 0;
+                    changingNow = 0;
+
+
+
+                    if (PlanAmount === '') {
+                        displayMessage("errorMsg", "Amount Cannot Be Empty", true);
+                        payNow.disabled = false;
+                        payLater.disabled = false;
+                        return;
+                    }
+
+                    showLoader();
+
+
+                    createCheckoutSession().then(function(data) {
+                        if (data.sessionId) {
+                            stripe.redirectToCheckout({
+                                sessionId: data.sessionId,
+                            }).then(handleResult);
+                        } else {
+                            handleResult(data);
+                        }
+                    });
+
+                })
+
+
+
+
+
+
+
+
                 // Create a Checkout Session with the selected product
                 const createCheckoutSession = function(stripe) {
                     return fetch("../controllers/stripe_contr.php", {
@@ -414,6 +473,8 @@ $PaymentMethods = getPaymentMethods($connect);
                             currencyCode: currencyCode,
                             PlanAmount: PlanAmount,
                             selectedMonths: selectedMonths,
+                            changing: changing,
+                            changingNow: changingNow
                         }),
                     }).then(function(result) {
                         return result.json();
@@ -441,12 +502,9 @@ $PaymentMethods = getPaymentMethods($connect);
                 // Function to toggle button content and show loader
                 function showLoader() {
                     // Disable the button
-                    document.getElementById('pay').disabled = true;
-
-                    // Change button content to loader
-                    document.getElementById('pay').innerHTML = `
-            <span class="spinner-grow spinner-grow-sm" aria-hidden="true"></span>
-            <span role="status">Please wait...</span>
-        `;
+                    document.getElementById('stripeModal').style.display = 'none';
+                    document.getElementById('paypalModal').style.display = 'none';
+                    document.getElementById('overlay').style.display = 'none';
+                    document.getElementById('loader').style.display = 'flex';
                 }
             </script>
