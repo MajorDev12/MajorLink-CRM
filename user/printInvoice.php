@@ -324,7 +324,7 @@ if ($invoiceID !== null && $clientID !== null) :
                     <p class="issueDate">Expire Date</p>
                     <h5><?= date("Y-m-d", strtotime($invoice["DueDate"])); ?></h5>
                     <p>Invoice Total</p>
-                    <h4 class="topTotal"><span class="currency">$</span><?= number_format($invoice["TotalAmount"], 2); ?></h4>
+                    <h4 class="topTotal"><span class="currency"><?= $invoice["TaxSymbol"]; ?> </span><?= number_format($invoice["TotalAmount"], 2); ?></h4>
                 </div>
             <?php endif; ?>
         </div>
@@ -382,7 +382,7 @@ if ($invoiceID !== null && $clientID !== null) :
                 <tr>
                     <td colspan="3" class="border-0"></td>
                     <td colspan="" class="Total">Total</td>
-                    <td class="totalPrice">$ <?= number_format($invoice["TotalAmount"], 2); ?></td>
+                    <td class="totalPrice"><?= $invoice["TaxSymbol"]; ?> <?= number_format($invoice["TotalAmount"], 2); ?></td>
                 </tr>
             </tbody>
         </table>

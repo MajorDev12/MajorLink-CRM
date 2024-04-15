@@ -10,6 +10,9 @@
 a {
 	text-decoration: none;
 }
+h1,h2,h3,h4,h5,h6{
+	color: var(--dark);
+}
 
 li {
 	list-style: none;
@@ -30,6 +33,7 @@ abbr {
 	--light-blue: #CFE8FF;
 	--grey: #eee;
 	--dark-grey: #AAAAAA;
+	--light-dark: #222831;
 	--dark: #342E37;
 	--red: #DB504A;
 	--yellow: #FFCE26;
@@ -37,6 +41,16 @@ abbr {
 	--orange: #FD7238;
 	--light-orange: #FFE0D3;
 }
+
+input, select{
+	background-color: var(--light) !important;
+	color: var(--dark) !important;
+	border: 1px solid var(--dark-grey);
+}
+
+
+
+
 /* Define scrollbar styles */
 ::-webkit-scrollbar {
     width: 4px; /* Width of the scrollbar */
@@ -64,6 +78,7 @@ body.dark {
 	--light: #0C0C1E;
 	--grey: #060714;
 	--dark: #FBFBFB;
+	--light-dark: #AAAAAA;
 }
 
 body {
@@ -74,6 +89,7 @@ label {
 	display: block;
 	font-weight: bold;
 	margin: 10px;
+	color: var(--light-dark) !important;
 }
 #loader {
 	position: absolute;

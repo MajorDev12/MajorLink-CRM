@@ -9,6 +9,7 @@ if (!isset($_SESSION['clientID']) || !isset($_SESSION['FirstName'])) {
 }
 ?>
 <?php
+sleep(1);
 require_once  '../database/pdo.php';
 require_once "../modals/validate_mod.php";
 require_once "../modals/changeClientPassword_mod.php";

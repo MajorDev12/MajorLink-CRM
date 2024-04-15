@@ -187,7 +187,7 @@ $invoiceID = $_SESSION["invoiceID"];
             <label class="expireDate">Expire Date</label>
             <p>{{ expireDate }}</p>
             <label>Invoice Total</label>
-            <h4 class="topTotal"><span class="currency">$</span>{{ totalAmount }}</h4>
+            <h4 class="topTotal"><span class="currency">{{ taxSymbol }}</span>{{ totalAmount }}</h4>
         </div>
     </div>
 
@@ -220,7 +220,7 @@ $invoiceID = $_SESSION["invoiceID"];
             <tr>
                 <td colspan="3" class="space"></td>
                 <td colspan="" class="Total">Total</td>
-                <td class="totalPrice">$ {{ totalAmount }}</td>
+                <td class="totalPrice">{{ taxSymbol }} {{ totalAmount }}</td>
             </tr>
         </tbody>
     </table>

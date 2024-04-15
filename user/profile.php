@@ -135,7 +135,7 @@ $clientData = getClientDataById($connect, $clientID);
         </div>
 
         <!-- content-container -->
-        <div id="loader">Loading...</div>
+        <!-- <div id="loader">Loading...</div> -->
         <div class="main-content">
             <div class="content">
 
@@ -172,7 +172,7 @@ $clientData = getClientDataById($connect, $clientID);
 
                                 <div class="col-md-8">
                                     <div class="card-body">
-                                        <div class="row">
+                                        <div class="row mb-3">
                                             <div class="col-md-6">
                                                 <label for="firstname">firstname</label>
                                                 <input type="text" class="form-control" name="firstname" id="firstname" value="<?= $clientData['FirstName'] ?>">
@@ -182,7 +182,7 @@ $clientData = getClientDataById($connect, $clientID);
                                                 <input type="text" class="form-control" name="lastname" id="lastname" value="<?= $clientData['LastName'] ?>">
                                             </div>
                                         </div>
-                                        <div class="row">
+                                        <div class="row mb-3">
                                             <div class="col-md-6">
                                                 <label for="PrimaryEmail">Email Address</label>
                                                 <input type="email" class="form-control" name="PrimaryEmail" id="PrimaryEmail" value="<?= $clientData['PrimaryEmail'] ?>">
@@ -192,7 +192,7 @@ $clientData = getClientDataById($connect, $clientID);
                                                 <input type="email" class="form-control" name="SecondaryEmail" id="SecondaryEmail" value="<?= $clientData['SecondaryEmail'] ?>">
                                             </div>
                                         </div>
-                                        <div class="row">
+                                        <div class="row mb-3">
                                             <div class="col-md-6">
                                                 <label for="primaryNumber">Phone Number</label>
                                                 <input type="tel" class="form-control" name="primaryNumber" id="primaryNumber" value="<?= $clientData['PrimaryNumber'] ?>">
@@ -202,12 +202,31 @@ $clientData = getClientDataById($connect, $clientID);
                                                 <input type="tel" class="col-md-6 form-control" name="secondaryNumber" id="secondaryNumber" value="<?= $clientData['SecondaryNumber'] ?>">
                                             </div>
                                         </div>
-
+                                        <div class="row mb-3">
+                                            <div class="col-md-6">
+                                                <label for="Address">Address</label>
+                                                <input type="text" class="form-control" name="Address" id="Address" value="<?= $clientData['Address'] ?>">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="City">City</label>
+                                                <input type="text" class="form-control" name="City" id="City" value="<?= $clientData['City'] ?>">
+                                            </div>
+                                        </div>
+                                        <div class="row mb-3">
+                                            <div class="col-md-6">
+                                                <label for="Country">Country</label>
+                                                <input type="text" class="form-control" name="Country" id="Country" value="<?= $clientData['Country'] ?>">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="zipcode">zipcode</label>
+                                                <input type="number" class="form-control" name="zipcode" id="zipcode" value="<?= $clientData['Zipcode'] ?>">
+                                            </div>
+                                        </div>
                                         <p id="editError"></p>
 
 
                                         <div class="row mt-3">
-                                            <button id="save" class="btn btn-success col-md-4">Save Changes</button>
+                                            <button id="updateProfileBtn" class="btn btn-success col-md-4">Save Changes</button>
                                         </div>
 
                                     <?php else : ?>
@@ -232,6 +251,190 @@ $clientData = getClientDataById($connect, $clientID);
 
 
             <script>
+                var updateProfileBtn = document.getElementById("updateProfileBtn");
+
+                var initialFirstName = <?= json_encode($clientData['FirstName']); ?>;
+                var initialLastName = <?= json_encode($clientData['LastName']); ?>;
+                var initialPrimaryEmail = <?= json_encode($clientData['PrimaryEmail']); ?>;
+                var initialSecondaryEmail = <?= json_encode($clientData['SecondaryEmail']); ?>;
+                var initialPrimaryNumber = <?= json_encode($clientData['PrimaryNumber']); ?>;
+                var initialSecondaryNumber = <?= json_encode($clientData['SecondaryNumber']); ?>;
+                var initialAddress = <?= json_encode($clientData['Address']); ?>;
+                var initialCity = <?= json_encode($clientData['City']); ?>;
+                var initialCountry = <?= json_encode($clientData['Country']); ?>;
+                var initialZipcode = <?= json_encode($clientData['Zipcode']); ?>;
+
+
+
+                updateProfileBtn.addEventListener("click", function() {
+                    var firstnameInput = document.getElementById("firstname").value;
+                    var lastnameInput = document.getElementById("lastname").value;
+                    var PrimaryEmailInput = document.getElementById("PrimaryEmail").value;
+                    var SecondaryEmailInput = document.getElementById("SecondaryEmail").value;
+                    var primaryNumberInput = document.getElementById("primaryNumber").value;
+                    var secondaryNumberInput = document.getElementById("secondaryNumber").value;
+                    var AddressInput = document.getElementById("Address").value;
+                    var CityInput = document.getElementById("City").value;
+                    var CountryInput = document.getElementById("Country").value;
+                    var zipcodeInput = document.getElementById("zipcode").value;
+
+
+
+
+
+
+
+
+                    // Compare input values with initial values
+                    if (
+                        firstnameInput != initialFirstName ||
+                        lastnameInput != initialLastName ||
+                        PrimaryEmailInput != initialPrimaryEmail ||
+                        SecondaryEmailInput != initialSecondaryEmail ||
+                        primaryNumberInput != initialPrimaryNumber ||
+                        secondaryNumberInput != initialSecondaryNumber ||
+                        AddressInput != initialAddress ||
+                        CityInput != initialCity ||
+                        CountryInput != initialCountry ||
+                        zipcodeInput != initialZipcode
+                    ) {
+                        // At least one input value has changed
+
+
+
+
+                        if (firstnameInput.trim() === "") {
+                            displayMessage("editError", "First name cannot be empty", true);
+                            return;
+                        } else {
+                            if (!/^[a-zA-Z0-9 ]+$/.test(firstnameInput)) {
+                                displayMessage("editError", "Only letters and numbers allowed", true);
+                                return;
+                            }
+                        }
+
+                        if (lastnameInput.trim() === "") {
+                            displayMessage("editError", "Last name cannot be empty", true);
+                            return;
+                        } else {
+                            if (!/^[a-zA-Z0-9 ]+$/.test(lastnameInput)) {
+                                displayMessage("editError", "Only letters and numbers allowed", true);
+                                return;
+                            }
+                        }
+
+
+                        if (PrimaryEmailInput.trim() === "") {
+                            displayMessage("editError", "Primary Email cannot be empty", true);
+                            return;
+                        } else {
+                            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(PrimaryEmailInput)) {
+                                displayMessage("editError", "Invalid Primary email address", true);
+                                return;
+                            }
+                        }
+
+
+                        if (SecondaryEmailInput.trim() === "") {
+                            SecondaryEmailInput = '';
+                        } else {
+                            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(SecondaryEmailInput)) {
+                                displayMessage("editError", "Invalid Secondary email address", true);
+                                return;
+                            }
+                        }
+
+                        if (primaryNumberInput.trim() === "") {
+                            displayMessage("editError", "Primary Number cannot be empty", true);
+                            return;
+                        } else {
+                            if (!/^\d{10}$/.test(primaryNumberInput)) {
+                                displayMessage("editError", "Primary Number must contain exactly 10 digits (only numbers allowed)", true);
+                                return;
+                            }
+                        }
+
+                        if (secondaryNumberInput.trim() !== "") {
+                            if (!/^\d{10}$/.test(secondaryNumberInput)) {
+                                displayMessage("editError", "Invalid Secondary phone number (must contain exactly 10 digits, only numbers allowed)", true);
+                                return;
+                            }
+                        }
+
+
+
+                        if (zipcodeInput.trim() !== "" && !isValidZipCode(zipcodeInput.trim())) {
+                            displayMessage("editError", "Please enter a valid zip code.", true);
+                            return; // Stop further execution
+                        }
+
+
+
+
+
+
+
+
+                        document.querySelector("#loader").style.display = 'block';
+
+
+                        var formData = new FormData();
+                        formData.append("firstnameInput", firstnameInput);
+                        formData.append("lastnameInput", lastnameInput);
+                        formData.append("PrimaryEmailInput", PrimaryEmailInput);
+                        formData.append("SecondaryEmailInput", SecondaryEmailInput);
+                        formData.append("primaryNumberInput", primaryNumberInput);
+                        formData.append("secondaryNumberInput", secondaryNumberInput);
+                        formData.append("AddressInput", AddressInput);
+                        formData.append("CityInput", CityInput);
+                        formData.append("CountryInput", CountryInput);
+                        formData.append("zipcodeInput", zipcodeInput);
+
+                        // Fetch API to send data to updateUserProfilePic_mod.php
+                        fetch("../controllers/updateUserProfile_contr.php", {
+                                method: "POST",
+                                body: formData
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                displayMessage("editError", "Updated Details Successfully", false);
+                                document.querySelector("#loader").style.display = 'none';
+                                setTimeout(() => {
+                                    location.reload();
+                                }, 1000);
+                            })
+                            .catch(error => {
+                                console.error("Error:", error);
+                            });
+
+
+
+
+
+
+
+
+
+
+                    } else {
+                        // No input values have changed
+                        displayMessage("editError", "No changes made", true);
+                        return;
+                    }
+                });
+
+
+
+                // Function to validate zip code format
+                function isValidZipCode(zipcode) {
+                    // Regular expression to validate zip code format (example: 12345 or 12345-6789)
+                    var zipCodePattern = /^\d{5}(?:-\d{4})?$/;
+                    return zipCodePattern.test(zipcode);
+                }
+
+
+
+
                 document.getElementById("fileImage").onchange = function(event) {
                     var editProfilePicture = document.getElementById("editprofilePicture");
 
@@ -285,6 +488,7 @@ $clientData = getClientDataById($connect, $clientID);
                         })
                         .then(response => response.json())
                         .then(data => {
+                            displayMessage("editError", "Please enter amount to be paid before proceeding.", false);
                             document.getElementById("cancel").style.display = "none";
                             document.getElementById("confirm").style.display = "none";
                             document.getElementById("upload").style.display = "block";
@@ -294,8 +498,5 @@ $clientData = getClientDataById($connect, $clientID);
                         .catch(error => {
                             console.error("Error:", error);
                         });
-
-
-
                 });
             </script>

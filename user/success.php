@@ -206,28 +206,36 @@ if (!empty($_GET['session_id'])) {
 
                         $expireDate = $expireDate->format('Y-m-d');
                         // Insert transaction data into the database 
-                        insertPaymentData($ClientID, $PlanID, $planAmount, $paymentStatus, $createdDate, $paymentMethodID, $InstallationFees, $connect);
-                        updatePlan($ClientID, $PlanID, $expireDate, $last_paymentDate, $connect);
-                        changeStatus($ClientID, $activeStatus, $connect);
-                        setStripeTransaction($connect, $ClientID, $customer_name, $customer_email, $paidAmount, $paidCurrency, $createdDate, $payment_id, $payment_status, $session_id);
-                        $SenderName = 'system';
-                        $MessageType = 'Transaction-success';
-                        $MessageContent = 'Your payment has been recieved successfully';
-                        $Status = 0;
-                        insertMessage($connect, $SenderName, $clientID, $MessageType, $MessageContent, $createdDate, $Status);
-                        $prefix = "INV";
-                        $randomDigits = str_pad(mt_rand(1, 99999), 5, '0', STR_PAD_LEFT);
-                        $invoiceNumber = $prefix . $randomDigits;
+                        if (!$changing) {
+                            insertPaymentData($ClientID, $PlanID, $planAmount, $paymentStatus, $createdDate, $paymentMethodID, $InstallationFees, $connect);
+                            updatePlan($ClientID, $PlanID, $expireDate, $last_paymentDate, $connect);
+                            changeStatus($ClientID, $activeStatus, $connect);
+                            setStripeTransaction($connect, $ClientID, $customer_name, $customer_email, $paidAmount, $paidCurrency, $createdDate, $payment_id, $payment_status, $session_id);
+                            $SenderName = 'system';
+                            $MessageType = 'Transaction-success';
+                            $MessageContent = 'Your payment has been recieved successfully';
+                            $Status = 0;
+                            insertMessage($connect, $SenderName, $clientID, $MessageType, $MessageContent, $createdDate, $Status);
+                            $prefix = "INV";
+                            $randomDigits = str_pad(mt_rand(1, 99999), 5, '0', STR_PAD_LEFT);
+                            $invoiceNumber = $prefix . $randomDigits;
 
-                        $totalAmount =  $paidAmount;
-                        $startDate =  $_SESSION['startDate'];
-                        $paymentDate = $_SESSION["paymentDate"];
-                        $taxSymbol = $_SESSION["currencySymbol"];
-                        $taxAmount = 0;
-                        $dueDate =  $expireDate;
-                        $status =  "Paid";
-                        addInvoice($connect, $clientID, $invoiceNumber, $totalAmount, $paymentDate, $startDate, $dueDate, $status, $taxSymbol, $taxAmount);
-                        saveInvoiceProducts($connect, $invoiceNumber, $subtotal, $invoiceProducts);
+                            $totalAmount =  $paidAmount;
+                            $startDate =  $_SESSION['startDate'];
+                            $paymentDate = $_SESSION["paymentDate"];
+                            $taxSymbol = $_SESSION["currencySymbol"];
+                            $taxAmount = 0;
+                            $dueDate =  $expireDate;
+                            $status =  "Paid";
+                            addInvoice($connect, $clientID, $invoiceNumber, $totalAmount, $paymentDate, $startDate, $dueDate, $status, $taxSymbol, $taxAmount);
+                            saveInvoiceProducts($connect, $invoiceNumber, $subtotal, $invoiceProducts);
+                        } else {
+                            if ($changingNow) {
+                                //set planid to paid plan
+                                // set last_payment to today
+                                // set start date to today
+                            }
+                        }
                     }
 
                     $status = 'success';

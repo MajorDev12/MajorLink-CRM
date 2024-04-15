@@ -11,10 +11,12 @@ if (!isset($_SESSION['clientID']) || !isset($_SESSION['FirstName'])) {
 <?php
 require_once  '../database/pdo.php';
 require_once  '../modals/viewSingleUser_mod.php';
+require_once  '../modals/getTime_mod.php';
 
 $connect = connectToDatabase($host, $dbname, $username, $password);
 $clientID = $_SESSION['clientID'];
 $clientData = getClientDataById($connect, $clientID);
+$greeting = getGreeting();
 ?>
 <?php require_once "../views/header.php"; ?>
 
@@ -165,21 +167,6 @@ $clientData = getClientDataById($connect, $clientID);
     <!-- MAIN -->
     <main>
         <div class="head-title">
-            <?php
-            // Get the current hour
-            $currentHour = date('H');
-
-            // Define greeting messages based on the time of the day
-            if ($currentHour >= 5 && $currentHour < 12) {
-                $greeting = "Good Morning";
-            } elseif ($currentHour >= 12 && $currentHour < 17) {
-                $greeting = "Afternoon";
-            } elseif ($currentHour >= 17 && $currentHour < 20) {
-                $greeting = "Good Evening";
-            } else {
-                $greeting = "Good Night";
-            }
-            ?>
             <div class="left">
                 <h1><?= $greeting ?>, <?= $_SESSION['FirstName']; ?></h1>
                 <!-- <p style="color: var(--dark);">You are running Low!!!</p> -->

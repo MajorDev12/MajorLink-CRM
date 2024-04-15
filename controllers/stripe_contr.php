@@ -36,10 +36,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $selectedMonths = inputValidation($request->selectedMonths);
 
     // Set the value in the session
-    $_SESSION["selectedMonths"] = $selectedMonths;
-    $_SESSION["startDate"] = $startDate;
-    $_SESSION["paymentDate"] = $paymentDate;
-    $_SESSION["currencySymbol"] = $currencySymbol;
+    // $_SESSION["selectedMonths"] = $selectedMonths;
+    // $_SESSION["startDate"] = $startDate;
+    // $_SESSION["paymentDate"] = $paymentDate;
+    // $_SESSION["currencySymbol"] = $currencySymbol;
 
     if (empty($PlanAmount)) {
         $response = array(

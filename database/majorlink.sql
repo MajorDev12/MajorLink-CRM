@@ -61,6 +61,10 @@ CREATE TABLE clients (
     LastName VARCHAR(255),
     PrimaryEmail VARCHAR(255),
     SecondaryEmail VARCHAR(255),
+    Address VARCHAR(255),
+    City VARCHAR(255),
+    Country VARCHAR(255),
+    Zipcode INT(255),
     PrimaryNumber VARCHAR(20),
     SecondaryNumber VARCHAR(20),
     PasswordHash VARCHAR(255), -- Store hashed passwords securely

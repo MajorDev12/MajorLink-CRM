@@ -25,19 +25,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["clientId"])) {
 
 
 
-    // echo $clientId . '<br />';
-    // echo $area . '<br />';
-    // echo $subArea . '<br />';
-    // echo $firstName . '<br />';
-    // echo $lastName . '<br />';
-    // echo $primaryEmail . '<br />';
-    // echo $secondaryEmail . '<br />';
-    // echo $primaryNumber . '<br />';
-    // echo $secondaryNumber . '<br />';
-    // echo $latitude . '<br />';
-    // echo $longitude;
-
-
     // Assuming the variables are already defined
 
     if (!preg_match('/^[a-zA-Z0-9 ]+$/', $firstName)) {
@@ -71,15 +58,19 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["clientId"])) {
     if (trim($primaryNumber) !== "") {
         if (!ctype_digit($primaryNumber)) {
             $errors[] = "Invalid phone number (only numbers allowed)";
+        } elseif (strlen($primaryNumber) !== 10) {
+            $errors[] = "Primary number must contain exactly 10 digits";
         }
     }
-
 
     if (trim($secondaryNumber) !== "") {
         if (!ctype_digit($secondaryNumber)) {
-            $errors[] = "Invalid phone number (only numbers allowed)";
+            $errors[] = "Invalid secondary phone number (only numbers allowed)";
+        } elseif (strlen($secondaryNumber) !== 10) {
+            $errors[] = "Secondary number must contain exactly 10 digits";
         }
     }
+
 
 
     if (trim($latitude) !== "") {

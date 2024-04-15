@@ -21,6 +21,8 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
 $clientID = $_SESSION["clientID"];
 $clientData = getClientDataById($connect, $clientID);
 
+$currentPlan = $clientData["PlanID"];
+
 $preferedmethodid = $clientData["PreferedPaymentMethod"];
 
 $PaymentMethods = getPaymentMethods($connect);
@@ -73,6 +75,10 @@ $PaymentMethods = getPaymentMethods($connect);
         font-weight: 900;
         cursor: pointer;
     }
+
+    #plandiv {
+        background-color: var(--light);
+    }
 </style>
 <div id="overlay"></div>
 
@@ -119,10 +125,10 @@ $PaymentMethods = getPaymentMethods($connect);
 
 
                     <!-- stripe modal -->
-                    <div id="stripeModal" class="modal shadow-sm p-3 mb-5 bg-body rounded">
+                    <div id="stripeModal" class="modal shadow-sm p-3 mb-5 rounded">
 
                         <p class="note p-2">
-                            note that changing subscription plan will remove any past payment and start afresh
+                            note that changing subscription plan will remove any past payment
                         </p>
                         <form action="">
                             <div class="row">
@@ -164,7 +170,7 @@ $PaymentMethods = getPaymentMethods($connect);
 
 
                     <!-- paypal modal -->
-                    <div id="paypalModal" class="modal shadow-sm p-3 mb-5 bg-body rounded">
+                    <div id="paypalModal" class="modal shadow-sm p-3 mb-5 rounded">
 
                         <p class="note p-2">
                             note that changing subscription plan will remove any past payment
@@ -214,37 +220,37 @@ $PaymentMethods = getPaymentMethods($connect);
 
 
 
+                    <?php
+                    $currentPlan = $clientData["PlanID"];
+                    ?>
 
-
-                    <div class="grid text-center plans row">
+                    <div class="grid text-center plans row" id="plandiv">
                         <?php $plans = getPlanData($connect); ?>
                         <?php foreach ($plans as $plan) : ?>
-
-                            <div class="col-md-6 shadow-sm p-3 mb-5 bg-body-tertiary rounded">
-                                <form action="">
-                                    <div class="planVolume mt-5 bg-primary">
-                                        <h3 class="p-4 text-light"><?php echo $plan["Volume"]; ?></h3>
-                                    </div>
-                                    <div class="planName mt-5">
-                                        <h4 id="planName" data-planid="<?php echo $plan["PlanID"]; ?>"><?php echo $plan["Name"]; ?></h4>
-                                        <p><?php //echo $plan["Notes"]; 
-                                            ?></p>
-                                    </div>
-                                    <div class="planPrice mb-3">
-                                        <h3 class=""> <sup class="currency" data-currencycode="<?= $settings[0]["CurrencyCode"]; ?>"> <?php
-                                                                                                                                        $settings = get_Settings($connect);
-                                                                                                                                        echo $settings[0]["CurrencySymbol"];
-
-                                                                                                                                        ?></sup><span class="number"><?php echo $plan["Price"]; ?></span><span class="month" name="duration">/month</span></h3>
-                                    </div>
-                                    <button type="button" class="btn btn-primary apply">Apply Now</button>
-                                </form>
-                            </div>
-
+                            <?php if ($plan["PlanID"] !== $currentPlan) : ?> <!-- Check if the plan ID is not equal to the current plan ID -->
+                                <div class="col-md-5 shadow p-3 m-3 rounded">
+                                    <form action="">
+                                        <div class="planVolume mt-5 bg-primary">
+                                            <h3 class="p-4 text-light"><?php echo $plan["Volume"]; ?></h3>
+                                        </div>
+                                        <div class="planName mt-5">
+                                            <h4 id="planName" data-planid="<?php echo $plan["PlanID"]; ?>"><?php echo $plan["Name"]; ?></h4>
+                                            <p><?php //echo $plan["Notes"]; 
+                                                ?></p>
+                                        </div>
+                                        <div class="planPrice mb-3">
+                                            <h3 class=""> <sup class="currency" data-currencycode="<?= $settings[0]["CurrencyCode"]; ?>"> <?php
+                                                                                                                                            $settings = get_Settings($connect);
+                                                                                                                                            echo $settings[0]["CurrencySymbol"];
+                                                                                                                                            ?></sup><span class="number"><?php echo $plan["Price"]; ?></span><span class="month" name="duration">/month</span></h3>
+                                        </div>
+                                        <button type="button" class="btn btn-primary apply">Apply Now</button>
+                                    </form>
+                                </div>
+                            <?php endif; ?>
                         <?php endforeach; ?>
-
-
                     </div>
+
 
 
                 </div>
@@ -369,15 +375,6 @@ $PaymentMethods = getPaymentMethods($connect);
                     selectedMonths = document.getElementById("selectedMonths").value;
 
 
-                    // console.log(paymentDate)
-                    // console.log(startDate)
-                    // console.log(PlanName)
-                    // console.log(currency)
-                    // console.log(currencyCode)
-                    // console.log(PlanAmount)
-                    // console.log(selectedMonths)
-                    // console.log(PlanID)
-                    // return;
                     if (PlanAmount === '') {
                         displayMessage("errorMsg", "Amount Cannot Be Empty", true);
                         payBtn.disabled = false;
