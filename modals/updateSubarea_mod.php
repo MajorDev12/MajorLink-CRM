@@ -1,13 +1,13 @@
 <?php
 
-function updateArea($updatedAreaName, $areaId, $connect)
+function updateSubArea($updatedAreaName, $subareaId, $connect)
 {
 
     // Perform the update operation in the database
-    $query = "UPDATE subareas SET subAreaName = :updatedAreaName WHERE AreaID = :areaId";
+    $query = "UPDATE subareas SET subAreaName = :updatedAreaName WHERE SubAreaID = :subareaId";
     $statement = $connect->prepare($query);
     $statement->bindParam(':updatedAreaName', $updatedAreaName);
-    $statement->bindParam(':areaId', $areaId);
+    $statement->bindParam(':subareaId', $subareaId);
 
     $result = $statement->execute();
     return $result;

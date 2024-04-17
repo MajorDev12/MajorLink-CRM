@@ -370,11 +370,6 @@ $clientData = getClientDataById($connect, $clientID);
 
 
 
-
-
-
-
-
                         document.querySelector("#loader").style.display = 'block';
 
 

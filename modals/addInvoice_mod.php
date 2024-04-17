@@ -294,3 +294,27 @@ function getInvoicesByClientID($connect, $clientID)
         return false;
     }
 }
+
+
+
+
+
+function deleteClientInvoices($clientId, $connect)
+{
+    try {
+        // Prepare SQL statement to delete invoices associated with the client
+        $query = "DELETE FROM invoices WHERE ClientID = :clientId";
+        $statement = $connect->prepare($query);
+        $statement->bindParam(':clientId', $clientId);
+
+        // Execute the query
+        $statement->execute();
+
+        // Return true if the deletion is successful
+        return true;
+    } catch (PDOException $e) {
+        // Handle the exception
+        echo "Error deleting client invoices: " . $e->getMessage();
+        return false;
+    }
+}

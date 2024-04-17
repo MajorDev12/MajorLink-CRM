@@ -1,6 +1,6 @@
 <?php
 
-function updateSingleUser($clientId, $firstName, $lastName, $primaryEmail, $secondaryEmail, $primaryNumber, $secondaryNumber, $area, $subArea, $latitude, $longitude, $connect)
+function updateSingleUser($clientId, $firstName, $lastName, $primaryEmail, $secondaryEmail, $primaryNumber, $secondaryNumber, $Address, $City, $Country, $Zipcode, $area, $subArea, $latitude, $longitude, $connect)
 {
     // Perform your update logic here, for example, updating a database
     try {
@@ -13,6 +13,10 @@ function updateSingleUser($clientId, $firstName, $lastName, $primaryEmail, $seco
             SecondaryEmail = :SecondaryEmail,
             PrimaryNumber = :PrimaryNumber,
             SecondaryNumber = :SecondaryNumber,
+            Address = :Address,
+            City = :City,
+            Country = :Country,
+            Zipcode = :Zipcode,
             Latitude = :Latitude,
             Longitude = :Longitude,
             AreaID = :Area,
@@ -29,6 +33,10 @@ function updateSingleUser($clientId, $firstName, $lastName, $primaryEmail, $seco
         $stmt->bindParam(':SecondaryEmail', $secondaryEmail);
         $stmt->bindParam(':PrimaryNumber', $primaryNumber);
         $stmt->bindParam(':SecondaryNumber', $secondaryNumber);
+        $stmt->bindParam(':Address', $Address);
+        $stmt->bindParam(':City', $City);
+        $stmt->bindParam(':Country', $Country);
+        $stmt->bindParam(':Zipcode', $Zipcode);
         $stmt->bindParam(':Latitude', $latitude);
         $stmt->bindParam(':Longitude', $longitude);
         $stmt->bindParam(':Area', $area);

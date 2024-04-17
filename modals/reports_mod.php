@@ -813,6 +813,49 @@ function getClientTotalAmount($connect, $clientId)
 
 
 
+
+function getSingleClientTotalAmount($connect, $clientId)
+{
+    try {
+        // Query to get total amounts for each payment status from both sales and invoices tables
+        $query = "SELECT 
+                    COALESCE(SUM(CASE WHEN s.PaymentStatus = 'Paid' THEN s.Total ELSE 0 END), 0) AS totalPaid,
+                    COALESCE(SUM(CASE WHEN s.PaymentStatus = 'Pending' THEN s.Total ELSE 0 END), 0) AS totalPending,
+                    COALESCE(SUM(CASE WHEN s.PaymentStatus = 'Partially Paid' THEN s.Total ELSE 0 END), 0) AS totalPartiallyPaid,
+                    COALESCE(SUM(CASE WHEN s.PaymentStatus = 'Cancelled' THEN s.Total ELSE 0 END), 0) AS totalCancelled
+                  FROM (
+                    SELECT Total, PaymentStatus FROM sales WHERE ClientID = :clientId
+                    UNION ALL
+                    SELECT TotalAmount, Status FROM invoices WHERE ClientID = :clientId
+                  ) AS s";
+
+        $statement = $connect->prepare($query);
+        $statement->bindValue(':clientId', $clientId, PDO::PARAM_INT);
+        $statement->execute();
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+
+        return $result;
+    } catch (PDOException $e) {
+        echo "Error: " . $e->getMessage();
+        return false;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //      expenses
 function getTotalExpenseByType($connect)
 {

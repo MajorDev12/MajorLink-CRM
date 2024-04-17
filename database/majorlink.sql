@@ -76,7 +76,7 @@ CREATE TABLE clients (
     LastLogin DATETIME,
     LastPayment DATETIME,
     CreatedDate DATETIME,
-    PreferedPaymentMethod INT(255) NOT NULL DEFAULT '6',
+    PreferedPaymentMethod INT(255) NOT NULL DEFAULT '3',
     ProfilePictureURL VARCHAR(255), 
     ActiveStatus TINYINT(1), 
     ExpireDate DATETIME,
@@ -357,10 +357,66 @@ CREATE TABLE systemlogs (
 
 
 
+DELIMITER //
+
+CREATE TRIGGER before_delete_area
+BEFORE DELETE ON areas
+FOR EACH ROW
+BEGIN
+    UPDATE clients SET AreaID = NULL WHERE AreaID = OLD.AreaID;
+    UPDATE clients SET SubAreaID = NULL WHERE SubAreaID = OLD.SubAreaID;
+    -- Add more update statements for other related tables if needed
+END;
+
+//
+
+DELIMITER ;
+
+
+
+ALTER TABLE `clients` DROP FOREIGN KEY `clients_ibfk_1`;
+ALTER TABLE `clients` ADD CONSTRAINT `clients_ibfk_1` FOREIGN KEY (`AreaID`) REFERENCES `areas`(`AreaID`) ON DELETE CASCADE ON UPDATE RESTRICT;
+ALTER TABLE `clients` DROP FOREIGN KEY `clients_ibfk_2`; 
+ALTER TABLE `clients` ADD CONSTRAINT `clients_ibfk_2` FOREIGN KEY (`SubAreaID`) REFERENCES `subareas`(`SubAreaID`) ON DELETE CASCADE ON UPDATE RESTRICT;
+
+
+
+
+
+
+
+
 
 ALTER TABLE subareas
 ADD CONSTRAINT fk_SubAreas_AreaID
 FOREIGN KEY (AreaID) REFERENCES areas(AreaID)
+ON DELETE CASCADE;
+
+
+ALTER TABLE invoices
+ADD CONSTRAINT fk_Invoices_ClientID
+FOREIGN KEY (ClientID) REFERENCES clients(ClientID)
+ON DELETE CASCADE;
+
+ALTER TABLE messages
+ADD CONSTRAINT fk_Messages_RecipientID
+FOREIGN KEY (RecipientID) REFERENCES clients(ClientID)
+ON DELETE CASCADE;
+
+ALTER TABLE payments
+ADD CONSTRAINT fk_payments_ClientID
+FOREIGN KEY (ClientID) REFERENCES clients(ClientID)
+ON DELETE CASCADE;
+
+ALTER TABLE stripepayments
+ADD CONSTRAINT fk_stripepayments_ClientID
+FOREIGN KEY (ClientID) REFERENCES clients(ClientID)
+ON DELETE CASCADE;
+
+
+ALTER TABLE invoiceproducts
+ADD CONSTRAINT fk_invoiceproducts_InvoiceID
+FOREIGN KEY (InvoiceID) REFERENCES invoices(InvoiceID)
 ON DELETE CASCADE;
 
 

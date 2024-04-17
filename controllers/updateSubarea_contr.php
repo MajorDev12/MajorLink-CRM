@@ -1,25 +1,21 @@
 <?php
 
-if (isset($_POST['updatedName']) && isset($_POST['currentAreaId'])) {
+if (isset($_POST['updatedNameInput']) && isset($_POST['modalSubAreaId'])) {
     sleep(1);
     require_once  '../database/pdo.php';
-    require_once  '../modals/updateArea_mod.php';
-
+    require_once  '../modals/updateSubarea_mod.php';
     $connect = connectToDatabase($host, $dbname, $username, $password);
 
-    $updatedAreaName = $_POST['updatedName'];
-    $areaId = $_POST['currentAreaId'];
+    $SubAreaId = $_POST['modalSubAreaId'];
+    $updatedName = $_POST['updatedNameInput'];
 
     // Call your update function here and handle the update logic
-    $updatedAreas = updateArea($updatedAreaName, $areaId, $connect);
+    $updateSubAreas = updateSubArea($updatedName, $SubAreaId, $connect);
 
-    // Fetch all areas after deletion
-    $areas = getData($connect);
 
     // Send the response as an associative array
     $output = array(
-        'success' => $updatedAreas ? true : false,
-        'areas' => $areas
+        'success' => $updateSubAreas ? true : false
     );
 
     echo json_encode($output);

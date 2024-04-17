@@ -6,9 +6,14 @@ require_once  '../modals/viewSingleUser_mod.php';
 require_once  '../modals/addInvoice_mod.php';
 require_once  '../modals/addSale_mod.php';
 require_once  '../modals/addPlan_mod.php';
+require_once  '../modals/setup_mod.php';
 $connect = connectToDatabase($host, $dbname, $username, $password);
 $clientData = getClientsNames($connect);
 $invoicesData = getAllInvoices($connect);
+
+$settings = get_Settings($connect);
+$code = $settings[0]["CurrencyCode"];
+$symbol = $settings[0]["CurrencySymbol"];
 ?>
 <?php require_once "header.php"; ?>
 
@@ -87,7 +92,8 @@ $invoicesData = getAllInvoices($connect);
         font-weight: 500;
     }
 
-    .newInvoice .secondContainer .topTotal {
+    .newInvoice .secondContainer .toptotal,
+    .newInvoice .totalPrice {
         color: var(--blue);
     }
 
@@ -488,7 +494,7 @@ $invoicesData = getAllInvoices($connect);
                                         <td style="text-align:center">
                                             <a href="viewProduct.php?i=<?= $sale["SaleID"]; ?>&c=<?= $sale["ClientID"]; ?>" class="icon view"><img src="../img/eyeIcon.png" alt=""></a>
                                             <abbr title="download pdf"><a href="../controllers/generateSalesInvoice_contr.php?i=<?= $sale["SaleID"]; ?>&c=<?= $sale["ClientID"]; ?>" target="_blank" class="icon pdf"><img src="../img/pdfIcon.png" alt=""></a></abbr>
-                                            <abbr title="print"><a href="../views/printSaleInvoice.php?i=<?= $sale["SaleID"]; ?>&c=<?= $sale["ClientID"]; ?>" target="_blank" class="icon print"><img src="../img/printIcon.png" alt=""></a></abbr>
+                                            <abbr title="print"><a href="../views/printSaleInvoice.php?i=<?= $sale["SaleID"]; ?>&c=<?= $sale["ClientID"]; ?>" target="_blank" class="icon delete"><img src="../img/printIcon.png" alt=""></a></abbr>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>
@@ -637,7 +643,7 @@ $invoicesData = getAllInvoices($connect);
                                 <p class="issueDate">Expire Date</p>
                                 <h5><input type="date" class="expireDate"></h5>
                                 <p>Invoice Total</p>
-                                <h4 class="topTotal"><span class="currency">$</span>00.00</h4>
+                                <h4 class="toptotal"><span class="currency"><?= $symbol; ?> </span> <span class="topTotal">00.00</span></h4>
                                 <select name="" id="status">
                                     <option value="" disabled selected>Status</option>
                                     <option value="Paid">Paid</option>
@@ -668,14 +674,14 @@ $invoicesData = getAllInvoices($connect);
                                 <tr>
                                     <td colspan="3" class="border-0"></td>
                                     <td colspan="" class="Subtotal">Subtotal</td>
-                                    <td class="subtotalAmount">0</td>
+                                    <td class="subtotalAmount">00.00</td>
                                 </tr>
                                 <tr>
                                     <td colspan="3" class="border-0"></td>
                                     <td colspan="" id="Tax">
                                         Tax<br />
-                                        <span>$</span>
-                                        <input type="radio" name="taxType" value="$" checked id="dollarRadio">
+                                        <span><?= $symbol; ?></span>
+                                        <input type="radio" name="taxType" value="<?= $symbol; ?>" checked id="dollarRadio">
                                         <br />
                                         <span>%</span>
                                         <input type="radio" name="taxType" value="%" id="percentRadio">
@@ -685,7 +691,7 @@ $invoicesData = getAllInvoices($connect);
                                 <tr>
                                     <td colspan="3" class="border-0"></td>
                                     <td colspan="" class="Total">Total</td>
-                                    <td class="totalPrice">0</td>
+                                    <td class="totalPrice"><span class="currency"><?= $symbol; ?> </span>0</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -1036,7 +1042,7 @@ $invoicesData = getAllInvoices($connect);
 
                 // new invoice code
                 var selectedClientId;
-                var taxSymbol = "$";
+                var taxSymbol = <?= json_encode($code); ?>;
                 var dollarRadio = document.getElementById('dollarRadio');
                 var percentRadio = document.getElementById('percentRadio');
 
@@ -1099,7 +1105,7 @@ $invoicesData = getAllInvoices($connect);
                     dollarRadio.addEventListener('change', function() {
                         if (dollarRadio.checked) {
                             percentRadio.checked = false;
-                            taxSymbol = "$";
+                            taxSymbol = <?= json_encode($code); ?>;
                         }
                         updateTotal();
                     });
@@ -1141,9 +1147,11 @@ $invoicesData = getAllInvoices($connect);
                         // Update the total price element
                         var totalPriceElement = document.querySelector('.totalPrice');
                         var topTotalElement = document.querySelector('.topTotal');
+                        var currencyElement = document.querySelector('.currency');
                         if (totalPriceElement && topTotalElement) {
-                            totalPriceElement.textContent = total.toFixed(2);
+                            totalPriceElement.textContent = <?= json_encode($symbol); ?> + ' ' + total.toFixed(2);
                             topTotalElement.textContent = total.toFixed(2);
+                            currencyElement.textContent = <?= json_encode($symbol); ?>;
                         }
                     }
 

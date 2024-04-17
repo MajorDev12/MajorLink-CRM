@@ -2,12 +2,16 @@
 <?php
 require_once  '../database/pdo.php';
 require_once  '../controllers/viewSingleUser_contr.php';
-require_once  '../modals/addArea_mod.php';
-require_once  '../modals/addPlan_mod.php';
 require_once  '../modals/getPaymentMethods_mod.php';
 require_once  '../controllers/addClient_contr.php';
+require_once  '../modals/addArea_mod.php';
+require_once  '../modals/addPlan_mod.php';
+require_once  '../modals/addPlan_mod.php';
+require_once  '../modals/reports_mod.php';
+require_once  '../modals/addInvoice_mod.php';
 
 $connect = connectToDatabase($host, $dbname, $username, $password);
+$invoicesData = getInvoicesByClientID($connect, $clientID);
 ?>
 <?php require_once "header.php"; ?>
 
@@ -28,7 +32,7 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
         display: flex;
         justify-content: center;
         align-items: center;
-        color: var(--fade-color);
+        color: var(--dark);
         border-bottom: 1px solid var(--color);
     }
 
@@ -55,22 +59,27 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
         padding: 50px 40px;
     }
 
+    .content .tabs button {
+        margin: 2px;
+        color: var(--dark);
+    }
+
     .tab-content h4 {
         font-size: var(--font-size);
         margin-bottom: 20px;
-        color: var(--fade-color);
+        color: var(--dark);
         font-weight: 600;
     }
 
     .tab-content h4 span {
-        color: var(--grey-color);
+        color: var(--dark);
     }
 
     .tab-content p {
         text-align: justify;
         line-height: 1.9;
         letter-spacing: 0.4px;
-        color: var(--color);
+        color: var(--light-dark);
     }
 
 
@@ -177,6 +186,10 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
     .upload input[type=submit] {
         cursor: pointer;
     }
+
+    #accountSummary h4 {
+        color: var(--light-dark);
+    }
 </style>
 <!-- SIDEBAR -->
 <?php require_once "side_nav.php"; ?>
@@ -234,10 +247,10 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                 <div class="tabs">
                     <button type="button" class="btn active">Summary</button>
                     <button type="button" class="btn active">Edit Customer</button>
-                    <button type="button" class="btn active">Modify Subscription</button>
+                    <!-- <button type="button" class="btn active">Modify Subscription</button> -->
                     <button type="button" class="btn active">Accounting</button>
                     <button type="button" class="btn active">Invoices</button>
-                    <button type="button" class="btn active">Send Message</button>
+                    <!-- <button type="button" class="btn active">Send Message</button> -->
                 </div>
             </div>
 
@@ -282,6 +295,11 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                                             <p class="col-md-6"><?php echo $clientData['ActiveStatus'] == 1 ? 'Active' : 'Inactive'; ?></p>
                                         </div>
 
+
+                                        <div class="row">
+                                            <h4 class="col-md-4 text-start">Expire Date: </h4>
+                                            <p class="col-md-6"><?php echo empty($clientData['ExpireDate']) ? '---' : $clientData['ExpireDate']; ?></p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -298,7 +316,7 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                             <div class="h4 pb-2 mb-4 border-bottom">
                                 <h4>More Information</h4>
                             </div>
-                            <div class="row  row-cols-1 row-cols-md-2 g-4">
+                            <div class="row row-cols-1 row-cols-md-2 g-4">
                                 <div class="col">
                                     <div class="row">
                                         <h4 class="col-md-6 text-start">Joined Date: </h4>
@@ -342,54 +360,7 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
 
                             </div>
 
-                            <div class="h4 pb-2 mt-4 mb-2 border-bottom">
-                                <h4>Payments</h4>
-                            </div>
-                            <div class="row  row-cols-1 row-cols-md-2 g-4 mt-4">
-                                <div class="col">
-                                    <div class="row">
-                                        <h4 class="col-md-6 text-start">Payment Date: </h4>
-                                        <p class="col-md-6"><?php echo empty($clientData['PaymentStatus']) ? '---' : $clientData['PaymentStatus']; ?></p>
-                                    </div>
-                                    <div class="row">
-                                        <h4 class="col-md-6 text-start">Payment Plan: </h4>
-                                        <p class="col-md-6"><?php echo empty($clientData['Plan']) ? '---' : $clientData['Plan']; ?></p>
-                                    </div>
-                                    <div class="row">
-                                        <h4 class="col-md-6 text-start">Payment Amount: </h4>
-                                        <p class="col-md-6"><?php echo empty($clientData['PaymentStatus']) ? '---' : $clientData['PaymentStatus']; ?></p>
-                                    </div>
 
-                                    <div class="row">
-                                        <h4 class="col-md-6 text-start">Expire Date: </h4>
-                                        <p class="col-md-6"><?php echo empty($clientData['ExpireDate']) ? '---' : $clientData['ExpireDate']; ?></p>
-                                    </div>
-
-                                </div>
-
-                                <div class="col">
-                                    <div class="row">
-                                        <h4 class="col-md-6 text-start">Payment Date: </h4>
-                                        <p class="col-md-6"><?php echo empty($clientData['PaymentStatus']) ? '---' : $clientData['PaymentStatus']; ?></p>
-                                    </div>
-                                    <div class="row">
-                                        <h4 class="col-md-6 text-start">Advance Plan: </h4>
-                                        <p class="col-md-6"><?php echo empty($clientData['Plan']) ? '---' : $clientData['Plan']; ?></p>
-                                    </div>
-                                    <div class="row">
-                                        <h4 class="col-md-6 text-start">Starts From: </h4>
-                                        <p class="col-md-6"><?php echo empty($clientData['PaymentStatus']) ? '---' : $clientData['PaymentStatus']; ?></p>
-                                    </div>
-
-                                    <div class="row">
-                                        <h4 class="col-md-6 text-start">Expire Date: </h4>
-                                        <p class="col-md-6"><?php echo empty($clientData['ExpireDate']) ? '---' : $clientData['ExpireDate']; ?></p>
-                                    </div>
-
-                                </div>
-
-
-                            </div>
 
 
                         </div>
@@ -417,584 +388,25 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
 
 
             <!-- Edit Customer Page -->
-
-            <div class="page editClient">
-                <h4>Edit User Details</h4>
-                <?php if (isset($clientData)) : ?>
-                    <div class="card usercard mb-3 shadow-sm p-3 mb-5 rounded" style="max-width: 900px;">
-                        <div class="row g-0">
-                            <div class="col-md-4 text-center">
-                                <form action="" enctype="multipart/form-data" id="editForm" method="post" onsubmit="submitForm(event)">
-                                    <input type="hidden" name="id" id="id" value="<?= $clientData['ClientID']; ?>">
-                                    <div class="upload">
-                                        <img id="editprofilePicture" src="../img/<?= $clientData['ProfilePictureURL']; ?>" class="img-fluid rounded-start" alt="..." width="200px" height="200px">
-
-                                        <div class="rightRound" id="upload">
-                                            <input type="file" name="fileImage" id="fileImage" accept=".jpg, .jpeg, .png">
-                                            <i class="fa fa-camera camera"></i>
-                                        </div>
-
-                                        <div class="leftRound" id="cancel">
-                                            <!-- <i class="fa fa-camera"></i> -->
-                                            <i class="fa fa-times"></i>
-                                        </div>
-
-                                        <div class="rightRound" id="confirm">
-                                            <input type="submit" id="submit" name="submit" value="">
-                                            <i class="fa fa-check"></i>
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-                            <script>
-                                document.getElementById("fileImage").onchange = function(event) {
-                                    var editProfilePicture = document.getElementById("editprofilePicture");
-
-                                    // Set new image source with transition
-                                    editProfilePicture.style.opacity = "0";
-                                    setTimeout(function() {
-                                        editProfilePicture.src = URL.createObjectURL(event.target.files[0]);
-                                        editProfilePicture.style.opacity = "1";
-                                    }, 300);
-
-                                    // Show buttons and hide upload button
-                                    document.getElementById("cancel").style.display = "block";
-                                    document.getElementById("confirm").style.display = "block";
-                                    document.getElementById("upload").style.display = "none";
-                                };
-
-                                var userImage = document.getElementById("editprofilePicture").src;
-                                document.getElementById("cancel").onclick = function() {
-                                    var editProfilePicture = document.getElementById("editprofilePicture");
-
-                                    // Set back to the original image with transition
-                                    editProfilePicture.style.opacity = "0";
-                                    setTimeout(function() {
-                                        editProfilePicture.src = userImage;
-                                        editProfilePicture.style.opacity = "1";
-                                    }, 300);
-
-                                    // Hide buttons and show the upload button
-                                    document.getElementById("cancel").style.display = "none";
-                                    document.getElementById("confirm").style.display = "none";
-                                    document.getElementById("upload").style.display = "block";
-                                };
-
-                                // Add an event listener for form submission
-                                document.getElementById("editForm").addEventListener("submit", function(event) {
-                                    event.preventDefault();
-
-
-                                    // Your existing code for image transition
-                                    var editProfilePicture = document.getElementById("editprofilePicture");
-                                    var fileInput = document.getElementById("fileImage");
-
-                                    var formData = new FormData();
-                                    formData.append("id", document.getElementById("id").value);
-                                    formData.append("fileImage", fileInput.files[0]);
-
-                                    // Fetch API to send data to updateUserProfilePic_mod.php
-                                    fetch("../modals/updateUserProfilePic_mod.php", {
-                                            method: "POST",
-                                            body: formData
-                                        })
-                                        .then(response => response.json())
-                                        .then(data => {
-                                            document.getElementById("cancel").style.display = "none";
-                                            document.getElementById("confirm").style.display = "none";
-                                            document.getElementById("upload").style.display = "block";
-                                            localStorage.setItem('updateClientProfileToast', 'true');
-                                            location.reload();
-                                        })
-                                        .catch(error => {
-                                            console.error("Error:", error);
-                                        });
-
-
-
-                                });
-                            </script>
-
-
-
-
-                            <div class="col-md-8">
-                                <div class="card-body">
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <label for="firstname">firstname</label>
-                                            <input type="text" class="form-control" name="firstname" id="firstname" value="<?= $clientData['FirstName'] ?>">
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label for="lastname">lastname</label>
-                                            <input type="text" class="form-control" name="lastname" id="lastname" value="<?= $clientData['LastName'] ?>">
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <label for="PrimaryEmail">Email Address</label>
-                                            <input type="email" class="form-control" name="PrimaryEmail" id="PrimaryEmail" value="<?= $clientData['PrimaryEmail'] ?>">
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label for="SecondaryEmail">Secondary Email</label>
-                                            <input type="email" class="form-control" name="SecondaryEmail" id="SecondaryEmail" value="<?= $clientData['SecondaryEmail'] ?>">
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <label for="primaryNumber">Phone Number</label>
-                                            <input type="tel" class="form-control" name="primaryNumber" id="primaryNumber" value="<?= $clientData['PrimaryNumber'] ?>">
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label for="secondaryNumber">secondary Number</label>
-                                            <input type="tel" class="col-md-6 form-control" name="secondaryNumber" id="secondaryNumber" value="<?= $clientData['SecondaryNumber'] ?>">
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-6">
-
-                                            <label for="Latitude">Latitude</label>
-                                            <input type="number" class="col-md-6 form-control" name="Latitude" id="Latitude" value="<?= $clientData['Latitude'] ?>">
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label for="Longitude">Longitude</label>
-                                            <input type="number" class="col-md-6 form-control" name="Longitude" id="Longitude" value="<?= $clientData['Longitude'] ?>">
-                                        </div>
-
-                                        <div class="col-md-6 mt-1">
-                                            <button id="getLocationButton" class="btn btn-primary btn-sm " onclick="getLocation()">Get Location</button>
-                                        </div>
-                                    </div>
-                                    <script>
-                                        function getLocation() {
-                                            if (navigator.geolocation) {
-                                                navigator.geolocation.getCurrentPosition(updateLocation);
-                                            } else {
-                                                alert("Geolocation is not supported by this browser.");
-                                            }
-                                        }
-
-                                        function updateLocation(position) {
-                                            const latitudeInput = document.getElementById('Latitude');
-                                            const longitudeInput = document.getElementById('Longitude');
-
-                                            // Update input values with the current location
-                                            latitudeInput.value = position.coords.latitude;
-                                            longitudeInput.value = position.coords.longitude;
-                                        }
-                                    </script>
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <label for="firstname">Choose Area</label>
-
-                                            <select name="area" id="area" class="form-select">
-                                                <option value="" disabled selected>Choose...</option>
-                                                <?php
-                                                $areas = getData($connect); // Replace with the actual function to get area data
-                                                foreach ($areas as $area) {
-                                                    echo '<option value="' . $area['AreaID'] . '">' . $area['AreaName'] . '</option>';
-                                                }
-                                                ?>
-                                            </select>
-                                            <p class="currentArea"><?php echo empty($clientData['Area']) ? 'Not Set yet' : 'Current Area: ' . $clientData['Area']; ?></p>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label for="lastname">Choose SubArea</label>
-                                            <select id="subArea" name="subArea" class="form-select">
-                                                <option value="" selected disabled>Choose...</option>
-                                            </select>
-                                            <p class="currentSubArea"><?php echo empty($clientData['SubArea']) ? 'Not Set yet' : 'Current Area: ' . $clientData['SubArea']; ?></p>
-
-                                            <script>
-                                                document.getElementById('area').addEventListener('change', function() {
-                                                    var areaId = this.value;
-                                                    var subAreaSelect = document.getElementById('subArea');
-
-                                                    // Clear existing options
-                                                    subAreaSelect.innerHTML = '<option selected>Choose...</option>';
-
-                                                    if (areaId) {
-
-                                                        var formData = new FormData();
-                                                        formData.append("areaId", areaId);
-                                                        // Fetch sub-areas based on the selected area
-                                                        fetch('../controllers/listSubarea_contr.php', {
-                                                                method: 'POST',
-                                                                body: formData
-                                                            })
-                                                            .then(response => response.json())
-                                                            .then(data => {
-                                                                if (data.subareas) {
-                                                                    // Populate the sub-area dropdown with fetched data
-                                                                    data.subareas.forEach(subarea => {
-                                                                        console.log("it returns")
-                                                                        var option = document.createElement('option');
-                                                                        option.value = subarea.SubAreaID;
-                                                                        option.textContent = subarea.SubAreaName;
-                                                                        subAreaSelect.appendChild(option);
-                                                                    });
-                                                                }
-
-                                                            })
-                                                            .catch(error => {
-                                                                console.error('Error fetching sub-areas:', error);
-                                                            });
-                                                    }
-                                                });
-                                            </script>
-                                        </div>
-                                    </div>
-                                    <p id="editError"></p>
-
-
-                                    <div class="row mt-3">
-                                        <button id="save" class="btn btn-success col-md-4">Save Changes</button>
-                                    </div>
-
-                                <?php else : ?>
-                                    <div class="alert alert-warning" role="alert">
-                                        No client data found for the provided ClientID.
-                                        <?php header("Location: viewClient.php"); ?>
-                                    </div>
-                                <?php endif; ?>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-            </div>
-
-
-
-
-
-
-
-
-
-
-
-
-            <!-- modifySubscription page -->
-            <div class="page modifySubscription">
-                <h4 class="border-bottom pb-3 mb-5">Change Subscription Plan</h4>
-                <form id="modifySubscriptionForm">
-                    <!-- Existing form elements -->
-
-                    <!-- Choose Plan Section -->
-                    <div class="row mt-5">
-                        <div class="col-md-6">
-                            <label for="firstname">Choose Plan</label>
-                            <select name="" id="Plans" class="form-select">
-                                <option value="" selected disabled>Choose...</option>
-                                <?php
-                                $plans = getPlanData($connect);
-
-                                foreach ($plans as $plan) {
-                                    $selected = ($plan['PlanID'] == $clientData['PlanID']) ? 'selected' : '';
-                                    echo "<option value=\"{$plan['PlanID']}\" {$selected} data-amount=\"{$plan['Price']}\">{$plan['Volume']}</option>";
-                                }
-
-
-                                ?>
-                            </select>
-                            <p class="currentPlan"><?php echo empty($clientData['Plan']) ? 'Not subscribed yet' : 'Current Plan: ' . $clientData['Plan']; ?></p>
-                        </div>
-                    </div>
-
-                    <!-- Subscription Options Section -->
-                    <div class="form-check form-switch col-md-6">
-                        <input class="form-check-input" type="radio" name="subscriptionOption" id="applyNowSwitch">
-                        <label class="form-check-label" for="applyNowSwitch">Apply Now</label>
-                    </div>
-
-                    <!-- Receipt Section -->
-                    <div id="receiptSection" class="mt-5" style="display: none;">
-                        <!-- Add your receipt details here -->
-                        <div class="row mt-5">
-                            <div class="form-group col-md-6">
-                                <label for="paymentDate">Payment Date:</label>
-                                <input type="date" id="paymentDate" name="paymentDate" value="<?php echo date('Y-m-d'); ?>" disabled required>
-                            </div>
-
-                            <div class="form-group col-md-6">
-                                <label for="saleDate">Payment Amount:</label>
-                                <input type="number" id="amountInput" name="amountInput" disabled required>
-                            </div>
-                        </div>
-                        <div class="row mt-4">
-                            <div class="form-group col-md-6">
-                                <label for="PaymentOption">Payment Method:</label>
-                                <select class="form-select" name="PaymentOption" id="PaymentOption">
-                                    <option value="" selected disabled>Choose</option>
-                                    <?php
-                                    $methods = getPaymentMethods($connect);
-
-                                    foreach ($methods as $method) {
-                                        $selected = ''; // Adjust this based on your logic for selecting a default method
-                                        echo '<option value="' . $method['PaymentOptionID'] . '" ' . $selected . ' data-method-id="' . $method['PaymentOptionName'] . '">' . $method['PaymentOptionName'] . '</option>';
-                                    }
-
-                                    ?>
-                                </select>
-                            </div>
-                            <div class="form-group col-md-6">
-                                <label for="paymentStatus">Payment Status:</label>
-                                <select class="form-select" name="" id="paymentStatus">
-                                    <option selected disabled value="">Choose</option>
-                                    <option value="Paid">Paid</option>
-                                    <option value="Pending">Pending</option>
-                                    <option value="Cancelled">Cancelled</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="row mt-5">
-                            <div class="form-group col-md-6">
-                                <label for="paymentReference">payment Reference:</label>
-
-                                <?php
-                                // Generate a unique payment reference
-                                $paymentReference = '#MJRLNK' . time();
-
-                                ?>
-                                <input type="text" class="form-control" id="paymentReference" aria-label="Payment Reference" value="<?php echo $paymentReference; ?>" readonly disabled>
-                            </div>
-                            <div class="form-group col-md-6">
-                                <label for="Total">Total:</label>
-                                <input type="text" id="Total" name="Total" disabled value="">
-                            </div>
-                        </div>
-
-                        <p id="suberror"></p>
-
-                        <div class="row mt-4">
-                            <button type="submit" id="updateSubscriptionBtn" class="btn btn-success col-md-4" onclick="updateSubscriptionPlan(event)">Save Changes</button>
-                        </div>
-
-
-
-                    </div>
-
-                </form>
-            </div>
-
-            <!-- Existing HTML code -->
-
-            <script>
-                const applyNowSwitch = document.getElementById('applyNowSwitch');
-                const receiptSection = document.getElementById('receiptSection');
-
-
-                applyNowSwitch.addEventListener('change', function() {
-                    // Show or hide the receipt section based on the radio button state
-                    receiptSection.style.display = applyNowSwitch.checked ? 'block' : 'none';
-                    applynextBtn.style.display = applyNowSwitch.checked ? 'none' : 'block';
-
-                });
-
-
-
-                $(document).ready(function() {
-                    $('#Plans').change(function() {
-                        var selectedPlan = $(this).find(':selected');
-                        var planAmountInput = $('#amountInput');
-                        var totalAmount = $('#Total');
-
-                        if (!isNaN(selectedPlan.val())) {
-                            var planPrice = selectedPlan.data('amount');
-                            planAmountInput.val(planPrice);
-                            totalAmount.val(planPrice);
-                        } else {
-                            planAmountInput.val(''); // Clear the input if the selected option is not a number
-                        }
-
-
-                    });
-                });
-
-
-
-
-
-                function updateSubscriptionPlan(event) {
-                    event.preventDefault();
-
-                    const clientData = <?= json_encode($clientData); ?>;
-
-                    const clientId = clientData["ClientID"];
-                    // Get selected plan details
-                    var selectedPlan = document.getElementById('Plans');
-                    var selectedPlanID = selectedPlan.value;
-                    var selectedPlanAmount = selectedPlan.options[selectedPlan.selectedIndex].getAttribute('data-amount');
-                    var paymentDate = document.getElementById('paymentDate').value;
-                    var paymentMethodID = document.getElementById('PaymentOption').value;
-                    var paymentStatus = document.getElementById('paymentStatus').value;
-                    var paymentReference = document.getElementById('paymentReference').value;
-
-                    var InstallationFees = null;
-                    if (
-                        !clientId ||
-                        !selectedPlanID ||
-                        !selectedPlanAmount ||
-                        !paymentDate ||
-                        !paymentMethodID ||
-                        !paymentStatus ||
-                        !paymentReference
-                    ) {
-                        // Display an error message or handle the empty fields as needed
-                        displayMessage("suberror", "Error: All fields must be filled", true);
-                        return;
-                    } else {
-                        loader.style.display = "flex";
-                        // All fields are filled, proceed with sending data through Fetch API
-                        var formData = new FormData();
-                        formData.append("clientId", clientId);
-                        formData.append("selectedPlanID", selectedPlanID);
-                        formData.append("selectedPlanAmount", selectedPlanAmount);
-                        formData.append("paymentDate", paymentDate);
-                        formData.append("paymentMethodID", paymentMethodID);
-                        formData.append("paymentStatus", paymentStatus);
-                        formData.append("InstallationFees", InstallationFees);
-                        formData.append("paymentReference", paymentReference);
-
-                        // Perform fetch API request
-                        fetch('../controllers/addPayment_contr.php', {
-                                method: 'POST',
-                                body: formData
-                            })
-                            .then(response => response.json())
-                            .then(data => {
-                                if (data.paymentSuccess) {
-                                    // Handle the response from the server
-                                    displayMessage("suberror", "Successfuly updated", false);
-                                    // Set a flag in local storage to indicate that the toast should be displayed after reload
-                                    localStorage.setItem('UpdateClientPlanToast', 'true');
-                                    setTimeout(() => {
-                                        loader.style.display = "none";
-                                    }, 2000);
-                                    location.reload();
-
-                                }
-                            })
-                            .catch(error => {
-                                console.error('Error:', error);
-                            });
-
-
-                    }
-                }
-            </script>
-
-
-
-
-
-
-
-
-            <!-- makepayment -->
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+            <?php require_once "customer_page.php"; ?>
 
 
 
             <!-- Accounting Page -->
-            <div class="page accounting">
-                <a href="" class="btn btn-primary">View Transactions</a>
-                <div class="card mx-auto" style="width: 18rem;">
-                    <div class="card-body shadow-sm p-3 mb-5 rounded text-center">
-                        <h1 class="card-title text-primary fw-bolder">0.Kshs</h1>
-                        <h4 class="card-text text-center">Account Balance</h4>
-                        <!-- <a href="#" class="btn btn-primary">Refund</a> -->
-                    </div>
-                </div>
-
-                <div class="pb-2 mb-4 border-bottom">
-                    <h4>Account Summary</h4>
-                </div>
-
-                <div class="text-end">
-                    <h4 class="text-dark border-bottom">Total Deposit: <span class="text-primary">$ 20,000</span></h4>
-                    <h4 class=" text-dark border-bottom">Total Withdrawals: <span class="text-danger">$ 2,000</span></h4>
-                    <h4 class=" text-dark border-bottom">Total Expenses: <span class="text-warning">$ 600</span></h4>
-                    <h3 class="pt-2 text-dark border-end">Total: <span class="text-success">$22,000</span></h3>
-                </div>
-            </div>
+            <?php require_once "accounting_page.php"; ?>
 
 
 
             <!-- Invoices Page -->
-            <div class="page invoice">
-
-                <h4 class="pb-2 mb-5 border-bottom">Major Nganga</h4>
-
-                <a href="" class="btn btn-primary pb-2 mb-5 border-bottom">New Invoice</a>
-
-                <table class="table pt-2 mt-5 border-bottom">
-                    <thead>
-                        <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">Customer</th>
-                            <th scope="col">Amount</th>
-                            <th scope="col">Invoice Date</th>
-                            <th scope="col">Payment Status</th>
-
-                        </tr>
-                    </thead>
-                    <tbody class="table-group-divider">
-                        <tr>
-                            <th scope="row">1</th>
-                            <td>Mark</td>
-                            <td>Otto</td>
-                            <td>@mdo</td>
-                            <td>Paid</td>
-
-                        </tr>
-                        <tr>
-                            <th scope="row">2</th>
-                            <td>Jacob</td>
-                            <td>Thornton</td>
-                            <td>@fat</td>
-                            <td>Paid</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">3</th>
-                            <td colspan="2">Larry the Bird</td>
-                            <td>@twitter</td>
-                            <td>Paid</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+            <?php require_once "invoice_page.php"; ?>
 
 
 
 
 
             <!-- message Page -->
-            <div class="page message">
 
-            </div>
-            </div>
+
 
 
 
@@ -1054,6 +466,10 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                     const SubArea = clientData["SubArea"];
                     const Latitude = clientData["Latitude"];
                     const Longitude = clientData["Longitude"];
+                    const Address = clientData['Address'];
+                    const City = clientData['City'];
+                    const Country = clientData['Country'];
+                    const Zipcode = clientData['Zipcode'];
 
 
                     const firstnameInput = document.querySelector('#firstname');
@@ -1066,6 +482,14 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                     const LongitudeInput = document.querySelector('#Longitude');
                     const areaInput = document.querySelector('#area');
                     const subareaInput = document.querySelector('#subArea');
+                    const AddressInput = document.querySelector('#Address');
+                    const CityInput = document.querySelector('#City');
+                    const CountryInput = document.querySelector('#Country');
+                    const ZipcodeInput = document.querySelector('#zipcode');
+
+
+
+
                     //check if changed
                     firstnameInput.addEventListener('input', markFormAsChanged);
                     lastnameInput.addEventListener('input', markFormAsChanged);
@@ -1073,6 +497,10 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                     SecondaryEmailInput.addEventListener('input', markFormAsChanged);
                     primaryNumberInput.addEventListener('input', markFormAsChanged);
                     secondaryNumberInput.addEventListener('input', markFormAsChanged);
+                    AddressInput.addEventListener('input', markFormAsChanged);
+                    CityInput.addEventListener('input', markFormAsChanged);
+                    CountryInput.addEventListener('input', markFormAsChanged);
+                    ZipcodeInput.addEventListener('input', markFormAsChanged);
 
                     const getLocationButton = document.querySelector('#getLocationButton');
 
@@ -1119,7 +547,10 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                             var submittedLongitude = document.querySelector('#Longitude').value;
                             var submittedarea = document.querySelector('#area').value;
                             var submittedsubarea = document.querySelector('#subArea').value;
-
+                            var submittedAddress = document.getElementById("Address").value;
+                            var submittedCity = document.getElementById("City").value;
+                            var submittedCountry = document.getElementById("Country").value;
+                            var submittedzipcode = document.getElementById("zipcode").value;
 
 
 
@@ -1181,6 +612,17 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
 
                             }
 
+
+                            if (submittedzipcode.trim() !== "" && !isValidZipCode(submittedzipcode.trim())) {
+                                displayMessage("editError", "Please enter a valid zip code.", true);
+                                return; // Stop further execution
+                            }
+
+
+
+
+
+
                             if (submittedLatitude.trim() === "") {
                                 submittedLatitude = null;
                             } else {
@@ -1226,6 +668,10 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                                 submittedSecondaryEmail !== SecondaryEmail ||
                                 submittedprimaryNumber !== PrimaryNumber ||
                                 submittedsecondaryNumber !== SecondaryNumber ||
+                                submittedAddress !== Address ||
+                                submittedCity !== City ||
+                                submittedCountry !== Country ||
+                                submittedzipcode !== Zipcode ||
                                 submittedLatitude !== Latitude ||
                                 submittedLongitude !== Longitude ||
                                 submittedarea !== Area ||
@@ -1244,6 +690,10 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                                     SecondaryEmail: submittedSecondaryEmail,
                                     PrimaryNumber: submittedprimaryNumber,
                                     SecondaryNumber: submittedsecondaryNumber,
+                                    Address: submittedAddress,
+                                    City: submittedCity,
+                                    Country: submittedCountry,
+                                    zipcode: submittedzipcode,
                                     Latitude: submittedLatitude,
                                     Longitude: submittedLongitude,
                                     Area: submittedarea,
@@ -1267,17 +717,18 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                                         if (data.success) {
                                             // Handle the response if needed
                                             document.getElementById("loader").style.display = 'none';
-                                            displayMessage("editError", "Updated Successfully", false);
+                                            displayMessage("editError", data.message, false);
                                             location.reload();
+                                        } else {
+                                            displayMessage("editError", data.message, true);
                                         }
                                     })
                                     .catch(error => {
                                         console.error('Error:', error);
-                                        console.log("ERROR")
+                                        displayMessage("editError", "network error", true);
                                     });
                             } else {
                                 // No changes, display error message or take appropriate action
-                                console.log('No changes made.');
                                 displayMessage("editError", "No Changes Made", true);
                             }
                         } else {
@@ -1289,6 +740,13 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                 });
 
 
+
+
+                function isValidZipCode(zipcode) {
+                    // Regular expression to validate zip code format (example: 12345 or 12345-6789)
+                    var zipCodePattern = /^\d{5}(?:-\d{4})?$/;
+                    return zipCodePattern.test(zipcode);
+                }
                 // error message function
                 function displayMessage(messageElement, message, isError, ) {
                     var targetElement = document.getElementById(messageElement);

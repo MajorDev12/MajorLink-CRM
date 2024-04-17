@@ -9,7 +9,20 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
 ?>
 <?php require_once "header.php"; ?>
 
+<style>
+  #areaName {
+    background-color: var(--light);
+    color: var(--dark);
+  }
 
+  #modalAreaName {
+    color: var(--light-dark);
+  }
+
+  #closeModal {
+    color: var(--light-dark);
+  }
+</style>
 <!-- SIDEBAR -->
 <?php require_once "side_nav.php"; ?>
 <!-- SIDEBAR -->
@@ -39,10 +52,7 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
         </ul>
       </div>
 
-      <a href="#" class="btn-download">
-        <i class='bx bxs-cloud-download'></i>
-        <span class="text">Download PDF</span>
-      </a>
+
     </div>
 
     <!-- content-container -->
@@ -70,8 +80,6 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
             </div>
             <div class="modal-body">
               <p id="modalAreaName" name="modalAreaName"></p>
-              <!-- <div id="error" class="text-danger"></div> -->
-              <div class="loader1">Loading...</div>
               <p id="modalerror"></p>
               <input type="text" id="updatedName" name="updatedName" class="form-control updatedmodalAreaName">
             </div>

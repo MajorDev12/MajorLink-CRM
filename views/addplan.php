@@ -92,7 +92,7 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
 
 
 
-          <!-- Add this to your HTML for the modal -->
+
           <div class="modal-plan" id="deleteModal">
             <div id="modalBackground"></div>
             <div class="modal-dialog-plan">

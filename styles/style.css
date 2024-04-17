@@ -10,9 +10,6 @@
 a {
 	text-decoration: none;
 }
-h1,h2,h3,h4,h5,h6{
-	color: var(--dark);
-}
 
 li {
 	list-style: none;
@@ -41,6 +38,13 @@ abbr {
 	--orange: #FD7238;
 	--light-orange: #FFE0D3;
 }
+
+h1,h2,h3,h4,h5,h6{
+	color: var(--dark);
+}
+
+
+
 
 input, select{
 	background-color: var(--light) !important;
@@ -381,6 +385,9 @@ label {
 
 .print {
 	background-color: var(--orange);
+}
+.delete {
+	background-color: var(--red);
 }
 
 

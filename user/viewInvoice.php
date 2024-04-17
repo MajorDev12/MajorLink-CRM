@@ -311,6 +311,7 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                             <?php endif; ?>
                         </div>
                         <?php if (!empty($invoice)) : ?>
+
                             <div class="invoiceInfo">
                                 <p>Invoice Number</p>
                                 <h5><?= $invoice["InvoiceNumber"]; ?></h5>

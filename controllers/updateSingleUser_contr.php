@@ -1,6 +1,6 @@
 <?php
 // Assuming you have a database connection established
-$errors = array();
+require_once "../controllers/session_Config.php";
 
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["clientId"])) {
     sleep(2);
@@ -22,7 +22,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["clientId"])) {
     $longitude = $_POST["Longitude"];
     $area = $_POST["Area"];
     $subArea = $_POST["SubArea"];
-
+    $Address = $_POST["Address"];
+    $City = $_POST["City"];
+    $Country = $_POST["Country"];
+    $Zipcode = $_POST["zipcode"];
+    $errors = array();
 
 
     // Assuming the variables are already defined
@@ -98,14 +102,17 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["clientId"])) {
     }
 
 
+    $updatedSuccess = false;
+
+
     // If there are no errors, insert data
     if (empty($errors)) {
-        // Insert into Clients table
-        $updatedSuccess = updateSingleUser($clientId, $firstName, $lastName, $primaryEmail, $secondaryEmail, $primaryNumber, $secondaryNumber, $area, $subArea, $latitude, $longitude, $connect);
-        $success = '<div class="alert alert-success">Client Added Successfuly</div>';
+        // update Clients table
+        $updatedSuccess = updateSingleUser($clientId, $firstName, $lastName, $primaryEmail, $secondaryEmail, $primaryNumber, $secondaryNumber, $Address, $City, $Country, $Zipcode, $area, $subArea, $latitude, $longitude, $connect);
+        $success = 'Client Updated Successfuly';
     } else {
         // If there are errors, construct an error message
-        $success = '<div class="alert alert-danger">' . implode('<br>', $errors) . '</div>';
+        $success = implode('<br>', $errors);
     }
 
     $output = array(

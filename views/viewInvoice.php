@@ -4,8 +4,11 @@
 require_once  '../database/pdo.php';
 require_once  '../modals/addInvoice_mod.php';
 require_once  '../modals/viewSingleUser_mod.php';
+require_once  '../modals/setup_mod.php';
 $connect = connectToDatabase($host, $dbname, $username, $password);
-
+$settings = get_Settings($connect);
+$initialCurrency = $settings[0]["CurrencyCode"];
+$initialSymbol = $settings[0]["CurrencySymbol"];
 ?>
 <?php require_once "header.php"; ?>
 
@@ -302,6 +305,7 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                             <?php endif; ?>
                         </div>
                         <?php if (!empty($invoice)) : ?>
+
                             <div class="invoiceInfo">
                                 <p>Invoice Number</p>
                                 <h5><?= $invoice["InvoiceNumber"]; ?></h5>
@@ -314,7 +318,7 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                                 <p class="issueDate">Expire Date</p>
                                 <h5><?= date("Y-m-d", strtotime($invoice["DueDate"])); ?></h5>
                                 <p>Invoice Total</p>
-                                <h4 class="topTotal"><span class="currency">$</span><?= number_format($invoice["TotalAmount"], 2); ?></h4>
+                                <h4 class="topTotal"><span class="currency"><?= $initialSymbol; ?> </span><?= number_format($invoice["TotalAmount"], 2); ?></h4>
                             </div>
                         <?php endif; ?>
                     </div>
@@ -372,7 +376,7 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                             <tr>
                                 <td colspan="3" class="border-0"></td>
                                 <td colspan="" class="Total">Total</td>
-                                <td class="totalPrice">$ <?= number_format($invoice["TotalAmount"], 2); ?></td>
+                                <td class="totalPrice"><?= $initialSymbol; ?> <?= number_format($invoice["TotalAmount"], 2); ?></td>
                             </tr>
                         </tbody>
                     </table>

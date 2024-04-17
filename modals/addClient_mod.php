@@ -58,3 +58,70 @@ function insertPaymentData($clientId, $Plan, $PlanAmount, $PaymentStatus,  $Paym
   $statement->bindParam(':InstallationFees', $InstallationFees);
   $statement->execute();
 }
+
+
+
+
+function searchClientsData($connect, $searchInput)
+{
+  try {
+    // Use a prepared statement to prevent SQL injection
+    $query = "SELECT clients.*, 
+                         areas.AreaName, 
+                         subareas.SubAreaName, 
+                         plans.Volume
+                  FROM clients
+                  LEFT JOIN areas ON clients.AreaID = areas.AreaID
+                  LEFT JOIN subareas ON clients.SubAreaID = subareas.SubAreaID
+                  LEFT JOIN plans ON clients.PlanID = plans.PlanID
+                  WHERE clients.FirstName LIKE :searchInput 
+                     OR clients.LastName LIKE :searchInput 
+                     OR areas.AreaName LIKE :searchInput 
+                     OR subareas.SubAreaName LIKE :searchInput 
+                     OR plans.Volume LIKE :searchInput 
+                     OR clients.ActiveStatus LIKE :searchInput";
+    $statement = $connect->prepare($query);
+    $statement->bindValue(':searchInput', '%' . $searchInput . '%', PDO::PARAM_STR);
+    $statement->execute();
+
+    $results = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+    return $results;
+  } catch (PDOException $e) {
+    // Handle the exception as needed
+    echo "Error: " . $e->getMessage();
+    return false;
+  }
+}
+
+
+
+
+
+function deleteClient($clientId, $connect)
+{
+  try {
+    // Prepare the DELETE statement
+    $query = "DELETE FROM clients WHERE ClientID = :clientId";
+    $statement = $connect->prepare($query);
+
+    // Bind the parameter
+    $statement->bindParam(':clientId', $clientId, PDO::PARAM_INT);
+
+    // Execute the statement
+    $statement->execute();
+
+    // Check if any row was affected
+    if ($statement->rowCount() > 0) {
+      // Client deleted successfully
+      return true;
+    } else {
+      // No client was deleted (maybe client with given ID doesn't exist)
+      return false;
+    }
+  } catch (PDOException $e) {
+    // Handle the exception as needed
+    echo "Error deleting client: " . $e->getMessage();
+    return false;
+  }
+}

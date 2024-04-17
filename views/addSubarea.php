@@ -11,6 +11,16 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
 
 <?php require_once "header.php"; ?>
 
+<style>
+    .list-group-item {
+        background-color: var(--light);
+        color: var(--dark);
+    }
+
+    #closeModal {
+        color: var(--light-dark);
+    }
+</style>
 
 <!-- SIDEBAR -->
 <?php require_once "side_nav.php"; ?>
@@ -41,16 +51,12 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                 </ul>
             </div>
 
-            <a href="#" class="btn-download">
-                <i class='bx bxs-cloud-download'></i>
-                <span class="text">Download PDF</span>
-            </a>
         </div>
         <div id="overlay"></div>
         <!-- content-container -->
         <div class="main-content">
 
-
+            <div id="loader">Loading...</div>
 
             <div class="content">
                 <!-- Modal -->
@@ -63,10 +69,10 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                     </div>
                     <div class="modal-body">
                         <p id="modalAreaName" name="modalAreaName"></p>
-                        <input type="hidden" id="modalAreaId" name="modalAreaId" value="">
+                        <input type="hidden" id="modalSubAreaId" name="modalSubAreaId" value="">
 
                         <p id="modalmessage"></p>
-                        <div id="loader">Loading...</div>
+
                         <input type="text" id="updatedName" name="updatedName" class="form-control updatedmodalAreaName">
                     </div>
                     <div class="modal-footer">
@@ -122,19 +128,19 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
 
             <script>
                 var areaButtons = document.querySelectorAll('.subareas');
-                var modalAreaId = document.getElementById('modalAreaId');
+                var modalSubAreaId = document.getElementById('modalSubAreaId');
                 var modalAreaName = document.getElementById('modalAreaName');
                 var closeModal = document.getElementById('closeModal');
                 var modal = document.getElementById('areaModal');
 
                 // Variable to store the current areaId
-                var currentAreaId = null;
+                var currentSubAreaId = null;
 
                 areaButtons.forEach(function(button) {
                     button.addEventListener('click', function() {
                         areaName = button.getAttribute('data-subarea-name');
                         currentAreaId = button.getAttribute('data-subarea-id');
-                        modalAreaName.innerText = currentAreaId;
+                        modalAreaName.innerText = currentSubAreaId;
                         // console.log("Current Area ID: " + currentAreaId);
                         // Add a callback function to refresh the page when the modal is hidden
                         // showModal();
@@ -154,7 +160,8 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                     subareas.forEach(function(subarea) {
                         var subAreaButton = document.createElement('button');
                         subAreaButton.type = 'button';
-                        subAreaButton.className = 'list-group-item list-group-item-action subareas';
+                        subAreaButton.id = 'subareasBtn';
+                        subAreaButton.className = 'list-group-item subareas';
                         subAreaButton.setAttribute('data-subarea-id', subarea.SubAreaID);
                         subAreaButton.setAttribute('data-subarea-name', subarea.SubAreaName);
                         subAreaButton.setAttribute('id', '' + subarea.SubAreaID);
@@ -164,7 +171,8 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                             var subAreaID = this.getAttribute('data-subarea-id');
                             var subAreaName = this.getAttribute('data-subarea-name');
                             var subAreaid = this.getAttribute('id');
-                            // modalAreaName.innerText = subAreaName + '   areaid:' + subAreaid;
+                            modalAreaName.innerText = subAreaName;
+                            modalSubAreaId.value = subAreaid;
                             // console.log(subAreaButton);
                             showModal();
                         });
@@ -307,9 +315,51 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
 
                 updateButton.addEventListener('click', function(e) {
                     e.preventDefault();
-                    console.log("id " + currentAreaId);
-                    console.log("name " + areaName.value);
+                    var updatedNameInput = document.querySelector("#updatedName").value
 
+                    if (!updatedNameInput || !modalSubAreaId.value) {
+                        displayMessage("modalmessage", "Cannot be empty", true);
+                        return;
+                    }
+
+
+
+                    loader.style.display = "flex";
+                    hideModal();
+                    var data = new FormData();
+                    data.append('modalSubAreaId', modalSubAreaId.value);
+                    data.append('updatedNameInput', updatedNameInput);
+
+                    // Make an AJAX request using Fetch API
+                    fetch('../controllers/updateSubarea_contr.php', {
+                            method: 'POST',
+                            body: data
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                // If the update is successful
+                                showModal();
+                                updateButton.disabled = true;
+                                document.getElementById('delete').disabled = true;
+                                displayMessage("modalmessage", "Updated successful", false);
+                                setTimeout(() => {
+                                    location.reload();
+                                }, 1000);
+                                // Optionally, you can perform additional actions here
+                            } else {
+                                // If the update fails, display an error message
+                                displayMessage("modalmessage", "deletion failed", true);
+                            }
+                        })
+                        .catch(error => {
+                            // Handle any network or request errors
+                            displayMessage("modalmessage", "An error occurred", true);
+                        })
+                        .finally(() => {
+                            // Hide the loader regardless of the outcome
+                            loader.style.display = "none";
+                        });
                 });
 
 
@@ -335,26 +385,29 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
 
                 deleteButton.addEventListener('click', function(e) {
                     e.preventDefault();
-
+                    console.log(modalSubAreaId.value)
                     // Check if a valid areaId is available
-                    if (currentAreaId !== null) {
-
+                    if (modalSubAreaId.value !== null) {
+                        hideModal();
                         loader.style.display = "flex";
                         var data = new FormData();
-                        data.append('currentAreaId', currentAreaId);
+                        data.append('modalSubAreaId', modalSubAreaId.value);
 
                         // Make an AJAX request using Fetch API
-                        fetch('../controllers/deleteArea_contr.php', {
+                        fetch('../controllers/deleteSubArea_contr.php', {
                                 method: 'POST',
                                 body: data
                             })
                             .then(response => response.json())
                             .then(data => {
                                 if (data.success) {
-                                    // If the update is successful, handle accordingly
-                                    displayMessage("modalmessage", "Update successful", false);
-                                    hideModal();
-                                    location.reload();
+                                    showModal();
+                                    updateButton.disabled = true;
+                                    document.getElementById('delete').disabled = true;
+                                    displayMessage("modalmessage", "Deleted successfully", false);
+                                    setTimeout(() => {
+                                        location.reload();
+                                    }, 1000);
                                     // Optionally, you can perform additional actions here
                                 } else {
                                     // If the update fails, display an error message
