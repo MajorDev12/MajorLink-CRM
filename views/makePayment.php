@@ -10,6 +10,11 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
 ?>
 <?php require_once "header.php"; ?>
 
+<style>
+    select {
+        background-color: var(--light);
+    }
+</style>
 
 <!-- SIDEBAR -->
 <?php require_once "side_nav.php"; ?>
@@ -40,12 +45,8 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                 </ul>
             </div>
 
-            <a href="#" class="btn-download">
-                <i class='bx bxs-cloud-download'></i>
-                <span class="text">Download PDF</span>
-            </a>
         </div>
-        <div id="loader">Loading</div>
+        <div id="loader">Processing...</div>
 
 
 
@@ -66,25 +67,22 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
         <div class="main-content">
             <div class="content">
 
-
+                <div id="overlay"></div>
                 <!-- Add this to your HTML for the modal -->
-                <div class="modal" id="deleteModal">
-                    <div id="modalBackground"></div>
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title">Confirm Payment</h5>
-                                <button type="button" id="closeDelModal" class="close" data-dismiss="modal">&times;</button>
-                            </div>
+                <div class="modal-container" id="deleteModal">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Confirm Payment</h5>
+                            <button type="button" id="closeDelModal" class="close" data-dismiss="modal">&times;</button>
+                        </div>
 
-                            <div class="modal-body">
-                                <p class="mt-3 pb-1"></p>
-                            </div>
+                        <div class="modal-body">
+                            <p class="mt-3 pb-1"></p>
+                        </div>
 
-                            <div class="modal-footer">
-                                <button type="button" id="ContinueBtn" class="btn btn-success ml-3">Continue</button>
-                                <button type="button" id="CancelBtn" class="btn btn-danger ml-3">Cancel</button>
-                            </div>
+                        <div class="modal-footer">
+                            <button type="button" id="ContinueBtn" class="btn btn-success ml-3">Continue</button>
+                            <button type="button" id="CancelBtn" class="btn btn-danger ml-3">Cancel</button>
                         </div>
                     </div>
                 </div>
@@ -109,7 +107,7 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                     <div class="col-md-6">
                         <label for="customer">Amount Paid:</label>
                         <div class="input-group">
-                            <input type="number" id="Amount" class="form-control" aria-label="Dollar amount (with dot and two decimal places)">
+                            <input type="number" id="Amount" readonly class="form-control" aria-label="Dollar amount (with dot and two decimal places)">
                         </div>
                     </div>
 
@@ -161,16 +159,7 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                     </div>
 
 
-                    <div class="col-md-4 mt-4">
-                        <label for="Product">Payment Reference:</label>
-                        <div class="input-group">
-                            <?php
-                            // Generate a unique payment reference
-                            $paymentReference = '#MJRLNK' . time();
-                            ?>
-                            <input type="text" id="paymentReference" class="form-control" aria-label="Payment Reference" value="<?php echo $paymentReference; ?>" readonly disabled>
-                        </div>
-                    </div>
+
 
                     <p id="errorMsg"></p>
                     <div class="form-group">
@@ -229,22 +218,31 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                     closeModal();
                 });
 
+                var ClientId;
+                var loader;
+                var paymentDate;
+                var Amount;
+                var selectedPlan;
+                var PlanId;
+                var planPrice;
+                var PaymentMethod;
+                var PaymentStatus;
+                var InstallationFees;
+                var ContinueBtn = document.getElementById("ContinueBtn");
 
                 function addPayment(event) {
                     event.preventDefault();
-                    var loader = document.getElementById("loader");
-                    var paymentDate = document.getElementById("paymentDate").value;
-                    var ClientId = document.getElementById("user_select").value;
-                    var Amount = document.getElementById("Amount").value;
-                    var selectedPlan = getSelectedPlan(ClientId, customerList);
-                    var PlanId = document.getElementById('plans').value;
-                    var planPrice = $("#plans option:selected").data("amount");
-                    var PaymentMethod = document.getElementById("PaymentMethod").value;
-                    var PaymentStatus = document.getElementById("PaymentStatus").value;
-                    var InstallationFees = document.getElementById("InstallationFees").value;
-                    var paymentReference = document.getElementById("paymentReference").value;
-                    var ContinueBtn = document.getElementById("ContinueBtn");
-                    var balance = 0;
+                    loader = document.getElementById("loader");
+                    paymentDate = document.getElementById("paymentDate").value;
+                    ClientId = document.getElementById("user_select").value;
+                    Amount = document.getElementById("Amount").value;
+                    selectedPlan = getSelectedPlan(ClientId, customerList);
+                    PlanId = document.getElementById('plans').value;
+                    planPrice = $("#plans option:selected").data("amount");
+                    PaymentMethod = document.getElementById("PaymentMethod").value;
+                    PaymentStatus = document.getElementById("PaymentStatus").value;
+                    InstallationFees = document.getElementById("InstallationFees").value;
+
 
 
                     if (!selectedPlan) {
@@ -266,99 +264,74 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                         !Amount ||
                         !PlanId ||
                         !PaymentMethod ||
-                        !PaymentStatus ||
-                        !paymentReference
+                        !PaymentStatus
                     ) {
                         displayMessage("errorMsg", "Fill In All The Required Fields", true);
                         return;
                     }
-
-
-
-                    ContinueBtn.addEventListener("click", function() {
-                        ContinuePayment();
-                    });
 
                     //check if advance is set  - check if records of advancePayment is set
                     //                         - get all fromDate of the advancePayments and check:
                     //                         - if 
                     //if advance is set cancel
                     //redirect to advance page
-
-
-                    if (Amount > planPrice) {
-                        // Calculate the balance
-                        balance = Amount - planPrice;
-                        // Show the modal with the calculated balance
-                        showModal(balance);
-                        return;
-                    }
-
-
-                    if (Amount < planPrice) {
-                        // Calculate the balance
-                        balance = Amount - planPrice;
-                        // Show the modal with the calculated balance
-                        showlessAmountModal(balance);
-                        return;
-                    }
-
-
                     showAmountModal();
+                }
 
-                    function ContinuePayment() {
 
-
-                        // All fields are filled, proceed with sending data through Fetch API
-                        loader.style.display = "flex";
-
-                        var formData = new FormData();
-                        formData.append("ClientId", ClientId);
-                        formData.append("paymentDate", paymentDate);
-                        formData.append("Amount", Amount);
-                        formData.append("balance", balance);
-                        formData.append("PlanId", PlanId);
-                        formData.append("PaymentMethod", PaymentMethod);
-                        formData.append("PaymentStatus", PaymentStatus);
-                        formData.append("InstallationFees", InstallationFees);
-                        formData.append("paymentReference", paymentReference);
+                ContinueBtn.addEventListener("click", function() {
+                    ContinuePayment();
+                });
 
 
 
-                        // Perform fetch API request
-                        fetch('../controllers/makePayment_contr.php', {
-                                method: 'POST',
-                                body: formData
-                            })
-                            .then(response => response.json())
-                            .then(data => {
-                                if (data.paymentSuccess) {
-                                    // Handle the response from the server
-                                    displayMessage("errorMsg", "Successfuly updated", false);
-                                    localStorage.setItem('AddNewClientPaymentToast', 'true');
+                function ContinuePayment() {
+
+
+                    closeModal();
+                    loader.style.display = "flex";
+
+                    var formData = new FormData();
+                    formData.append("ClientId", ClientId);
+                    formData.append("paymentDate", paymentDate);
+                    formData.append("Amount", Amount);
+                    formData.append("PlanId", PlanId);
+                    formData.append("PaymentMethod", PaymentMethod);
+                    formData.append("PaymentStatus", PaymentStatus);
+                    formData.append("InstallationFees", InstallationFees);
+
+
+                    // Perform fetch API request
+                    fetch('../controllers/makePayment_contr.php', {
+                            method: 'POST',
+                            body: formData
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.paymentSuccess) {
+                                showAmountModal();
+                                loader.style.display = "none";
+                                // Handle the response from the server
+                                displayMessage("errorMsg", "Successfuly updated", false);
+                                localStorage.setItem('AddNewClientPaymentToast', 'true');
+                                setTimeout(() => {
                                     location.reload();
-                                    setTimeout(() => {
-                                        loader.style.display = "none";
-                                    }, 2000);
-                                }
-                                if (data.advancePaid) {
-                                    closeModal();
-                                    loader.style.display = "none";
-                                    displayMessage("errorMsg", "the customer has subscribed to an advance Payment", false);
-                                    localStorage.setItem('ClientHasAdvancePaymentToast', 'true');
-                                    setTimeout(() => {
-                                        location.reload();
-                                    }, 3000);
+                                }, 2000);
+                            }
+                            if (data.advancePaid) {
+                                closeModal();
+                                loader.style.display = "none";
+                                displayMessage("errorMsg", "the customer has subscribed to an advance Payment", true);
+                                localStorage.setItem('ClientHasAdvancePaymentToast', 'true');
+                                setTimeout(() => {
+                                    location.reload();
+                                }, 3000);
 
-                                }
-                            })
-                            .catch(error => {
-                                console.error('Error:', error);
-                            });
-
-
-                    }
-
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                        });
 
 
                 }
@@ -367,6 +340,23 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
 
 
 
+
+
+
+
+                $(document).ready(function() {
+                    $('#plans').change(function() {
+                        var selectedPlan = $(this).find(':selected');
+                        var planAmountInput = $('#Amount');
+
+                        if (!isNaN(selectedPlan.val())) {
+                            var planPrice = selectedPlan.data('amount');
+                            planAmountInput.val(planPrice);
+                        } else {
+                            planAmountInput.val(''); // Clear the input if "Choose..." is selected
+                        }
+                    });
+                });
 
 
 
@@ -384,7 +374,7 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                     modalContent.innerText = `You Exceeded The Amount For The Plan Selected By ${shouldFormat} Would You Want To Make Payment and Send Balance To Your Account?`;
 
                     document.getElementById("deleteModal").style.display = "block";
-                    document.getElementById("modalBackground").style.display = "block";
+                    document.getElementById("overlay").style.display = "block";
                     document.getElementById("ContinueBtn").style.display = "block";
 
                 }
@@ -404,7 +394,7 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                     modalContent.innerText = `The Amount is less ${shouldFormat} to subscribe to the selected plan`;
 
                     document.getElementById("deleteModal").style.display = "block";
-                    document.getElementById("modalBackground").style.display = "block";
+                    document.getElementById("overlay").style.display = "block";
                     document.getElementById("ContinueBtn").style.display = "none";
 
 
@@ -422,7 +412,7 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                     modalContent.innerText = `Confirm payment`;
 
                     document.getElementById("deleteModal").style.display = "block";
-                    document.getElementById("modalBackground").style.display = "block";
+                    document.getElementById("overlay").style.display = "block";
 
 
                 }
@@ -433,26 +423,9 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                 function closeModal() {
                     // Close the modal
                     document.getElementById("deleteModal").style.display = "none";
-                    document.getElementById("modalBackground").style.display = "none";
+                    document.getElementById("overlay").style.display = "none";
                 }
 
-
-
-
-                // error message function
-                function displayMessage(messageElement, message, isError, ) {
-                    var targetElement = document.getElementById(messageElement);
-                    targetElement.innerText = message;
-
-                    if (isError) {
-                        targetElement.style.color = 'red';
-                    } else {
-                        targetElement.style.color = 'green';
-                    }
-                    setTimeout(function() {
-                        targetElement.innerText = '';
-                    }, 1000);
-                }
 
 
                 // Call the function after the page loads

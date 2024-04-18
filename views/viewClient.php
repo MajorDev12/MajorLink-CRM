@@ -220,7 +220,7 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                                     <td>
                                         <!-- Update the onclick event to trigger the form submission -->
                                         <a href="viewSingleUser.php?id=<?= $client['ClientID'] ?>" class="btn btn-primary me-2 icon view"><img src="../img/eyeIcon.png" class="viewBtn" alt=""></a>
-                                        <a href="#" data-client-id="<?= $client['ClientID'] ?>" class="btn btn-secondary icon delete delete-btn"><img src="../img/deleteIcon.png" class="viewBtn" alt=""></a>
+                                        <a href="#" data-client-id="<?= $client['ClientID'] ?>" class="btn btn-secondary delete-btn"><img src="../img/deleteIcon.png" class="viewBtn" alt=""></a>
                                     </td>
                                 </tr>
                                 <?php

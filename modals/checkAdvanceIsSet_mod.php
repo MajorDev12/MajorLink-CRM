@@ -5,7 +5,7 @@ function hasMadeAdvancePayment($clientId, $connect)
         $todayDate = date('Y-m-d');
 
         // Fetch advance payment data for the specific ClientId
-        $query = "SELECT FromDate FROM advancepayments WHERE ClientId = :clientId";
+        $query = "SELECT ExpireDate FROM clients WHERE ClientId = :clientId";
         $statement = $connect->prepare($query);
         $statement->bindParam(':clientId', $clientId);
         $statement->execute();
@@ -15,15 +15,12 @@ function hasMadeAdvancePayment($clientId, $connect)
         if ($result) {
             // Compare FromDate with the current date
             foreach ($result as $row) {
-                $fromDate = $row['FromDate'];
-                if ($fromDate > $todayDate) {
-                    // Client has made an advance payment for a date in the future
+                $ExpireDate = $row['ExpireDate'];
+                if ($ExpireDate > $todayDate) {
                     return true;
                 }
             }
         }
-
-        // Client has not made an advance payment or all payments are in the past
         return false;
     } catch (Exception $e) {
         echo "Error: " . $e->getMessage();

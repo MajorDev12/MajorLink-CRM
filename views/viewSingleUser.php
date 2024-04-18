@@ -247,7 +247,7 @@ $invoicesData = getInvoicesByClientID($connect, $clientID);
                 <div class="tabs">
                     <button type="button" class="btn active">Summary</button>
                     <button type="button" class="btn active">Edit Customer</button>
-                    <!-- <button type="button" class="btn active">Modify Subscription</button> -->
+                    <button type="button" class="btn active">Modify Subscription</button>
                     <button type="button" class="btn active">Accounting</button>
                     <button type="button" class="btn active">Invoices</button>
                     <!-- <button type="button" class="btn active">Send Message</button> -->

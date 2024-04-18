@@ -97,6 +97,9 @@ label {
 	margin: 10px;
 	color: var(--light-dark) !important;
 }
+#user_select{
+	background-color: var(--light);
+}
 table{
 	background-color: var(--light);
 	width: 100%;
