@@ -34,6 +34,12 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
     .print {
         background-color: var(--red);
     }
+
+    .area {
+        background-color: var(--light);
+        color: var(--light-dark);
+        border-right: none;
+    }
 </style>
 
 <!-- SIDEBAR -->
@@ -65,10 +71,7 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                 </ul>
             </div>
 
-            <a href="#" class="btn-download">
-                <i class='bx bxs-cloud-download'></i>
-                <span class="text">Download PDF</span>
-            </a>
+
         </div>
 
         <!-- content-container -->
@@ -161,15 +164,9 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                                 echo '<div class="d-flex justify-content-between align-items-center">';
                                 echo '<span class="list-group-item list-group-item-action area" aria-current="true" data-area-name="' . $expenseTypeName . '" data-area-id="' . $expenseTypeID . '">' . $expenseTypeName . '</span>';
 
+                                echo '<a href="#" class="icon view ml-3" data-area-id="' . $expenseTypeID . '" onclick="editPlan(' . $expenseTypeID . ', \'' . $expenseTypeName . '\')"><img src="../img/eyeIcon.png" alt=""></a>';
 
-
-
-                                echo '<a href="#" class="icon view me-3" data-area-id="' . $expenseTypeID . '" onclick="editPlan(' . $expenseTypeID . ', \'' . $expenseTypeName . '\')"><img src="../img/eyeIcon.png" alt=""></a>';
-
-
-
-
-                                echo '<a href="#" class="icon print"  data-area-id="' . $expenseTypeID . '" onclick="confirmDelete(' . $expenseTypeID . ')"><img id="delImg" src="../img/deleteIcon.png" alt=""></a>';
+                                // echo '<a href="#" class="icon print"  data-area-id="' . $expenseTypeID . '" onclick="confirmDelete(' . $expenseTypeID . ')"><img id="delImg" src="../img/deleteIcon.png" alt=""></a>';
 
                                 echo '</div>';
                             }

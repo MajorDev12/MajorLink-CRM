@@ -4,11 +4,21 @@ require_once  '../database/pdo.php';
 require_once  '../controllers/addPlan_contr.php';
 require_once  '../modals/addPlan_mod.php';
 require_once  '../modals/validate_mod.php';
+require_once  '../modals/setup_mod.php';
 
 $connect = connectToDatabase($host, $dbname, $username, $password);
+
+$settings = get_Settings($connect);
+$code = $settings[0]["CurrencyCode"];
+$symbol = $settings[0]["CurrencySymbol"];
 ?>
 <?php require_once "header.php"; ?>
 
+<style>
+  p {
+    text-transform: capitalize;
+  }
+</style>
 
 <!-- SIDEBAR -->
 <?php require_once "side_nav.php"; ?>
@@ -39,96 +49,92 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
         </ul>
       </div>
 
-      <a href="#" class="btn-download">
-        <i class='bx bxs-cloud-download'></i>
-        <span class="text">Download PDF</span>
-      </a>
+
     </div>
 
     <!-- content-container -->
     <div class="main-content">
       <div id="loader">Loading...</div>
+
+
+      <!-- Update modal -->
+      <div id="overlay"></div>
+      <div class="modal-container" id="planModal">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Edit Plan</h5>
+            <button type="button" id="closeModal" class="close" data-dismiss="modal">&times;</button>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" id="edit-PlanId" value="">
+            <label for="editPlanName">Name:</label>
+            <input type="text" id="edit-PlanName" class="form-control modalInput">
+            <label for="editPlanVolume">Volume:</label>
+            <input type="text" id="edit-PlanVolume" class="form-control modalInput">
+            <label for="editPlanPrice">Price (<?= $symbol; ?>):</label>
+            <input type="number" id="edit-PlanPrice" class="form-control modalInput">
+          </div>
+          <div class="modal-footer">
+            <p id="modalerror"></p>
+            <button type="button" class="btn btn-info" data-plan-id="<?= $plan['PlanID'] ?>" onclick="updatePlanData(this)">Save Changes</button>
+          </div>
+        </div>
+      </div>
+
+
+
+      <!-- Delete modal -->
+      <div class="modal-container" id="deleteModal">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Confirm Delete</h5>
+            <button type="button" id="closeDelModal" class="close" data-dismiss="modal">&times;</button>
+          </div>
+          <div class="modal-body">
+            <p class="mt-3">Are you sure you want to delete this plan?</p>
+            <input type="hidden" id="deletePlanId" value="">
+          </div>
+          <div class="modal-footer">
+            <p id="errordelmodal"></p>
+            <button type="button" id="deleteButton" class="btn btn-danger ml-3" onclick="deletePlanConfirmed()">Delete</button>
+          </div>
+        </div>
+
+      </div>
+
+
+
+
+
+
+
       <div class="content">
         <form id="addPlanform" class="row g-3">
-          <div class="col-md-5">
+          <div class="col-md-5 me-5">
             <label for="inputText" class="form-label">Add Name</label>
             <input type="text" class="form-control forminput" id="planName">
             <label for="inputText" class="form-label mt-4">Add Volume</label>
             <input type="text" class="form-control forminput" id="planVolume">
-            <label for="inputEmail4" class="form-label  mt-4">Add Price</label>
+            <label for="inputEmail4" class="form-label  mt-4">Add Price (<?= $symbol; ?>)</label>
             <input type="number" class="form-control forminput" id="planPrice">
             <p id="error"></p>
             <button type="button" id="addbtn" onclick="addplan(event); return false;" class="btn btn-primary mt-4">Add</button>
           </div>
 
-          <div id="overlay"></div>
-          <!-- Add this to your HTML for the modal -->
-          <div class="modal-plan" id="planModal">
-            <div id="modalBackground"></div>
-            <div class="modal-dialog-plan">
-              <div class="modal-content-plan">
-                <div class="modal-header-plan">
-                  <h5 class="modal-title-plan">Edit Plan</h5>
-                  <button type="button" id="closeModal" class="close" data-dismiss="modal">&times;</button>
-                </div>
-                <div class="modal-body-plan">
-                  <input type="hidden" id="edit-PlanId" value="">
-                  <label for="editPlanName">Name:</label>
-                  <input type="text" id="edit-PlanName" class="form-control modalInput">
-                  <label for="editPlanVolume">Volume:</label>
-                  <input type="text" id="edit-PlanVolume" class="form-control modalInput">
-                  <label for="editPlanPrice">Price:</label>
-                  <input type="number" id="edit-PlanPrice" class="form-control modalInput">
-                </div>
-                <div class="modal-footer-plan">
-                  <p id="modalerror"></p>
-                  <button type="button" class="btn btn-info" data-plan-id="<?= $plan['PlanID'] ?>" onclick="updatePlanData(this)">Save Changes</button>
-                </div>
-              </div>
-            </div>
-          </div>
 
-
-
-
-
-
-          <div class="modal-plan" id="deleteModal">
-            <div id="modalBackground"></div>
-            <div class="modal-dialog-plan">
-              <div class="modal-content-plan">
-                <div class="modal-header-plan">
-                  <h5 class="modal-title-plan">Confirm Delete</h5>
-                  <button type="button" id="closeDelModal" class="close" data-dismiss="modal">&times;</button>
-                </div>
-                <div class="modal-body-plan">
-                  <p class="mt-3">Are you sure you want to delete this plan?</p>
-                  <input type="hidden" id="deletePlanId" value="">
-                </div>
-                <div class="modal-footer-plan">
-                  <p id="errordelmodal"></p>
-                  <button type="button" id="deleteButton" class="btn btn-danger ml-3" onclick="deletePlanConfirmed()">Delete</button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-
-          <div class="col-md-7">
-            <table class="table table-hover caption-top">
-              <caption>List of Packages</caption>
-              <thead class="table-Primary">
-                <tr class="table-primary">
+          <div class="col-md-6">
+            <table>
+              <thead class="">
+                <tr class="">
                   <th scope="col">No</th>
                   <th scope="col">Name</th>
                   <th scope="col">Volume</th>
-                  <th scope="col">Price</th>
+                  <th scope="col">Price (<?= $symbol; ?>)</th>
                   <th scope="col">Action</th>
                 </tr>
               </thead>
-              <tbody class="table-group-divider">
+              <tbody class="">
                 <?php $plans = getPlanData($connect);
-                //var_dump($plans['Name']); 
                 ?>
                 <?php foreach ($plans as $key => $plan) : ?>
                   <tr>
@@ -138,7 +144,7 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                     <td><?= $plan['Price'] ?></td>
                     <td>
                       <button type="button" class="btn btn-info" data-plan-id="<?= $plan['PlanID'] ?>" onclick="editPlan('<?= $plan['PlanID'] ?>', '<?= $plan['Name'] ?>', '<?= $plan['Volume'] ?>', '<?= $plan['Price'] ?>')">Update</button>
-                      <button type="button" class="btn btn-danger" data-plan-id="<?= $plan['PlanID'] ?>" onclick="confirmDelete('<?= $plan['PlanID'] ?>')">Del</button>
+                      <!-- <button type="button" class="btn btn-danger" data-plan-id="<?= $plan['PlanID'] ?>" onclick="confirmDelete('<?= $plan['PlanID'] ?>')">Del</button> -->
                     </td>
                   </tr>
                 <?php endforeach; ?>
@@ -323,61 +329,63 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
 
 
 
-        function confirmDelete(planId) {
-          // Set the planId to a hidden input in the delete confirmation modal
-          document.getElementById('deletePlanId').value = planId;
-          // Show the delete confirmation modal
-          showDeleteModal();
-        }
+        // function confirmDelete(planId) {
+        //   // Set the planId to a hidden input in the delete confirmation modal
+        //   document.getElementById('deletePlanId').value = planId;
+        //   // Show the delete confirmation modal
+        //   showDeleteModal();
+        // }
 
 
 
 
 
 
-        function deletePlanConfirmed() {
-          var planId = document.getElementById('deletePlanId').value;
-          button = document.querySelector("#deleteButton");
+        // function deletePlanConfirmed() {
+        //   var planId = document.getElementById('deletePlanId').value;
+        //   button = document.querySelector("#deleteButton");
+
+        //   console.log(planId);
 
 
-          if (planId !== null) {
-            loader.style.display = "flex";
+        //   if (planId !== null) {
+        //     loader.style.display = "flex";
 
-            var sendData = new FormData();
-            sendData.append('planId', planId);
+        //     var sendData = new FormData();
+        //     sendData.append('planId', planId);
 
-            fetch('../controllers/deletePlan_contr.php', {
-                method: 'POST',
-                body: sendData
-              })
-              .then(response => response.json())
-              .then(data => {
-                if (data.success) {
-                  hideDeleteModal();
-                  planId = null;
-                  loader.style.display = "none";
-                  displayMessage("errordelmodal", "Deleted Successfuly", false);
-                  location.reload();
-                } else {
-                  // Handle failure (e.g., display an error message)
-                  console.error("Update failed: " + data.error);
-                  displayMessage("errordelmodal", "Delete failed: " + data.error, true);
-                }
-              })
-              .catch(error => {
-                // Handle network or request errors
-                document.getElementById("errordelmodal").innerText = "error";
-                console.error("An error occurred: " + error);
-                displayMessage("errordelmodal", "An error occurred: " + error, true);
-                loader.style.display = "none";
-                setTimeout(() => {
-                  hideModal();
-                }, 2000);
-              });
-          } else {
-            displayMessage("errordelmodal", "NULL", false);
-          }
-        }
+        //     fetch('../controllers/deletePlan_contr.php', {
+        //         method: 'POST',
+        //         body: sendData
+        //       })
+        //       .then(response => response.json())
+        //       .then(data => {
+        //         if (data.success) {
+        //           hideDeleteModal();
+        //           planId = null;
+        //           loader.style.display = "none";
+        //           displayMessage("errordelmodal", "Deleted Successfuly", false);
+        //           location.reload();
+        //         } else {
+        //           // Handle failure (e.g., display an error message)
+        //           console.error("Update failed: " + data.error);
+        //           displayMessage("errordelmodal", "Delete failed: " + data.error, true);
+        //         }
+        //       })
+        //       .catch(error => {
+        //         // Handle network or request errors
+        //         loader.style.display = "none";
+        //         document.getElementById("errordelmodal").innerText = "error";
+        //         console.error("An error occurred: " + error);
+        //         displayMessage("errordelmodal", "An error occurred: " + error, true);
+        //         setTimeout(() => {
+        //           hideDeleteModal();
+        //         }, 2000);
+        //       });
+        //   } else {
+        //     displayMessage("errordelmodal", "NULL", false);
+        //   }
+        // }
 
 
 
@@ -392,20 +400,20 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
           hideModal();
         })
 
-        closeDelModal.addEventListener('click', function() {
-          hideDeleteModal();
-        })
+        // closeDelModal.addEventListener('click', function() {
+        //   hideDeleteModal();
+        // })
 
-        function showDeleteModal() {
-          document.getElementById('deleteModal').style.display = 'block';
-          document.getElementById('overlay').style.display = 'block';
-        }
+        // function showDeleteModal() {
+        //   document.getElementById('deleteModal').style.display = 'block';
+        //   document.getElementById('overlay').style.display = 'block';
+        // }
 
 
-        function hideDeleteModal() {
-          document.getElementById('deleteModal').style.display = 'none';
-          document.getElementById('overlay').style.display = 'none';
-        }
+        // function hideDeleteModal() {
+        //   document.getElementById('deleteModal').style.display = 'none';
+        //   document.getElementById('overlay').style.display = 'none';
+        // }
 
         // Show modal and overlay
         function showModal() {
@@ -418,26 +426,5 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
         function hideModal() {
           document.getElementById('planModal').style.display = 'none';
           document.getElementById('overlay').style.display = 'none';
-        }
-
-
-        function displayMessage(messageElement, message, isError) {
-          // Get the HTML element where the message should be displayed
-          var targetElement = document.getElementById(messageElement);
-
-          // Set the message text
-          targetElement.innerText = message;
-
-          // Add styling based on whether it's an error or success
-          if (isError) {
-            targetElement.style.color = 'red';
-          } else {
-            targetElement.style.color = 'green';
-          }
-
-          // Set a timeout to hide the message with the fade-out effect
-          setTimeout(function() {
-            targetElement.innerText = '';
-          }, 2000);
         }
       </script>

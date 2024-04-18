@@ -6,8 +6,15 @@ require_once  '../modals/addPaymentMethod_mod.php';
 
 $connect = connectToDatabase($host, $dbname, $username, $password);
 ?>
-<?php require_once "header.php"; ?>
 
+<?php require_once "header.php"; ?>
+<style>
+    .area {
+        background-color: var(--light);
+        color: var(--light-dark);
+        border-right: none;
+    }
+</style>
 
 <!-- SIDEBAR -->
 <?php require_once "side_nav.php"; ?>
@@ -33,15 +40,11 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                     </li>
                     <li><i class='bx bx-chevron-right'></i></li>
                     <li>
-                        <a class="active" href="#">Home</a>
+                        <a class="active" href="#">Add Payment Method</a>
                     </li>
                 </ul>
             </div>
 
-            <a href="#" class="btn-download">
-                <i class='bx bxs-cloud-download'></i>
-                <span class="text">Download PDF</span>
-            </a>
         </div>
 
         <!-- content-container -->
@@ -51,26 +54,24 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
 
 
 
-
+                <div id="overlay"></div>
                 <!-- Add this to your HTML for the modal -->
-                <div class="modal-plan" id="delModal">
-                    <div id="modalBackground"></div>
-                    <div class="modal-dialog-plan">
-                        <div class="modal-content-plan">
-                            <div class="modal-header-plan">
-                                <h5 class="modal-title-plan">Confirm Delete</h5>
-                                <button type="button" id="closeDelModal" class="close" data-dismiss="modal">&times;</button>
-                            </div>
-                            <div class="modal-body-plan">
-                                <p class="mt-3">Are you sure you want to delete this plan?</p>
-                                <input type="hidden" id="delmodalPaymentMethodID" value="">
-                            </div>
-                            <div class="modal-footer-plan">
-                                <p id="errordelmodal"></p>
-                                <button type="button" id="delButton" class="btn btn-danger ml-3" onclick="deletePaymentMethodConfirmed()">Delete</button>
-                            </div>
+                <div class="modal-container" id="delModal">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Confirm Delete</h5>
+                            <button type="button" id="closeDelModal" class="close" data-dismiss="modal">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <p class="mt-3">Are you sure you want to delete this Payment Method?</p>
+                            <input type="hidden" id="delmodalPaymentMethodID" value="">
+                        </div>
+                        <div class="modal-footer">
+                            <p id="errordelmodal"></p>
+                            <button type="button" id="delButton" class="btn btn-danger ml-3" onclick="deletePaymentMethodConfirmed()">Delete</button>
                         </div>
                     </div>
+
                 </div>
 
 
@@ -85,23 +86,21 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
 
 
 
-                <div class="modal-plan" id="PaymentMethodModal">
-                    <div id="modalBackground"></div>
-                    <div class="modal-dialog-plan">
-                        <div class="modal-content-plan">
-                            <div class="modal-header-plan">
-                                <h5 class="modal-title-plan">Edit </h5>
-                                <button type="button" id="closeModal" class="close" data-dismiss="modal">&times;</button>
-                            </div>
-                            <div class="modal-body-plan">
-                                <input type="hidden" id="hiddenPaymentMethodID" value="">
-                                <label for="editPlanPrice">Expense:</label>
-                                <input type="text" id="edit-PaymentMethod" class="form-control">
-                            </div>
-                            <div class="modal-footer-plan">
-                                <p id="modalerror"></p>
-                                <button type="button" class="btn btn-info" data-plan-id="<?= $plan['PlanID'] ?>" onclick="updatePaymentMethodData(this)">Save Changes</button>
-                            </div>
+                <div class="modal-container" id="PaymentMethodModal">
+
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Edit </h5>
+                            <button type="button" id="closeModal" class="close" data-dismiss="modal">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <input type="hidden" id="hiddenPaymentMethodID" value="">
+                            <label for="editPlanPrice">Expense:</label>
+                            <input type="text" id="edit-PaymentMethod" class="form-control">
+                        </div>
+                        <div class="modal-footer">
+                            <p id="modalerror"></p>
+                            <button type="button" class="btn btn-info" data-plan-id="<?= $plan['PlanID'] ?>" onclick="updatePaymentMethodData(this)">Save Changes</button>
                         </div>
                     </div>
                 </div>
@@ -137,8 +136,8 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
 
                                 echo '<div class="d-flex justify-content-between align-items-center">';
                                 echo '<span class="list-group-item list-group-item-action area" aria-current="true" data-area-name="' . $PaymentMethod . '" data-area-id="' . $PaymentMethodID . '">' . $PaymentMethod . '</span>';
-                                echo '<button type="button" class="btn btn-info me-3" data-area-id="' . $PaymentMethodID . '" onclick="editPaymentMethod(' . $PaymentMethodID . ', \'' . $PaymentMethod . '\')">Edit</button>';
-                                echo '<button type="button" class="btn btn-danger" data-area-id="' . $PaymentMethodID . '" onclick="confirmDelete(' . $PaymentMethodID . ')">Del</button>';
+                                echo '<button type="button" class="btn btn-info ml-3" data-area-id="' . $PaymentMethodID . '" onclick="editPaymentMethod(' . $PaymentMethodID . ', \'' . $PaymentMethod . '\')">Edit</button>';
+                                // echo '<button type="button" class="btn btn-danger" data-area-id="' . $PaymentMethodID . '" onclick="confirmDelete(' . $PaymentMethodID . ')">Del</button>';
                                 echo '</div>';
                             }
                             ?>
@@ -147,13 +146,17 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                 </form>
             </div>
 
+
+            <?php require_once "footer.php"; ?>
+
+
             <script>
                 var loader = document.getElementById("loader");
                 var closeModal = document.getElementById("closeModal");
+                var closeDelModal = document.getElementById("closeDelModal");
                 var addbtn = document.getElementById("addbtn");
 
                 function addPaymentMethod() {
-                    console.log("it reads");
                     var PaymentMethodInput = document.getElementById("PaymentMethodInput").value.trim();
                     var isValid = true;
                     addbtn.disabled = true;
@@ -161,11 +164,13 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                     if (!PaymentMethodInput) {
                         displayMessage("error", "Cannot Be Empty", true);
                         isValid = false;
+                        addbtn.disabled = false;
                         return;
                     }
                     if (!/^[a-zA-Z0-9\s]+$/.test(PaymentMethodInput)) {
                         displayMessage("error", "Invalid characters in Name", true);
                         isValid = false;
+                        addbtn.disabled = false;
                         return;
                     }
 
@@ -246,10 +251,8 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                     // Check if changes are made
                     if (updatedPaymentMethod !== initialPaymentMethod) {
                         loader.style.display = "flex";
-                        console.log("it loads");
-                        // Changes detected, send data for update
-                        // Perform your AJAX request here
-                        // You can use the Fetch API for this purpose
+                        hideModal();
+
                         var sendData = new FormData();
                         sendData.append('PaymentMethodID', PaymentMethodID);
                         sendData.append('updatedPaymentMethod', updatedPaymentMethod);
@@ -261,18 +264,25 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                             .then(response => response.json())
                             .then(data => {
                                 if (data.success) {
-                                    location.reload();
-                                    hideModal();
                                     loader.style.display = "none";
+                                    showModal();
                                     displayMessage("modalerror", "Updated Successfuly", false);
+                                    setTimeout(() => {
+                                        location.reload();
+                                    }, 1000);
+
                                 } else {
-                                    // Handle failure (e.g., display an error message)
+                                    showModal();
                                     console.error("Update failed: " + data.error);
                                     displayMessage("modalerror", "Update failed: " + data.error, true);
+                                    setTimeout(() => {
+                                        hideModal();
+                                    }, 1000);
                                 }
                             })
                             .catch(error => {
                                 // Handle network or request errors
+                                showModal();
                                 console.error("An error occurred: " + error);
                                 displayMessage("modalerror", "An error occurred", true);
                                 loader.style.display = "none";
@@ -293,112 +303,74 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
 
 
 
-                function confirmDelete(PaymentMethodID) {
-                    // Set the planId to a hidden input in the delete confirmation modal
-                    document.getElementById('delmodalPaymentMethodID').value = PaymentMethodID;
-                    // Show the delete confirmation modal
-                    showDeleteModal();
-                }
+                // function confirmDelete(PaymentMethodID) {
+                //     // Set the planId to a hidden input in the delete confirmation modal
+                //     document.getElementById('delmodalPaymentMethodID').value = PaymentMethodID;
+                //     // Show the delete confirmation modal
+                //     showDeleteModal();
+                // }
 
 
 
 
 
 
-                function deletePaymentMethodConfirmed() {
-                    var PaymentMethodID = document.getElementById('delmodalPaymentMethodID').value;
-                    button = document.getElementById("delButton");
-                    button.disabled = true;
+                // function deletePaymentMethodConfirmed() {
+                //     var PaymentMethodID = document.getElementById('delmodalPaymentMethodID').value;
+                //     button = document.getElementById("delButton");
+                //     button.disabled = true;
 
-                    if (PaymentMethodID !== null) {
-                        loader.style.display = "flex";
-                        var sendData = new FormData();
-                        sendData.append('PaymentMethodID', PaymentMethodID);
+                //     if (PaymentMethodID !== null) {
+                //         loader.style.display = "flex";
+                //         var sendData = new FormData();
+                //         sendData.append('PaymentMethodID', PaymentMethodID);
 
-                        fetch('../controllers/deletePaymentMethod_contr.php', {
-                                method: 'POST',
-                                body: sendData
-                            })
-                            .then(response => response.json())
-                            .then(data => {
-                                if (data.success) {
-                                    location.reload();
-                                    hideDeleteModal();
-                                    PaymentMethodID = null;
-                                    button.disabled = false;
-                                    loader.style.display = "none";
-                                    displayMessage("errordelmodal", "Deleted Successfuly", false);
+                //         fetch('../controllers/deletePaymentMethod_contr.php', {
+                //                 method: 'POST',
+                //                 body: sendData
+                //             })
+                //             .then(response => response.json())
+                //             .then(data => {
+                //                 if (data.success) {
+                //                     location.reload();
+                //                     hideDeleteModal();
+                //                     PaymentMethodID = null;
+                //                     button.disabled = false;
+                //                     loader.style.display = "none";
+                //                     displayMessage("errordelmodal", "Deleted Successfuly", false);
 
-                                } else {
-                                    // Handle failure (e.g., display an error message)
-                                    button.disabled = false;
-                                    console.error("Update failed: " + data.error);
-                                    displayMessage("errordelmodal", "Delete failed: " + data.error, true);
-                                }
-                            })
-                            .catch(error => {
-                                // Handle network or request errors
-                                console.error("An error occurred: " + error);
-                                displayMessage("errordelmodal", "An error occurred: " + error, true);
-                                loader.style.display = "none";
-                                button.disabled = false;
-                            });
-                    } else {
-                        displayMessage("errordelmodal", "NULL", false);
-                        button.disabled = false;
-                    }
-                }
-
-
+                //                 } else {
+                //                     // Handle failure (e.g., display an error message)
+                //                     button.disabled = false;
+                //                     console.error("Update failed: " + data.error);
+                //                     displayMessage("errordelmodal", "Delete failed: " + data.error, true);
+                //                 }
+                //             })
+                //             .catch(error => {
+                //                 // Handle network or request errors
+                //                 console.error("An error occurred: " + error);
+                //                 displayMessage("errordelmodal", "An error occurred: " + error, true);
+                //                 loader.style.display = "none";
+                //                 button.disabled = false;
+                //             });
+                //     } else {
+                //         displayMessage("errordelmodal", "NULL", false);
+                //         button.disabled = false;
+                //     }
+                // }
 
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                function displayMessage(messageElement, message, isError) {
-                    // Get the HTML element where the message should be displayed
-                    var targetElement = document.getElementById(messageElement);
-
-                    // Set the message text
-                    targetElement.innerText = message;
-
-                    // Add styling based on whether it's an error or success
-                    if (isError) {
-                        targetElement.style.color = 'red';
-                    } else {
-                        targetElement.style.color = 'green';
-                    }
-
-                    // Set a timeout to hide the message with the fade-out effect
-                    setTimeout(function() {
-                        targetElement.innerText = '';
-                        addbtn.disabled = false;
-                    }, 2000);
-                }
 
 
                 closeModal.addEventListener('click', function() {
                     hideModal();
                 })
+                // closeDelModal.addEventListener('click', function() {
+                //     hideDeleteModal();
+                // })
 
                 // Show modal and overlay
                 function showModal() {
@@ -413,14 +385,14 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                     document.getElementById('overlay').style.display = 'none';
                 }
 
-                function showDeleteModal() {
-                    document.getElementById('delModal').style.display = 'block';
-                    document.getElementById('overlay').style.display = 'block';
-                }
+                // function showDeleteModal() {
+                //     document.getElementById('delModal').style.display = 'block';
+                //     document.getElementById('overlay').style.display = 'block';
+                // }
 
 
-                function hideDeleteModal() {
-                    document.getElementById('delModal').style.display = 'none';
-                    document.getElementById('overlay').style.display = 'none';
-                }
+                // function hideDeleteModal() {
+                //     document.getElementById('delModal').style.display = 'none';
+                //     document.getElementById('overlay').style.display = 'none';
+                // }
             </script>

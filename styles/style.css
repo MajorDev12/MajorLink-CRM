@@ -42,11 +42,13 @@ abbr {
 h1,h2,h3,h4,h5,h6{
 	color: var(--dark);
 }
+p{
+	color: var(--light-dark);
+}
 
 
 
-
-input, select{
+input, select, textarea{
 	background-color: var(--light) !important;
 	color: var(--dark) !important;
 	border: 1px solid var(--dark-grey);
@@ -97,16 +99,43 @@ label {
 }
 table{
 	background-color: var(--light);
+	width: 100%;
+    border-collapse: collapse;
 }
 table th{
 	color: var(--dark);
+	padding-bottom: 12px;
+    font-size: 13px;
+    text-align: left;
+    border-bottom: 1px solid var(--grey);
 }
 table td{
 	color: var(--light-dark);
+	padding: 16px 0;
+    text-align: left;
 }
 table tbody tr:hover {
 	background: var(--grey);
 }
+
+
+table td .icon {
+    background-color: var(--blue);
+    border-radius: 5px;
+    padding: 4px;
+    cursor: pointer;
+  }
+
+table td .view {
+    background-color: var(--blue);
+  }
+
+
+
+
+
+
+
 #loader {
 	position: absolute;
 	top: 0;
@@ -259,8 +288,8 @@ table tbody tr:hover {
     position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
+    width: 30%;
+    height: 50%;
     background-color: rgba(0, 0, 0, 0.5);
 	z-index: 111;
 }
@@ -305,7 +334,9 @@ table tbody tr:hover {
     font-size: 20px;
     color: #333;
 }
-
+#closeModal{
+	color: var(--light-dark);
+}
 .modal-body {
     margin-bottom: 20px;
 }

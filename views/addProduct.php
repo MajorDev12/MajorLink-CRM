@@ -9,7 +9,11 @@ $products = getProductData($connect);
 ?>
 <?php require_once "header.php"; ?>
 
-
+<style>
+    p {
+        color: var(--light-dark);
+    }
+</style>
 <!-- SIDEBAR -->
 <?php require_once "side_nav.php"; ?>
 <!-- SIDEBAR -->
@@ -39,10 +43,6 @@ $products = getProductData($connect);
                 </ul>
             </div>
 
-            <a href="#" class="btn-download">
-                <i class='bx bxs-cloud-download'></i>
-                <span class="text">Download PDF</span>
-            </a>
         </div>
 
         <!-- content-container -->
@@ -56,25 +56,23 @@ $products = getProductData($connect);
                 <!-- Add this to your HTML for the modal -->
                 <div class="modal-container" id="productModal">
                     <div id="modalBackground"></div>
-                    <div class="modal-dialog-plan">
-                        <div class="modal-content-plan">
-                            <div class="modal-header-plan">
-                                <h5 class="modal-title-plan">Edit Plan</h5>
-                                <button type="button" id="closeModal" class="close" data-dismiss="modal">&times;</button>
-                            </div>
-                            <div class="modal-body-plan">
-                                <input type="hidden" id="edit-ProductId" value="">
-                                <label for="editPlanName">Name:</label>
-                                <input type="text" id="edit-ProductName" class="form-control modalInput">
-                                <label for="editPlanVolume">Price:</label>
-                                <input type="number" id="edit-ProductPrice" class="form-control modalInput">
-                                <label for="editPlanPrice">Notes:</label>
-                                <textarea name="" id="edit-ProductNotes" class="form-control modalInput" cols="40" rows="5"></textarea>
-                            </div>
-                            <div class="modal-footer-plan">
-                                <p id="modalerror"></p>
-                                <button type="button" class="btn btn-info" data-plan-id="<?= $product['PlanID'] ?>" onclick="updateProductData(this)">Save Changes</button>
-                            </div>
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Edit Plan</h5>
+                            <button type="button" id="closeModal" class="close" data-dismiss="modal">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <input type="hidden" id="edit-ProductId" value="">
+                            <label for="editPlanName">Name:</label>
+                            <input type="text" id="edit-ProductName" class="form-control modalInput">
+                            <label for="editPlanVolume">Price:</label>
+                            <input type="number" id="edit-ProductPrice" class="form-control modalInput">
+                            <label for="editPlanPrice">Notes:</label>
+                            <textarea name="" id="edit-ProductNotes" class="form-control modalInput" cols="40" rows="5"></textarea>
+                        </div>
+                        <div class="modal-footer">
+                            <p id="modalerror"></p>
+                            <button type="button" class="btn btn-info" data-plan-id="<?= $product['PlanID'] ?>" onclick="updateProductData(this)">Save Changes</button>
                         </div>
                     </div>
                 </div>
@@ -84,22 +82,20 @@ $products = getProductData($connect);
 
 
                 <!-- Add this to your HTML for the modal -->
-                <div class="modal-plan" id="deleteModal">
-                    <div id="modalBackground"></div>
-                    <div class="modal-dialog-plan">
-                        <div class="modal-content-plan">
-                            <div class="modal-header-plan">
-                                <h5 class="modal-title-plan">Confirm Delete</h5>
-                                <button type="button" id="closeDelModal" class="close" data-dismiss="modal">&times;</button>
-                            </div>
-                            <div class="modal-body-plan">
-                                <p class="mt-3">Are you sure you want to delete this plan?</p>
-                                <input type="hidden" id="deleteProductId" value="">
-                            </div>
-                            <div class="modal-footer-plan">
-                                <p id="errordelmodal"></p>
-                                <button type="button" id="deleteButton" class="btn btn-danger ml-3" onclick="deleteProductConfirmed()">Delete</button>
-                            </div>
+                <div class="modal-container" id="deleteModal">
+
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Confirm Delete</h5>
+                            <button type="button" id="closeDelModal" class="close" data-dismiss="modal">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <p class="mt-3">Are you sure you want to delete this Product?</p>
+                            <input type="hidden" id="deleteProductId" value="">
+                        </div>
+                        <div class="modal-footer">
+                            <p id="errordelmodal"></p>
+                            <button type="button" id="deleteButton" class="btn btn-danger ml-3" onclick="deleteProductConfirmed()">Delete</button>
                         </div>
                     </div>
                 </div>
@@ -133,14 +129,13 @@ $products = getProductData($connect);
                         <label for="">Notes</label>
                         <textarea name="notes" id="notes" cols="10" rows="10"></textarea>
                     </div>
-                    <div class="col-md-6">
+                    <!-- <div class="col-md-6">
                         <label for="ProductName">Product Image:</label>
                         <div class="input-group mb-3">
-                            <!-- <input type="file" name="ProductImage" id="ProductName" class="form-control" aria-label="Dollar amount (with dot and two decimal places)"> -->
+                            <input type="file" name="ProductImage" id="ProductName" class="form-control" aria-label="Dollar amount (with dot and two decimal places)">
                         </div>
-                    </div>
-                    <!-- Rest of the form fields remain the same -->
-                    <!-- ... -->
+                    </div> -->
+
                     <p id="error"></p>
                     <div class="form-group">
                         <button type="button" id="addbtn" name="submitProduct" onclick="addProduct();" class="btn btn-primary">Save</button>
@@ -160,12 +155,10 @@ $products = getProductData($connect);
 
 
 
-
                 <div class="col-md-12 p-4">
-                    <table class="table table-hover caption-top">
-                        <caption>List of Products</caption>
-                        <thead class="table-Primary">
-                            <tr class="table-primary bg-primary">
+                    <table class="">
+                        <thead class="">
+                            <tr class="">
                                 <th scope="col">No</th>
                                 <th scope="col">Name</th>
                                 <th scope="col">Price</th>
@@ -173,7 +166,7 @@ $products = getProductData($connect);
                                 <th scope="col">Actions</th>
                             </tr>
                         </thead>
-                        <tbody class="table-group-divider">
+                        <tbody class="">
                             <?php $products = getProductData($connect);
                             //var_dump($plans['Name']); 
                             ?>
@@ -230,7 +223,7 @@ $products = getProductData($connect);
                     }
 
 
-                    if (!/^[a-zA-Z0-9\s]+$/.test(notes)) {
+                    if (!/^[a-zA-Z0-9\s]*$/.test(notes)) {
                         displayMessage("error", "Invalid characters in Notes", true);
                         isValid = false;
                         document.getElementById("addbtn").disabled = false;
@@ -482,33 +475,5 @@ $products = getProductData($connect);
                 function hideModal() {
                     document.getElementById('productModal').style.display = 'none';
                     document.getElementById('overlay').style.display = 'none';
-                }
-
-
-
-
-
-
-
-
-
-                function displayMessage(messageElement, message, isError, ) {
-                    // Get the HTML element where the message should be displayed
-                    var targetElement = document.getElementById(messageElement);
-
-                    // Set the message text
-                    targetElement.innerText = message;
-
-                    // Add styling based on whether it's an error or success
-                    if (isError) {
-                        targetElement.style.color = 'red';
-                    } else {
-                        targetElement.style.color = 'green';
-                    }
-
-                    // Set a timeout to hide the message with the fade-out effect
-                    setTimeout(function() {
-                        targetElement.innerText = '';
-                    }, 1000);
                 }
             </script>
