@@ -98,7 +98,7 @@ $symbol = $settings[0]["CurrencySymbol"];
                 <form class="row g-3 form">
                     <div class="form-group">
                         <label for="paymentDate">Payment Date:</label>
-                        <input type="date" id="paymentDate" name="paymentDate" required>
+                        <input type="date" id="paymentDate" value="<?= date('Y-m-d'); ?>" name="paymentDate" required>
                     </div>
                     <div class="col-md-6">
                         <?php $clientData = getClientsNames($connect); ?>

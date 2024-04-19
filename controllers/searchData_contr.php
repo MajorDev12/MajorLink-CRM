@@ -13,8 +13,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $results = searchServicesData($connect, $searchInput);
 
 
-
-
         if ($results !== false) {
 
 

@@ -128,6 +128,21 @@ function initializeTabs(tabSelector, contentSelector) {
     });
 }
 
+function addSearchEventListener(searchIcon, searchInput, searchBtn) {
+	searchIcon.addEventListener('click', function() {
+		// Toggle the 'show' class on searchInput and searchBtn
+		searchInput.classList.toggle('show');
+		searchBtn.classList.toggle('show');
+
+		// Focus on the searchInput when it becomes visible
+		if (searchInput.classList.contains('show')) {
+			searchInput.focus();
+		}
+	});
+}
+
+
+
 
 
 

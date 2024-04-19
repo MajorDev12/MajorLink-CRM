@@ -16,7 +16,13 @@ $settings = get_Settings($connect);
 ?>
 
 <?php require_once "header.php"; ?>
+<?php require_once "style.config.php"; ?>
 
+<style>
+    span {
+        color: var(--light-dark);
+    }
+</style>
 
 <!-- SIDEBAR -->
 <?php require_once "side_nav.php"; ?>
@@ -61,13 +67,14 @@ $settings = get_Settings($connect);
             <div class="content">
                 <form class="row g-3 form">
                     <div class="form-group">
-                        <label for="saleDate">Sale Date: <span class="asterik">*</span></label>
-                        <input type="date" id="saleDate" name="saleDate" required>
+                        <label for="saleDate">Sale Date</label>
+                        <input type="date" id="saleDate" name="saleDate" value="<?= date('Y-m-d'); ?>" required>
+
                     </div>
 
 
                     <div class="col-md-6">
-                        <label for="customer">Customer: <span class="asterik">*</span></label>
+                        <label for="customer">Customer</label>
                         <select id="user_select" name="user_id" class="clientsSelect form-select form-select-md">
                             <option value="" selected hidden>--Search--</option>
                         </select>
@@ -77,7 +84,7 @@ $settings = get_Settings($connect);
 
 
                     <div class="col-md-6">
-                        <label for="Product">Product: <span class="asterik">*</span></label>
+                        <label for="Product">Product</label>
                         <select class="form-select form-select-md" id="ProductSelect" aria-label="Default select example">
                             <option value="" disabled selected>Choose...</option>
                             <?php foreach ($products as $product) : ?>
@@ -89,7 +96,7 @@ $settings = get_Settings($connect);
 
 
                     <div class="col-md-6">
-                        <label for="Product">Quantity: <span class="asterik">*</span></label>
+                        <label for="Product">Quantity</label>
                         <div class="input-group">
                             <input type="number" id="Quantity" class="form-control" aria-label="Dollar amount (with dot and two decimal places)">
                         </div>
@@ -97,7 +104,7 @@ $settings = get_Settings($connect);
 
 
                     <div class="col-md-6">
-                        <label for="UnitPrice">Unit Price: (<?= $settings[0]["CurrencySymbol"]; ?>)</label>
+                        <label for="UnitPrice">Unit Price (<?= $settings[0]["CurrencySymbol"]; ?>)</label>
                         <div class="input-group">
                             <input type="number" id="UnitPrice" class="form-control " readonly aria-label="Unit Price">
                         </div>
@@ -105,7 +112,7 @@ $settings = get_Settings($connect);
 
 
                     <div class="col-md-6">
-                        <label for="Product">Payment Method:</label>
+                        <label for="Product">Payment Method</label>
                         <select class="form-select form-select-md" id="Product" aria-label="Default select example">
                             <option value="" disabled selected>Choose...</option>
                             <?php foreach ($methods as $method) : ?>
@@ -117,7 +124,7 @@ $settings = get_Settings($connect);
 
 
                     <div class="col-md-6">
-                        <label for="PaymentStatus">Payment Status: <span class="asterik">*</span></label>
+                        <label for="PaymentStatus">Payment Status</label>
                         <select class="form-select form-select-md" id="PaymentStatus" aria-label="Default select example">
                             <option value="" selected>Choose</option>
                             <option value="pending">Pending</option>
@@ -132,25 +139,21 @@ $settings = get_Settings($connect);
 
 
                     <div class="col-md-6">
-                        <label for="paymentDate">Tax Symbol: <span class="asterik">*</span></label>
+                        <label for="paymentDate">Tax Symbol</label>
                         <span><?= $settings[0]["CurrencySymbol"]; ?></span>
                         <input type="radio" name="taxType" value="<?= $settings[0]["CurrencySymbol"]; ?>" checked id="taxCurrency">
                         <span>%</span>
                         <input type="radio" id="taxPercent" name="taxType" value="%">
                     </div>
                     <div class="col-md-6">
-                        <label for="paymentDate">Tax: <span class="asterik">*</span></label>
+                        <label for="paymentDate">Tax</label>
                         <input type="number" id="taxInput" class="form-control" required>
                     </div>
                     <div class="col-md-6">
-                        <label for="Product">Total: (<?= $settings[0]["CurrencySymbol"]; ?>)</label>
+                        <label for="Product">Total (<?= $settings[0]["CurrencySymbol"]; ?>)</label>
                         <div class="input-group">
                             <input type="number" id="Total" class="form-control" readonly aria-label="Dollar amount (with dot and two decimal places)">
                         </div>
-                    </div>
-                    <div class="col-md-6">
-                        <label for="paymentDate">Payment Date: <span class="asterik">*</span></label>
-                        <input type="date" id="paymentDate" class="form-control" name="paymentDate" required>
                     </div>
                     <div id="errorMsg"></div>
                     <div class="form-group">
@@ -305,8 +308,8 @@ $settings = get_Settings($connect);
                         displayMessage('errorMsg', 'Choose customer first', true);
                         return;
                     }
-                    if (!saleDate || !productID || !quantity || !unitPrice || !paymentMethodID || !PaymentStatus || !paymentDate) {
-                        displayMessage('errorMsg', 'FIll in all fields whith asterik (*)', true);
+                    if (!saleDate || !productID || !quantity || !unitPrice || !paymentMethodID || !PaymentStatus) {
+                        displayMessage('errorMsg', 'FIll in all fields', true);
                         return;
                     }
 
@@ -320,7 +323,7 @@ $settings = get_Settings($connect);
                         return;
                     }
 
-
+                    loader.style.display = "flex";
                     var formData = new FormData();
                     formData.append("saleDate", saleDate);
                     formData.append("clientID", clientID);
@@ -342,21 +345,25 @@ $settings = get_Settings($connect);
                         .then(response => response.json())
                         .then(data => {
                             if (data.success) {
-                                // Handle the response from the server
+                                loader.style.display = "none";
                                 displayMessage("errorMsg", data.message, false);
-
                                 setTimeout(() => {
-                                    loader.style.display = "none";
+                                    location.reload();
                                 }, 2000);
-                                location.reload();
+
                             }
                             if (!data.success) {
-                                // Handle the response from the server
+                                loader.style.display = "none";
                                 displayMessage("errorMsg", data.message, false);
+                                setTimeout(() => {
+                                    location.reload();
+                                }, 2000);
                             }
                         })
                         .catch(error => {
                             console.error('Error:', error);
+                            loader.style.display = "none";
+                            displayMessage("errorMsg", data.message, false);
                         });
 
 

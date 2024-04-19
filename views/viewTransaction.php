@@ -1,8 +1,12 @@
 <?php require_once "../controllers/session_Config.php"; ?>
 <?php
 require_once  '../database/pdo.php';
+require_once  '../modals/addPayment_mod.php';
 
 $connect = connectToDatabase($host, $dbname, $username, $password);
+$payments = getAllPayments($connect);
+
+
 ?>
 <?php require_once "header.php"; ?>
 <style>
@@ -30,16 +34,58 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
         margin-bottom: 24px;
     }
 
+    .main-content .content .tableActions {
+        display: flex;
+        flex-direction: row;
+        justify-content: end;
+        align-items: center;
+    }
+
+    .main-content .head .tableActions .bx {
+        padding: 5px;
+        cursor: pointer;
+        font-size: 1.2em;
+        margin-top: 20px;
+    }
+
+    .main-content .head .tableActions .searchBtn,
+    .main-content .head .tableActions .searchInput {
+        border: 1px solid var(--dark-grey);
+        outline: none;
+        display: none;
+        transition: all 0.5s ease-in-out;
+    }
+
+
+    .main-content .head .tableActions .searchInput {
+        width: 30%;
+        height: 30%;
+        padding: 5px;
+        border-top-right-radius: 10px;
+        border-bottom-right-radius: 10px;
+        font-size: 14px;
+    }
+
+    .main-content .head .tableActions .searchBtn {
+        background-color: var(--light);
+        color: var(--dark);
+        padding: 5px;
+        margin-right: 2px;
+        font-size: 14px;
+        border-top-left-radius: 5px;
+        border-bottom-left-radius: 5px;
+        height: 30%;
+    }
+
+    .main-content .head .tableActions .searchBtn:hover {
+        color: var(--light-green);
+        background-color: var(--blue);
+    }
+
     .main-content .content .head h3 {
         margin-right: auto;
         font-size: 24px;
         font-weight: 600;
-    }
-
-    .main-content .content .head .bx {
-        cursor: pointer;
-        font-size: 1.5em;
-        margin-top: 20px;
     }
 
     .main-content .content .order {
@@ -113,10 +159,6 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                 </ul>
             </div>
 
-            <a href="#" class="btn-download">
-                <i class='bx bxs-cloud-download'></i>
-                <span class="text">Download PDF</span>
-            </a>
         </div>
 
         <!-- toast -->
@@ -138,19 +180,18 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                 <div class="order">
 
                     <div class="head">
-                        <div class="col-md-6">
-                            <label for="salesperson">Search Customer:</label>
-                            <select class="form-select form-select-md " id="salesperson" aria-label="Default select example">
-                                <option selected>Customer 1</option>
-                                <option value="1">One</option>
-                                <option value="2">Two</option>
-                                <option value="3">Three</option>
-                            </select>
-                            <div class="output-icons">
-                                <i class='bx bxs-file-pdf'></i>
-                                <i class='bx bxs-printer'></i>
-                                <i class='bx bxs-download'></i>
-                                <i class='bx bx-filter'></i>
+                        <div class="col">
+                            <div class="h4 pb-2 mt-2 mb-2 border-bottom">
+                                <h3>View All Transactions</h3>
+                            </div>
+                            <div class="tableActions">
+                                <input type="submit" value="Search" class="searchBtn" id="searchBtn1">
+                                <input type="search" class="searchInput" id="searchInput1">
+                                <i class='bx bx-search' id="searchIcon1" onclick=""></i>
+                                <i class='bx bxs-printer' id="printIcon1"></i>
+                                <i class='bx bxs-spreadsheet' id="spreadsheetIcon1"></i>
+                                <!-- <i class='bx bx-filter'></i> -->
+
                             </div>
                         </div>
                     </div>
@@ -158,144 +199,60 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
 
 
                     <table class="mt-5">
-                        <thead>
+                        <thead id="thead1">
                             <tr>
                                 <th>TransactID</th>
                                 <th>Payment Date</th>
                                 <th>Payment Method</th>
                                 <th>Amount</th>
-                                <th>Plan</th>
-                                <th>Actions</th>
+                                <th>Status</th>
+                                <th>Type</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <td class="">00001</td>
-                                <td class="">1 / 01 / 2023 </td>
-                                <td><span class="">M-Pesa</span></td>
-                                <td><span class="">2000</span></td>
-                                <td><span class="">5mbps</span></td>
-                                <td>
-                                    <a href="#" data-target="main" class="btn btn-primary me-2">View</a>
-                                    <a href="#" data-target="addClient" class="btn btn-secondary">Edit</a>
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <td class="">00001</td>
-                                <td class="">1 / 01 / 2023 </td>
-                                <td><span class="">M-Pesa</span></td>
-                                <td><span class="">2000</span></td>
-                                <td><span class="">5mbps</span></td>
-                                <td>
-                                    <a href="#" data-target="main" class="btn btn-primary me-2">View</a>
-                                    <a href="#" data-target="addClient" class="btn btn-secondary">Edit</a>
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <td class="">00001</td>
-                                <td class="">1 / 01 / 2023 </td>
-                                <td><span class="">M-Pesa</span></td>
-                                <td><span class="">2000</span></td>
-                                <td><span class="">5mbps</span></td>
-                                <td>
-                                    <a href="#" data-target="main" class="btn btn-primary me-2">View</a>
-                                    <a href="#" data-target="addClient" class="btn btn-secondary">Edit</a>
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <td class="">00001</td>
-                                <td class="">1 / 01 / 2023 </td>
-                                <td><span class="">M-Pesa</span></td>
-                                <td><span class="">2000</span></td>
-                                <td><span class="">5mbps</span></td>
-                                <td>
-                                    <a href="#" data-target="main" class="btn btn-primary me-2">View</a>
-                                    <a href="#" data-target="addClient" class="btn btn-secondary">Edit</a>
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <td class="">00001</td>
-                                <td class="">1 / 01 / 2023 </td>
-                                <td><span class="">M-Pesa</span></td>
-                                <td><span class="">2000</span></td>
-                                <td><span class="">5mbps</span></td>
-                                <td>
-                                    <a href="#" data-target="main" class="btn btn-primary me-2">View</a>
-                                    <a href="#" data-target="addClient" class="btn btn-secondary">Edit</a>
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <td class="">00001</td>
-                                <td class="">1 / 01 / 2023 </td>
-                                <td><span class="">M-Pesa</span></td>
-                                <td><span class="">2000</span></td>
-                                <td><span class="">5mbps</span></td>
-                                <td>
-                                    <a href="#" data-target="main" class="btn btn-primary me-2">View</a>
-                                    <a href="#" data-target="addClient" class="btn btn-secondary">Edit</a>
-                                </td>
-                            </tr>\
-                            <tr>
-                                <td class="">00001</td>
-                                <td class="">1 / 01 / 2023 </td>
-                                <td><span class="">M-Pesa</span></td>
-                                <td><span class="">2000</span></td>
-                                <td><span class="">5mbps</span></td>
-                                <td>
-                                    <a href="#" data-target="main" class="btn btn-primary me-2">View</a>
-                                    <a href="#" data-target="addClient" class="btn btn-secondary">Edit</a>
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <td class="">00001</td>
-                                <td class="">1 / 01 / 2023 </td>
-                                <td><span class="">M-Pesa</span></td>
-                                <td><span class="">2000</span></td>
-                                <td><span class="">5mbps</span></td>
-                                <td>
-                                    <a href="#" data-target="main" class="btn btn-primary me-2">View</a>
-                                    <a href="#" data-target="addClient" class="btn btn-secondary">Edit</a>
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <td class="">00001</td>
-                                <td class="">1 / 01 / 2023 </td>
-                                <td><span class="">M-Pesa</span></td>
-                                <td><span class="">2000</span></td>
-                                <td><span class="">5mbps</span></td>
-                                <td>
-                                    <a href="#" data-target="main" class="btn btn-primary me-2">View</a>
-                                    <a href="#" data-target="addClient" class="btn btn-secondary">Edit</a>
-                                </td>
-                            </tr>
-
+                        <tbody class="searchData">
+                            <?php if ($payments) : ?>
+                                <?php foreach ($payments as $payment) : ?>
+                                    <tr>
+                                        <td><?= $payment['InvoiceNumber'] ?></td>
+                                        <td><?= $payment['PaymentDate'] ?></td>
+                                        <td><?= isset($payment['PaymentOptionName']) ? $payment['PaymentOptionName'] : '' ?></td>
+                                        <td><?= isset($payment['PaymentAmount']) ? $payment['PaymentAmount'] : $payment['Total'] ?></td>
+                                        <td><?= isset($payment['PaymentStatus']) ? $payment['PaymentStatus'] : '' ?></td>
+                                        <td><?= $payment['type'] ?></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php else : ?>
+                                <tr>
+                                    <td>Something went wrong</td>
+                                </tr>
+                            <?php endif; ?>
                         </tbody>
                     </table>
 
                 </div>
-
             </div>
-            <nav aria-label="Page navigation example">
-                <ul class="pagination">
-                    <li class="page-item">
-                        <a class="page-link" href="#" aria-label="Previous">
-                            <span aria-hidden="true">&laquo;</span>
-                        </a>
-                    </li>
-                    <li class="page-item"><a class="page-link" href="#">1</a></li>
-                    <li class="page-item"><a class="page-link" href="#">2</a></li>
-                    <li class="page-item"><a class="page-link" href="#">3</a></li>
-                    <li class="page-item">
-                        <a class="page-link" href="#" aria-label="Next">
-                            <span aria-hidden="true">&raquo;</span>
-                        </a>
-                    </li>
-                </ul>
-            </nav>
+
+            <?php require_once "footer.php"; ?>
+
+            <script>
+                const searchIcon1 = document.getElementById('searchIcon1');
+                const searchInput1 = document.getElementById('searchInput1');
+                const searchBtn1 = document.getElementById('searchBtn1');
+                const printIcon1 = document.getElementById('printIcon1');
+                const spreadsheetIcon1 = document.getElementById('spreadsheetIcon1');
+                const thead1 = document.getElementById('thead1');
+                const searchData = document.getElementsByClassName('searchData');
+                const pageUrl1 = '../controllers/searchTransactionData_contr.php';
+                addSearchEventListener(searchIcon1, searchInput1, searchBtn1);
+
+                Search(searchBtn1, searchInput1, pageUrl1, 'searchData');
+
+                printIcon1.addEventListener('click', function() {
+                    // Access the first element with the class 'searchSales'
+                    printTable(printIcon1, searchData[0], 'thead1');
+                });
+
+                spreadsheetIcon1.addEventListener("click", function() {
+                    exportToCSV(thead1, searchData[0]);
+                })
+            </script>

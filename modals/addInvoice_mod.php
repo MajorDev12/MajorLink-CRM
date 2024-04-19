@@ -20,7 +20,7 @@ VALUES (:clientID, :invoiceNumber, :totalAmount, :paymentDate, :startDate, :dueD
         $statement->execute();
 
         // Return the last inserted InvoiceID
-        return $connect->lastInsertId();
+        return true;
     } catch (PDOException $e) {
         echo "Error: " . $e->getMessage();
         return false;
@@ -272,6 +272,66 @@ function searchProductsData($connect, $searchInput)
         return false;
     }
 }
+
+
+
+
+
+
+function searchServicesandPaymentsData($connect, $searchInput)
+{
+    try {
+        // Use a prepared statement to prevent SQL injection
+        $query = "(SELECT 
+        'Product' AS type,
+        sales.InvoiceNumber,
+        sales.Total AS amount,
+        sales.PaymentStatus AS status,
+        sales.SaleDate AS PaymentDate,
+        paymentoptions.PaymentOptionName
+    FROM sales
+    LEFT JOIN paymentoptions ON sales.PaymentOptionID = paymentoptions.PaymentOptionID
+    WHERE sales.PaymentStatus LIKE :searchInput 
+        OR sales.InvoiceNumber LIKE :searchInput 
+        OR sales.Total LIKE :searchInput)
+    UNION
+    (SELECT 
+        'Plan' AS type,
+        payments.InvoiceNumber,
+        payments.PaymentAmount,
+        payments.PaymentStatus,
+        payments.PaymentDate,
+        paymentoptions.PaymentOptionName
+    FROM payments
+    LEFT JOIN paymentoptions ON payments.PaymentOptionID = paymentoptions.PaymentOptionID
+    WHERE payments.PaymentStatus LIKE :searchInput 
+        OR payments.InvoiceNumber LIKE :searchInput 
+        OR payments.PaymentAmount LIKE :searchInput 
+        OR paymentoptions.PaymentOptionName LIKE :searchInput)
+    ORDER BY PaymentDate DESC
+    ";
+
+        $statement = $connect->prepare($query);
+        $statement->bindValue(':searchInput', '%' . $searchInput . '%', PDO::PARAM_STR);
+        $statement->execute();
+
+        $results = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        return $results;
+    } catch (PDOException $e) {
+        // Handle the exception as needed
+        echo "Error: " . $e->getMessage();
+        return false;
+    }
+}
+
+
+
+
+
+
+
+
 
 
 

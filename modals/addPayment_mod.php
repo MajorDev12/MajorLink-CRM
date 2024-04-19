@@ -1,13 +1,14 @@
 <?php
 
 
-function insertPaymentData($clientId, $PlanID, $PlanAmount, $paymentStatus, $paymentDate, $paymentMethodID, $InstallationFees, $connect)
+function insertPaymentData($clientId, $PlanID, $invoiceNumber, $PlanAmount, $paymentStatus, $paymentDate, $paymentMethodID, $InstallationFees, $connect)
 {
     try {
-        $query = "INSERT INTO Payments (ClientID, PlanID, PaymentAmount, PaymentStatus, PaymentDate, PaymentOptionID, InstallationFees) VALUES (:clientId, :PlanID, :PlanAmount, :paymentStatus, :paymentDate, :paymentMethodID, :InstallationFees)";
+        $query = "INSERT INTO Payments (ClientID, PlanID, InvoiceNumber, PaymentAmount, PaymentStatus, PaymentDate, PaymentOptionID, InstallationFees) VALUES (:clientId, :PlanID, :invoiceNumber, :PlanAmount, :paymentStatus, :paymentDate, :paymentMethodID, :InstallationFees)";
         $statement = $connect->prepare($query);
         $statement->bindParam(':clientId', $clientId);
         $statement->bindParam(':PlanID', $PlanID);
+        $statement->bindParam(':invoiceNumber', $invoiceNumber);
         $statement->bindParam(':PlanAmount', $PlanAmount);
         $statement->bindParam(':paymentStatus', $paymentStatus);
         $statement->bindParam(':paymentDate', $paymentDate);
@@ -46,6 +47,7 @@ function getPayments($connect, $clientId)
         $sql = "SELECT 
             payments.PaymentAmount,
             payments.PaymentStatus,
+            payments.InvoiceNumber,
             payments.PaymentDate,
             paymentoptions.PaymentOptionName,
             plans.Volume 
@@ -62,5 +64,44 @@ function getPayments($connect, $clientId)
         return $result;
     } catch (Exception $e) {
         return "Error: " . $e->getMessage();
+    }
+}
+
+
+
+
+
+function getAllPayments($connect)
+{
+    try {
+        $sql = "(SELECT 
+                    'Plan' AS type,
+                    payments.PaymentAmount,
+                    payments.PaymentStatus,
+                    payments.InvoiceNumber,
+                    payments.PaymentDate,
+                    paymentoptions.PaymentOptionName
+                FROM payments
+                LEFT JOIN paymentoptions ON payments.PaymentOptionID = paymentoptions.PaymentOptionID
+                LEFT JOIN plans ON payments.PlanID = plans.PlanID)
+                UNION
+                (SELECT 
+                    'Product' AS type,
+                    sales.Total,
+                    sales.PaymentStatus,
+                    sales.InvoiceNumber,
+                    sales.SaleDate AS PaymentDate,
+                    paymentoptions.PaymentOptionName
+                FROM sales
+                LEFT JOIN paymentoptions ON sales.PaymentOptionID = paymentoptions.PaymentOptionID)
+                ORDER BY PaymentDate DESC";
+
+        $statement = $connect->prepare($sql);
+        $statement->execute();
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        return $result;
+    } catch (PDOException $e) {
+        return array("error" => "Error: " . $e->getMessage()); // Return an array with an error message
     }
 }

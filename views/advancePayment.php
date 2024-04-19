@@ -95,7 +95,7 @@ $symbol = $settings[0]["CurrencySymbol"];
                 <form class="row g-3 form">
                     <div class="form-group">
                         <label for="paymentDate">Payment Date:</label>
-                        <input type="date" id="paymentDate" name="paymentDate" required>
+                        <input type="date" id="paymentDate" value="<?= date('Y-m-d'); ?>" name="paymentDate" required>
                     </div>
                     <div class="col-md-6">
                         <label for="fromDate">From Date:</label>
@@ -184,7 +184,7 @@ $symbol = $settings[0]["CurrencySymbol"];
 
                             foreach ($methods as $method) {
                                 $selected = ''; // Adjust this based on your logic for selecting a default method
-                                echo '<option value="' . $method['PaymentOptionID'] . '" ' . $selected . ' data-method-id="' . $method['PaymentOptionName'] . '">' . $method['PaymentOptionName'] . '</option>';
+                                echo '<option value="' . $method['PaymentOptionID'] . '" data-method-id="' . $method['PaymentOptionName'] . '">' . $method['PaymentOptionName'] . '</option>';
                             }
                             ?>
                         </select>
@@ -268,10 +268,11 @@ $symbol = $settings[0]["CurrencySymbol"];
                     var fromDate;
 
 
-                    if (!selectedClientId, !amountPaid, !selectedPlan, !PaymentMethod, !paymentDate) {
-                        displayMessage("errorMsg", "fill in all fields", true);
+                    if (!selectedClientId || !amountPaid || !selectedPlan || !PaymentMethod || !paymentDate) {
+                        displayMessage("errorMsg", "Please fill in all fields", true);
                         return;
                     }
+
 
                     fromDate = expireDate ? String(expireDate) : String(paymentDate);
 
@@ -323,6 +324,7 @@ $symbol = $settings[0]["CurrencySymbol"];
                         formData.append("calculatedExpireDate", calculatedExpireDate);
                         formData.append("selectedPlan", selectedPlan);
                         formData.append("PaymentMethod", PaymentMethod);
+                        formData.append("durationInMonths", durationInMonths);
 
 
                         // Perform fetch API request
@@ -334,19 +336,37 @@ $symbol = $settings[0]["CurrencySymbol"];
                             .then(data => {
                                 if (data.paymentSuccess) {
                                     // Handle the response from the server
-                                    displayMessage("errorMsg", "Successfuly updated", false);
-                                    localStorage.setItem('AddNewClientPaymentToast', 'true');
-                                    location.reload();
+                                    let anyFailure = false;
+
+                                    // Iterate over the response object keys
+                                    for (let key in data) {
+                                        // Check if the value is falsy (except for success)
+                                        if (data.hasOwnProperty(key) && key !== 'success' && !data[key]) {
+                                            anyFailure = true;
+                                            console.log(`${key}: Failure`);
+                                        }
+                                    }
+
+                                    // Display error message if any operation failed
+                                    if (anyFailure) {
+                                        displayMessage("errorMsg", `${key}: Failure`, true);
+                                        // displayMessage("errorMsg", data.success, false);
+                                    } else {
+                                        displayMessage("errorMsg", "Successfuly updated", false);
+                                        localStorage.setItem('AddNewClientPaymentToast', 'true');
+                                        location.reload();
+                                    }
+
+                                    // Hide loader after 2 seconds
                                     setTimeout(() => {
                                         loader.style.display = "none";
                                     }, 2000);
+
                                 }
                             })
                             .catch(error => {
                                 console.error('Error:', error);
                             });
-
-
                     }
 
 

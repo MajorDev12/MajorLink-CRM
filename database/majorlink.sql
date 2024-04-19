@@ -182,6 +182,7 @@ CREATE TABLE payments (
     PaymentID INT PRIMARY KEY AUTO_INCREMENT,
     ClientID INT,
     PlanID INT,
+    InvoiceNumber VARCHAR(50) NULL,
     PaymentAmount DECIMAL(10, 2) NOT NULL,
     PaymentStatus VARCHAR(50),
     PaymentDate DATE,

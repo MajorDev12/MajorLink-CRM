@@ -2,7 +2,7 @@
 require_once "../controllers/session_Config.php";
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (isset($_POST["expenseDate"], $_POST["expenseSelected"], $_POST["amountSpent"], $_POST["methodSelected"], $_POST["expenseDescription"], $_FILES["PaymentRecieptFile"])) {
+    if (isset($_POST["expenseDate"], $_POST["expenseSelected"], $_POST["amountSpent"], $_POST["methodSelected"])) {
         sleep(1);
         require_once  '../database/pdo.php';
         require_once  '../modals/addExpense_mod.php';
@@ -15,8 +15,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $expenseSelected = $_POST["expenseSelected"];
         $amountSpent = $_POST["amountSpent"];
         $methodSelected = $_POST["methodSelected"];
-        $expenseDescription = $_POST["expenseDescription"];
-        $PaymentRecieptFile = $_FILES["PaymentRecieptFile"];
+        $expenseDescription = $_FILES["expenseDescription"] ?? '';
+        $uploadedFilePath = '';
 
         // Check if the file was uploaded without errors
         if (isset($_FILES["PaymentRecieptFile"]) && $_FILES["PaymentRecieptFile"]["error"] == UPLOAD_ERR_OK) {
@@ -51,16 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $error = "Error: Failed to upload file.";
                 }
             }
-        } else {
-            $response = [
-                'success' => false,
-                'message' => $error
-            ];
-            echo json_encode($response);
-            exit();
         }
-
-
 
         $updated = addExpense($connect, $expenseDate, $expenseSelected, $amountSpent, $methodSelected, $expenseDescription, $uploadedFilePath);
 

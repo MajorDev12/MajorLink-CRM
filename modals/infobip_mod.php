@@ -30,7 +30,7 @@ function sendSMS($provider, $number, $message)
         $message = new SmsTextualMessage(
             destinations: [$destination],
             text: $message,
-            from: "daveh"
+            from: "MajorLink"
         );
 
         $request = new SmsAdvancedTextualRequest(messages: [$message]);

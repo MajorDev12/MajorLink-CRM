@@ -100,6 +100,9 @@ label {
 #user_select{
 	background-color: var(--light);
 }
+.show {
+	display: inline-block !important;
+}
 table{
 	background-color: var(--light);
 	width: 100%;

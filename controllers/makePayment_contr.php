@@ -5,7 +5,6 @@ $errors = array();
 if (isset($_POST["ClientId"])) {
     sleep(2);
     require_once  '../database/pdo.php';
-    require_once  '../modals/updateBalance_mod.php';
     require_once  '../modals/viewSingleUser_mod.php';
     require_once  '../modals/checkAdvanceIsSet_mod.php';
     require_once  '../modals/addPayment_mod.php';
@@ -98,7 +97,7 @@ if (isset($_POST["ClientId"])) {
     if (empty($errors)) {
         // Insert payment data, update plan, and change status
         if ($activeStatus) {
-            $paymentSuccess = insertPaymentData($clientId, $PlanID, $PlanAmount, $paymentStatus, $paymentDate, $paymentMethodID, $InstallationFees, $connect);
+            $paymentSuccess = insertPaymentData($clientId, $PlanID, $invoiceNumber, $PlanAmount, $paymentStatus, $paymentDate, $paymentMethodID, $InstallationFees, $connect);
             $updatedPlan = updatePlan($clientId, $PlanID, $expireDate, $last_paymentDate, $connect);
             $statusChanged = changeStatus($clientId, $activeStatus, $connect);
             $success = 'Payment Added Successfuly';
@@ -108,7 +107,7 @@ if (isset($_POST["ClientId"])) {
             sendSuccessMessage($clientId, $time, $connect);
             sendTextMessage($Clientnumber, $PlanVolume, $expireDate);
         } else {
-            $paymentSuccess = insertPaymentData($clientId, $PlanID, $PlanAmount, $paymentStatus, $paymentDate, $paymentMethodID, $InstallationFees, $connect);
+            $paymentSuccess = insertPaymentData($clientId, $PlanID, $invoiceNumber, $PlanAmount, $paymentStatus, $paymentDate, $paymentMethodID, $InstallationFees, $connect);
             $updatedPlan = updatePlan($clientId, $PlanID, $expireDate, $last_paymentDate, $connect);
             $statusChanged = changeStatus($clientId, $activeStatus, $connect);
             $success = 'Payment Added Successfuly';

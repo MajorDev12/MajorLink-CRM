@@ -339,10 +339,7 @@ $symbol = $settings[0]["CurrencySymbol"];
                 </ul>
             </div>
 
-            <a href="#" class="btn-download">
-                <i class='bx bxs-cloud-download'></i>
-                <span class="text">Download PDF</span>
-            </a>
+
         </div>
 
         <!-- content-container -->
@@ -957,20 +954,6 @@ $symbol = $settings[0]["CurrencySymbol"];
 
 
                 document.addEventListener('DOMContentLoaded', function() {
-
-                    function addSearchEventListener(searchIcon, searchInput, searchBtn) {
-                        searchIcon.addEventListener('click', function() {
-                            // Toggle the 'show' class on searchInput and searchBtn
-                            searchInput.classList.toggle('show');
-                            searchBtn.classList.toggle('show');
-
-                            // Focus on the searchInput when it becomes visible
-                            if (searchInput.classList.contains('show')) {
-                                searchInput.focus();
-                            }
-                        });
-                    }
-
 
                     const searchIcon1 = document.getElementById('searchIcon1');
                     const searchInput1 = document.getElementById('searchInput1');

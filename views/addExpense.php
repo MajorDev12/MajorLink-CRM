@@ -1,5 +1,6 @@
 <?php require_once "../controllers/session_Config.php"; ?>
 <?php require_once "header.php"; ?>
+<?php require_once "style.config.php"; ?>
 <?php
 require_once  '../database/pdo.php';
 require_once  '../modals/addExpenseType_mod.php';
@@ -39,10 +40,6 @@ $methods = getPaymentMethods($connect);
                 </ul>
             </div>
 
-            <a href="#" class="btn-download">
-                <i class='bx bxs-cloud-download'></i>
-                <span class="text">Download PDF</span>
-            </a>
         </div>
 
         <!-- content-container -->
@@ -51,7 +48,7 @@ $methods = getPaymentMethods($connect);
                 <div class="row g-3 form">
                     <div class="form-group">
                         <label for="expenseDate">Expense Date:</label>
-                        <input type="date" id="expenseDate">
+                        <input type="date" value="<?= date('Y-m-d'); ?>" id="expenseDate">
                     </div>
 
                     <div class="col-md-6">
@@ -91,7 +88,7 @@ $methods = getPaymentMethods($connect);
 
                     <div class="col-md-12">
                         <label for="">Expense Description</label>
-                        <textarea name="expenseDescription" id="expenseDescription" cols="100" rows="10"></textarea>
+                        <textarea class="p-3" name="expenseDescription" id="expenseDescription" cols="100" rows="10"></textarea>
                     </div>
                     <!-- Rest of the form fields remain the same -->
                     <!-- ... -->
@@ -124,6 +121,7 @@ $methods = getPaymentMethods($connect);
                         return;
                     }
 
+                    loader.style.display = "flex";
 
                     var formData = new FormData();
                     formData.append("expenseDate", expenseDate.value);
@@ -142,7 +140,6 @@ $methods = getPaymentMethods($connect);
                         .then(response => response.json())
                         .then(data => {
                             if (data.success) {
-                                // Handle the response from the server
                                 displayMessage("errorMsg", data.message, false);
 
                                 setTimeout(() => {
@@ -151,12 +148,15 @@ $methods = getPaymentMethods($connect);
                                 location.reload();
                             }
                             if (!data.success) {
+                                loader.style.display = "none";
                                 // Handle the response from the server
                                 displayMessage("errorMsg", data.message, false);
                             }
                         })
                         .catch(error => {
                             console.error('Error:', error);
+                            loader.style.display = "none";
+                            displayMessage("errorMsg", "Network Error", false);
                         });
 
 
