@@ -4,12 +4,27 @@ require_once  '../database/pdo.php';
 require_once  '../modals/getClientsNames_mod.php';
 require_once  '../modals/addPlan_mod.php';
 require_once  '../modals/getPaymentMethods_mod.php';
+require_once  '../modals/setup_mod.php';
 
 $connect = connectToDatabase($host, $dbname, $username, $password);
+
+$settings = get_Settings($connect);
+$symbol = $settings[0]["CurrencySymbol"];
 ?>
 
 <?php require_once "header.php"; ?>
 
+<style>
+    .setfrom {
+        color: var(--green);
+        font-weight: 700;
+    }
+
+    .expiredate {
+        color: var(--red);
+        font-weight: 600;
+    }
+</style>
 
 <!-- SIDEBAR -->
 <?php require_once "side_nav.php"; ?>
@@ -35,36 +50,28 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                     </li>
                     <li><i class='bx bx-chevron-right'></i></li>
                     <li>
-                        <a class="active" href="#">Home</a>
+                        <a class="active" href="#">Advance Payment</a>
                     </li>
                 </ul>
             </div>
 
-            <a href="#" class="btn-download">
-                <i class='bx bxs-cloud-download'></i>
-                <span class="text">Download PDF</span>
-            </a>
         </div>
 
-
+        <div id="overlay"></div>
         <!-- Add this to your HTML for the modal -->
-        <div class="modal" id="deleteModal">
-            <div id="modalBackground"></div>
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Confirm Payment</h5>
-                        <button type="button" id="closeDelModal" class="close" data-dismiss="modal">&times;</button>
-                    </div>
+        <div class="modal-container" id="deleteModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirm Payment</h5>
+                    <button type="button" id="closeDelModal" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p class="mt-3 pb-1"></p>
+                </div>
 
-                    <div class="modal-body">
-                        <p class="mt-3 pb-1"></p>
-                    </div>
-
-                    <div class="modal-footer">
-                        <button type="button" id="ContinueBtn" class="btn btn-success ml-3">Continue</button>
-                        <button type="button" id="CancelBtn" class="btn btn-danger ml-3">Cancel</button>
-                    </div>
+                <div class="modal-footer">
+                    <button type="button" id="ContinueBtn" class="btn btn-success ml-3">Continue</button>
+                    <button type="button" id="CancelBtn" class="btn btn-danger ml-3">Cancel</button>
                 </div>
             </div>
         </div>
@@ -106,12 +113,24 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                         </select>
                     </div>
                     <div class="col-md-6">
-                        <label for="customer">Amount Paid:</label>
+                        <label for="customer">Months:</label>
                         <div class="input-group">
-                            <input type="number" id="AmountPaid" class="form-control" aria-label="Dollar amount (with dot and two decimal places)">
+                            <select id="selectedMonths" class="form-select">
+                                <option selected value="1">1 - month</option>
+                                <option value="2">2 - months</option>
+                                <option value="3">3 - months</option>
+                                <option value="4">4 - months</option>
+                                <option value="5">5 - months</option>
+                                <option value="6">6 - months</option>
+                                <option value="7">7 - months</option>
+                                <option value="8">8 - months</option>
+                                <option value="9">9 - months</option>
+                                <option value="10">10 - months</option>
+                                <option value="11">11 - months</option>
+                                <option value="12">12 - months</option>
+                            </select>
                         </div>
                     </div>
-
 
 
                     <div class="col-md-6">
@@ -128,6 +147,34 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                             ?>
                         </select>
                     </div>
+
+
+                    <div class="col-md-6">
+                        <label for="customer">Amount Paid (<?= $symbol; ?>)</label>
+                        <div class="input-group">
+                            <input type="number" readonly id="AmountPaid" class="form-control" aria-label="Dollar amount (with dot and two decimal places)">
+                        </div>
+                    </div>
+
+                    <script>
+                        $(document).ready(function() {
+                            $('#plan').change(function() {
+                                var selectedPlan = $(this).find(':selected');
+                                var planAmountInput = $('#AmountPaid');
+
+                                if (!isNaN(selectedPlan.val())) {
+                                    var planPrice = selectedPlan.data('amount');
+                                    planAmountInput.val(planPrice);
+                                } else {
+                                    planAmountInput.val(''); // Clear the input if "Choose..." is selected
+                                }
+                            });
+                        });
+                    </script>
+
+
+
+
                     <div class="col-md-6">
                         <label for="PaymentMethod">Payment Method:</label>
                         <select class="form-select form-select-md" id="PaymentMethod" aria-label="Default select example">
@@ -215,6 +262,7 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                     var SetfromDate = document.getElementById("fromDate").value;
                     var toDateInput = document.getElementById("toDate").value;
                     var errorMsg = document.getElementById("errorMsg");
+                    var selectedMonths = document.getElementById("selectedMonths").value;
                     var planPrice = $("#plan option:selected").data("amount");
                     var amountPaid = $("#AmountPaid").val();
                     var fromDate;
@@ -239,8 +287,8 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                     document.getElementById("fromDate").value = SetfromDate;
 
                     // Calculate the expiration date based on plan price and amount paid
-                    var durationInMonths = Math.floor(amountPaid / planPrice);
-                    var balance = amountPaid - (durationInMonths * planPrice);
+                    var durationInMonths = Math.floor(selectedMonths);
+
                     var amountSet = (durationInMonths * planPrice);
 
 
@@ -248,7 +296,7 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                     document.getElementById("toDate").value = calculatedExpireDate;
 
                     if (durationInMonths > 0) {
-                        showModal(durationInMonths, SetfromDate, calculatedExpireDate, balance)
+                        showModal(durationInMonths, SetfromDate, calculatedExpireDate)
                     } else {
                         showEmptyModal();
                     }
@@ -271,7 +319,6 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                         formData.append("selectedClientId", selectedClientId);
                         formData.append("paymentDate", paymentDate);
                         formData.append("SetfromDate", SetfromDate);
-                        formData.append("balance", balance);
                         formData.append("amountSet", amountSet);
                         formData.append("calculatedExpireDate", calculatedExpireDate);
                         formData.append("selectedPlan", selectedPlan);
@@ -347,26 +394,21 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
 
 
 
-                function showModal(durationInMonths, SetfromDate, calculatedExpireDate, balance) {
-
+                function showModal(durationInMonths, SetfromDate, calculatedExpireDate) {
                     // Display the modal with the balance information
                     var modalContent = document.querySelector(".modal-body p");
-                    var shouldFormat = balance.toLocaleString(undefined, {
-                        style: "currency",
-                        currency: "KSH"
-
-                    });
 
                     // Update modal content with the calculated balance
-                    modalContent.innerText = `The Advance Payment Will Run For ${durationInMonths} Months and Start on ${SetfromDate} to ${calculatedExpireDate}.The Remaining Balance of ${shouldFormat} Will Be Sent To The Clients Account`;
+                    modalContent.innerHTML = `The Advance Payment Will Run For ${durationInMonths} Month(s) and Start on <span class="setfrom">${SetfromDate}</span> to <span class="expiredate">${calculatedExpireDate}</span>.`;
+
 
                     document.getElementById("deleteModal").style.display = "block";
-                    document.getElementById("modalBackground").style.display = "block";
+                    document.getElementById("overlay").style.display = "block";
                     document.getElementById("ContinueBtn").style.display = "block";
 
                 }
 
-                showEmptyModal
+
 
                 function showEmptyModal() {
 
@@ -378,39 +420,19 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                     modalContent.innerText = `Amount Entered is Less than the Selected Plan`;
 
                     document.getElementById("deleteModal").style.display = "block";
-                    document.getElementById("modalBackground").style.display = "block";
+                    document.getElementById("overlay").style.display = "block";
                     document.getElementById("ContinueBtn").style.display = "none";
 
                 }
 
 
 
-                function displayMessage(messageElement, message, isError, ) {
-                    // Get the HTML element where the message should be displayed
-                    var targetElement = document.getElementById(messageElement);
-
-                    // Set the message text
-                    targetElement.innerText = message;
-
-                    // Add styling based on whether it's an error or success
-                    if (isError) {
-                        targetElement.style.color = 'red';
-                    } else {
-                        targetElement.style.color = 'green';
-                    }
-
-                    // Set a timeout to hide the message with the fade-out effect
-                    setTimeout(function() {
-                        targetElement.innerText = '';
-                    }, 1000);
-                }
-
 
 
                 function closeModal() {
                     // Close the modal
                     document.getElementById("deleteModal").style.display = "none";
-                    document.getElementById("modalBackground").style.display = "none";
+                    document.getElementById("overlay").style.display = "none";
                 }
 
 

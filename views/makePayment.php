@@ -5,8 +5,12 @@ require_once  '../database/pdo.php';
 require_once  '../modals/getClientsNames_mod.php';
 require_once  '../modals/getPaymentMethods_mod.php';
 require_once  '../modals/addPlan_mod.php';
+require_once  '../modals/setup_mod.php';
 
 $connect = connectToDatabase($host, $dbname, $username, $password);
+
+$settings = get_Settings($connect);
+$symbol = $settings[0]["CurrencySymbol"];
 ?>
 <?php require_once "header.php"; ?>
 
@@ -105,7 +109,7 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                     </div>
 
                     <div class="col-md-6">
-                        <label for="customer">Amount Paid:</label>
+                        <label for="customer">Amount Paid (<?= $symbol; ?>)</label>
                         <div class="input-group">
                             <input type="number" id="Amount" readonly class="form-control" aria-label="Dollar amount (with dot and two decimal places)">
                         </div>

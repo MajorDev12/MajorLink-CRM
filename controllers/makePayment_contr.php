@@ -34,6 +34,8 @@ if (isset($_POST["ClientId"])) {
     $clientData = getClientDataById($connect, $clientId);
     $Clientnumber = $clientData["PrimaryNumber"];
 
+    $invoiceNumber = generateInvoiceNumber();
+
     $planData = getPlanDataByID($connect, $PlanID);
     $PlanVolume = $planData['Volume'];
     $paidMonths = 1;
@@ -80,7 +82,7 @@ if (isset($_POST["ClientId"])) {
     // Format the dates for insertion into the database
     $paymentDate = $paymentDateObject->format('Y-m-d');
     $last_paymentDate = $paymentDateObject->format('Y-m-d');
-    $expireDate = $expireDateObject->format('Y-m-d H:i:s');
+    $expireDate = $expireDateObject->format('Y-m-d');
 
     // Check if paymentStatus is either "Paid" or "Pending"
     $activeStatus = 0;
@@ -99,20 +101,17 @@ if (isset($_POST["ClientId"])) {
             $paymentSuccess = insertPaymentData($clientId, $PlanID, $PlanAmount, $paymentStatus, $paymentDate, $paymentMethodID, $InstallationFees, $connect);
             $updatedPlan = updatePlan($clientId, $PlanID, $expireDate, $last_paymentDate, $connect);
             $statusChanged = changeStatus($clientId, $activeStatus, $connect);
-            $success = 'Client Added Successfuly';
+            $success = 'Payment Added Successfuly';
 
-            $invoiceNumber = generateInvoiceNumber();
-
-            // Call createAndSaveInvoice function with the generated invoice number
-            createAndSaveInvoice($clientId, $invoiceNumber, $paidAmount, $expireDate, $time, $paymentDate, $symbol, $connect);
-            saveInvoiceProducts($connect, $invoiceNumber, $paidAmount, $invoiceProducts);
+            createSaveInvoice($clientId, $invoiceNumber, $PlanAmount, $expireDate, $time, $paymentDate, $symbol, $connect);
+            saveInvoiceProducts($connect, $invoiceNumber, $PlanAmount, $invoiceProducts);
             sendSuccessMessage($clientId, $time, $connect);
             sendTextMessage($Clientnumber, $PlanVolume, $expireDate);
         } else {
             $paymentSuccess = insertPaymentData($clientId, $PlanID, $PlanAmount, $paymentStatus, $paymentDate, $paymentMethodID, $InstallationFees, $connect);
             $updatedPlan = updatePlan($clientId, $PlanID, $expireDate, $last_paymentDate, $connect);
             $statusChanged = changeStatus($clientId, $activeStatus, $connect);
-            $success = 'Client Added Successfuly';
+            $success = 'Payment Added Successfuly';
         }
     } else {
         // If there are errors, construct an error message
@@ -133,44 +132,6 @@ if (isset($_POST["ClientId"])) {
 
     echo json_encode($response);
     exit();
-
-
-
-
-
-
-
-    function createAndSaveInvoice($ClientID, $invoiceNumber, $paidAmount, $expireDate, $time, $paymentDate, $taxSymbol, $connect)
-    {
-        $totalAmount = $paidAmount;
-        $startDate = $time;
-        $paymentDate = $paymentDate;
-        $taxSymbol = $_SESSION["currencySymbol"];
-        $taxAmount = 0;
-        $dueDate = $expireDate;
-        $status = "Paid";
-        addInvoice($connect, $ClientID, $invoiceNumber, $totalAmount, $paymentDate, $startDate, $dueDate, $status, $taxSymbol, $taxAmount);
-    }
-
-
-    function sendSuccessMessage($ClientID, $createdDate, $connect)
-    {
-        $SenderName = 'system';
-        $MessageType = 'Transaction-success';
-        $MessageContent = 'Your payment has been received successfully';
-        $Status = 0;
-        insertMessage($connect, $SenderName, $ClientID, $MessageType, $MessageContent, $createdDate, $Status);
-    }
-
-    function sendTextMessage($Clientnumber, $planVolume, $expireDate)
-    {
-        $expireDate = new DateTime($expireDate);
-        $expireDate = $expireDate->format('j F Y');
-
-        $provider = 'Infobip';
-        $message = 'You have successfully subscribed to ' . $planVolume . ' Your subscription will be renewed on ' . $expireDate . ' Thank you for choosing MajorLink';
-        sendSMS($provider, $Clientnumber, $message);
-    }
 } else {
     // If the request method is not POST, return an error response
     $response = [
@@ -179,4 +140,44 @@ if (isset($_POST["ClientId"])) {
     ];
 
     echo json_encode($response);
+}
+
+
+
+
+
+
+
+
+
+function createSaveInvoice($ClientID, $invoiceNumber, $paidAmount, $expireDate, $time, $paymentDate, $taxSymbol, $connect)
+{
+    $totalAmount = $paidAmount;
+    $startDate = $time;
+    $paymentDate = $paymentDate;
+    $taxSymbol = $taxSymbol;
+    $taxAmount = 0;
+    $dueDate = $expireDate;
+    $status = "Paid";
+    addInvoice($connect, $ClientID, $invoiceNumber, $totalAmount, $paymentDate, $startDate, $dueDate, $status, $taxSymbol, $taxAmount);
+}
+
+
+function sendSuccessMessage($ClientID, $createdDate, $connect)
+{
+    $SenderName = 'system';
+    $MessageType = 'Transaction-success';
+    $MessageContent = 'Your payment has been received successfully';
+    $Status = 0;
+    insertMessage($connect, $SenderName, $ClientID, $MessageType, $MessageContent, $createdDate, $Status);
+}
+
+function sendTextMessage($Clientnumber, $planVolume, $expireDate)
+{
+    $expireDate = new DateTime($expireDate);
+    $expireDate = $expireDate->format('j F Y');
+
+    $provider = 'Infobip';
+    $message = 'You have successfully subscribed to ' . $planVolume . '. Your subscription will be renewed on ' . $expireDate . ' Thank you for choosing MajorLink';
+    sendSMS($provider, $Clientnumber, $message);
 }
