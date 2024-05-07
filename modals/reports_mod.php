@@ -1,15 +1,46 @@
 <?php
+function getTotalIncome($connect)
+{
+    try {
+        // SQL query to calculate total income from both sales and invoices
+        $query = "SELECT COALESCE(SUM(total_income), 0) AS totalIncome
+                  FROM (
+                      SELECT SUM(TotalAmount) AS total_income FROM invoices WHERE Status IN ('Paid', 'Partially Paid')
+                      UNION ALL
+                      SELECT SUM(Total) AS total_income FROM sales WHERE PaymentStatus IN ('Paid', 'Partially Paid')
+                  ) AS combined_income";
+
+        // Prepare and execute the query
+        $statement = $connect->prepare($query);
+        $statement->execute();
+
+        // Fetch the result
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+
+        return $result['totalIncome']; // Return the total income
+    } catch (PDOException $e) {
+        // Handle any potential errors
+        echo "Error: " . $e->getMessage();
+        return false;
+    }
+}
+
+
+
+
+
 
 function getBestSellingArea($connect)
 {
     try {
-        $query = "SELECT clients.AreaID, areas.AreaName, SUM(invoices.TotalAmount) AS total_income 
-                  FROM invoices 
-                  JOIN clients ON invoices.ClientID = clients.ClientID 
+        $query = "SELECT clients.AreaID, areas.AreaName, 
+                  SUM(invoices.TotalAmount) AS total_invoice_income,
+                  SUM(sales.Total) AS total_sales_income
+                  FROM clients 
+                  LEFT JOIN invoices ON clients.ClientID = invoices.ClientID AND invoices.Status IN ('Paid', 'Partially Paid')
+                  LEFT JOIN sales ON clients.ClientID = sales.ClientID AND sales.PaymentStatus IN ('Paid', 'Partially Paid')
                   JOIN areas ON clients.AreaID = areas.AreaID
-                  WHERE invoices.Status IN ('Paid', 'Partially Paid') 
-                  GROUP BY clients.AreaID 
-                  ORDER BY total_income DESC 
+                  GROUP BY clients.AreaID
                   LIMIT 1";
         $statement = $connect->prepare($query);
         $statement->execute();
@@ -22,6 +53,8 @@ function getBestSellingArea($connect)
         return false;
     }
 }
+
+
 
 
 function getBestSellingPlan($connect)
@@ -78,7 +111,6 @@ function getBestSellingProduct($connect)
 
 
 
-
 function getBestMonthThisYear($connect)
 {
     try {
@@ -91,11 +123,11 @@ function getBestMonthThisYear($connect)
                          SUM(TotalAmount) AS total_income 
                   FROM (
                       SELECT paymentDate, TotalAmount FROM invoices
+                      WHERE YEAR(paymentDate) = :year AND Status IN ('Paid', 'Partially Paid')
                       UNION ALL
                       SELECT SaleDate, Total FROM sales
+                      WHERE YEAR(SaleDate) = :year AND PaymentStatus IN ('Paid', 'Partially Paid')
                   ) AS combined_data
-                  WHERE YEAR(paymentDate) = :year
-                --   AND Status IN ('Paid', 'Partially Paid')
                   GROUP BY MONTH(paymentDate), MONTHNAME(paymentDate)
                   ORDER BY total_income DESC 
                   LIMIT 1";
@@ -120,7 +152,6 @@ function getBestMonthThisYear($connect)
 
 
 
-
 function getBestYear($connect)
 {
     try {
@@ -129,8 +160,10 @@ function getBestYear($connect)
                          SUM(TotalAmount) AS total_income 
                   FROM (
                       SELECT paymentDate, TotalAmount FROM invoices
+                      WHERE Status IN ('Paid', 'Partially Paid')
                       UNION ALL
                       SELECT SaleDate, Total FROM sales
+                      WHERE PaymentStatus IN ('Paid', 'Partially Paid')
                   ) AS combined_data
                   GROUP BY YEAR(paymentDate) 
                   ORDER BY total_income DESC 
@@ -160,9 +193,9 @@ function getTotalIncomeByDate($connect, $date)
         // SQL query to calculate total income for the given date
         $query = "SELECT SUM(total_amount) AS total_income 
                   FROM (
-                      SELECT TotalAmount AS total_amount FROM invoices WHERE DATE(paymentDate) = :date
+                      SELECT TotalAmount AS total_amount FROM invoices WHERE DATE(paymentDate) = :date AND Status IN ('Paid', 'Partially Paid')
                       UNION ALL
-                      SELECT Total AS total_amount FROM sales WHERE DATE(saleDate) = :date
+                      SELECT Total AS total_amount FROM sales WHERE DATE(saleDate) = :date AND PaymentStatus IN ('Paid', 'Partially Paid')
                   ) AS combined_data";
 
         // Prepare and execute the query
@@ -190,9 +223,9 @@ function getTotalIncomeByYearMonth($connect, $year, $month)
         // SQL query to calculate total income for the given year and month
         $query = "SELECT SUM(total_amount) AS total_income 
                   FROM (
-                      SELECT TotalAmount AS total_amount FROM invoices WHERE YEAR(paymentDate) = :year AND MONTH(paymentDate) = :month
+                      SELECT TotalAmount AS total_amount FROM invoices WHERE YEAR(paymentDate) = :year AND MONTH(paymentDate) = :month AND Status IN ('Paid', 'Partially Paid')
                       UNION ALL
-                      SELECT Total AS total_amount FROM sales WHERE YEAR(saleDate) = :year AND MONTH(saleDate) = :month
+                      SELECT Total AS total_amount FROM sales WHERE YEAR(saleDate) = :year AND MONTH(saleDate) = :month AND PaymentStatus IN ('Paid', 'Partially Paid')
                   ) AS combined_data";
 
         // Prepare and execute the query
@@ -244,9 +277,9 @@ function getTotalIncomeLastThreeMonths($connect)
 
             $query = "SELECT SUM(total_amount) AS total_income 
                       FROM (
-                          SELECT TotalAmount AS total_amount FROM invoices WHERE YEAR(paymentDate) = :year AND MONTH(paymentDate) = :month
+                          SELECT TotalAmount AS total_amount FROM invoices WHERE YEAR(paymentDate) = :year AND MONTH(paymentDate) = :month AND Status IN ('Paid', 'Partially Paid')
                           UNION ALL
-                          SELECT Total AS total_amount FROM sales WHERE YEAR(saleDate) = :year AND MONTH(saleDate) = :month
+                          SELECT Total AS total_amount FROM sales WHERE YEAR(saleDate) = :year AND MONTH(saleDate) = :month AND PaymentStatus IN ('Paid', 'Partially Paid')
                       ) AS combined_data";
 
             $statement = $connect->prepare($query);
@@ -267,7 +300,6 @@ function getTotalIncomeLastThreeMonths($connect)
         return false;
     }
 }
-
 
 
 
@@ -302,9 +334,9 @@ function getTotalIncomeLastSixMonths($connect)
 
             $query = "SELECT SUM(total_amount) AS total_income 
                       FROM (
-                          SELECT TotalAmount AS total_amount FROM invoices WHERE YEAR(paymentDate) = :year AND MONTH(paymentDate) = :month
+                          SELECT TotalAmount AS total_amount FROM invoices WHERE YEAR(paymentDate) = :year AND MONTH(paymentDate) = :month AND Status IN ('Paid', 'Partially Paid')
                           UNION ALL
-                          SELECT Total AS total_amount FROM sales WHERE YEAR(saleDate) = :year AND MONTH(saleDate) = :month
+                          SELECT Total AS total_amount FROM sales WHERE YEAR(saleDate) = :year AND MONTH(saleDate) = :month AND PaymentStatus IN ('Paid', 'Partially Paid')
                       ) AS combined_data";
 
             $statement = $connect->prepare($query);
@@ -329,16 +361,17 @@ function getTotalIncomeLastSixMonths($connect)
 
 
 
+
 function getTotalIncomeByYear($connect, $year)
 {
     try {
         // SQL query to calculate total income for the given year
         $query = "SELECT SUM(total_amount) AS total_income 
-                  FROM (
-                      SELECT TotalAmount AS total_amount FROM invoices WHERE YEAR(paymentDate) = :year
-                      UNION ALL
-                      SELECT Total AS total_amount FROM sales WHERE YEAR(saleDate) = :year
-                  ) AS combined_data";
+        FROM (
+            SELECT TotalAmount AS total_amount FROM invoices WHERE YEAR(paymentDate) = :year AND Status IN ('Paid', 'Partially Paid')
+            UNION ALL
+            SELECT Total AS total_amount FROM sales WHERE YEAR(saleDate) = :year AND PaymentStatus IN ('Paid', 'Partially Paid')
+        ) AS combined_data";
 
         // Prepare and execute the query
         $statement = $connect->prepare($query);
@@ -348,7 +381,7 @@ function getTotalIncomeByYear($connect, $year)
         // Fetch the result
         $result = $statement->fetch(PDO::FETCH_ASSOC);
 
-        return $result; // Return the total income for the given year
+        return $result;
     } catch (PDOException $e) {
         // Handle any potential errors
         echo "Error: " . $e->getMessage();
@@ -369,7 +402,7 @@ function getBestYearInRange($connect)
         $highestIncome = 0;
 
         // Iterate over the range of years from 2010 to the current year
-        for ($year = 2010; $year <= $currentYear; $year++) {
+        for ($year = 2020; $year <= $currentYear; $year++) {
             // Get the total income for the current year
             $totalIncome = getTotalIncomeByYear($connect, $year);
 
@@ -403,7 +436,7 @@ function getWorstYearInRange($connect)
         $lowestIncome = PHP_INT_MAX;
 
         // Iterate over the range of years from 2010 to the current year
-        for ($year = 2010; $year <= $currentYear; $year++) {
+        for ($year = 2020; $year <= $currentYear; $year++) {
             // Get the total income for the current year
             $totalIncome = getTotalIncomeByYear($connect, $year);
 
@@ -682,6 +715,7 @@ function getTotalIncomeOfAllProducts($connect)
         $query = "SELECT products.ProductName, COALESCE(SUM(sales.Total), 0) AS totalIncome
                   FROM products
                   LEFT JOIN sales ON products.ProductID = sales.ProductID
+                  WHERE sales.PaymentStatus IN ('Paid', 'Partially Paid')
                   GROUP BY products.ProductName";
 
         $statement = $connect->prepare($query);
@@ -698,10 +732,11 @@ function getTotalIncomeOfAllProducts($connect)
 
 
 
+
 function getTotalIncomeByPlan($connect, $planId)
 {
     try {
-        $query = "SELECT plans.Name, COALESCE(SUM(total_income), 0) AS totalIncome
+        $query = "SELECT plans.Name, plans.Volume, COALESCE(SUM(total_income), 0) AS totalIncome
                   FROM plans
                   LEFT JOIN (
                       SELECT clients.planId, SUM(invoices.TotalAmount) AS total_income 

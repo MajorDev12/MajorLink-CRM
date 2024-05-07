@@ -87,16 +87,6 @@ CREATE TABLE clients (
 );
 
 
-CREATE TABLE clientaccounts (
-    AccountID INT PRIMARY KEY AUTO_INCREMENT,
-    ClientID INT,
-    Balance DECIMAL(10, 2) DEFAULT 0.00,
-    TotalDeposits DECIMAL(10, 2) DEFAULT 0.00,
-    TotalWithdrawals DECIMAL(10, 2) DEFAULT 0.00,
-    LastTransactionDate DATE,
-    FOREIGN KEY (ClientID) REFERENCES clients(ClientID) ON DELETE CASCADE ON UPDATE CASCADE
-);
-
 CREATE TABLE paymentoptions (
     PaymentOptionID INT PRIMARY KEY AUTO_INCREMENT,
     PaymentOptionImg VARCHAR(50) NOT NULL,
@@ -134,19 +124,22 @@ CREATE TABLE companysettings (
     Email VARCHAR(255),
     PhoneNumber VARCHAR(20),
     Country VARCHAR(100),
+    Address TEXT,
+    Website VARCHAR(255),
+    Zipcode VARCHAR(20), 
+    City VARCHAR(100), 
     TimeZone VARCHAR(50),
     CurrencyName VARCHAR(100),
     CurrencySymbol VARCHAR(100),
     CurrencyCode VARCHAR(100),
     PhoneCode VARCHAR(100),
-    LogoURL VARCHAR(255),
-    Address TEXT
+    LogoURL VARCHAR(255)
     -- other company-related attributes
 );
 
 
-INSERT INTO companysettings (CompanyName, Motto, Email, PhoneNumber, Country, TimeZone, CurrencyName, CurrencySymbol, PhoneCode, LogoURL, Address)
-VALUES (NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO companysettings (CompanyName, Motto, Email, PhoneNumber, Country, Address, Website, Zipcode, City, TimeZone, CurrencyName, CurrencySymbol, PhoneCode, LogoURL, Address)
+VALUES (NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
 
 
@@ -217,6 +210,26 @@ CREATE TABLE advancepayments (
 CREATE TABLE stripepayments (
     ID INT PRIMARY KEY AUTO_INCREMENT,
     Session_id VARCHAR(255) NOT NULL,
+    PaymentID VARCHAR(255) NOT NULL,
+    PaidAmount DECIMAL(10, 2) NOT NULL,
+    PaidCurrency VARCHAR(255) NULL,
+    Payment_status VARCHAR(255) NOT NULL,
+    ClientID INT,
+    PlanID INT,
+    Customer_name VARCHAR(255) NULL,
+    Customer_email VARCHAR(255) NULL,
+    CreatedDate VARCHAR(255) NULL,
+    UpdatedDate VARCHAR(255) NULL,
+    -- other advance payment-related attributes
+    FOREIGN KEY (ClientID) REFERENCES clients(ClientID),
+    FOREIGN KEY (PlanID) REFERENCES plans(PlanID)
+);
+
+
+
+CREATE TABLE paypalpayments (
+    ID INT PRIMARY KEY AUTO_INCREMENT,
+    Order_id VARCHAR(255) NOT NULL,
     PaymentID VARCHAR(255) NOT NULL,
     PaidAmount DECIMAL(10, 2) NOT NULL,
     PaidCurrency VARCHAR(255) NULL,
@@ -317,6 +330,17 @@ CREATE TABLE emailTemplate (
 );
 
 
+CREATE TABLE sent_email_reminders (
+    ReminderID INT PRIMARY KEY AUTO_INCREMENT,
+    ClientID INT NOT NULL,
+    InvoiceID INT NOT NULL,
+    ReminderSentDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (ClientID) REFERENCES clients(ClientID),
+    FOREIGN KEY (InvoiceID) REFERENCES invoices(InvoiceID)
+);
+
+
+
 CREATE TABLE smsTemplate (
     TemplateID INT AUTO_INCREMENT PRIMARY KEY,
     Category VARCHAR(255) NOT NULL,
@@ -382,6 +406,9 @@ ALTER TABLE `clients` ADD CONSTRAINT `clients_ibfk_2` FOREIGN KEY (`SubAreaID`) 
 
 
 
+ALTER TABLE advancepayments
+DROP FOREIGN KEY advancepayments_ibfk_1, 
+ADD CONSTRAINT fk_advancepayments_ClientID FOREIGN KEY (ClientID) REFERENCES clients(ClientID) ON DELETE SET NULL;
 
 
 
@@ -406,6 +433,11 @@ ON DELETE CASCADE;
 
 ALTER TABLE payments
 ADD CONSTRAINT fk_payments_ClientID
+FOREIGN KEY (ClientID) REFERENCES clients(ClientID)
+ON DELETE CASCADE;
+
+ALTER TABLE advancepayments
+ADD CONSTRAINT fk_advancepayments_ClientID
 FOREIGN KEY (ClientID) REFERENCES clients(ClientID)
 ON DELETE CASCADE;
 

@@ -12,13 +12,14 @@ if (isset($_POST["selectedClientId"])) {
     require_once  '../modals/setup_mod.php';
     require_once  '../modals/getTime_mod.php';
     require_once  '../modals/addPlan_mod.php';
-    require_once  '../modals/infobip_mod.php';
+    require_once  '../modals/sendSms_mod.php';
     require_once  '../modals/notification_mod.php';
 
     $connect  = connectToDatabase($host, $dbname, $username, $password);
     $settings = get_Settings($connect);
     $timezone = $settings[0]["TimeZone"];
     $symbol = $settings[0]["CurrencySymbol"];
+    $code = $settings[0]["PhoneCode"];
     $time = getTime($timezone);
     $CreatedDate = $time;
 
@@ -45,7 +46,7 @@ if (isset($_POST["selectedClientId"])) {
 
     $clientData = getClientDataById($connect, $clientId);
     $currentPlan = $clientData["PlanID"];
-    $Clientnumber = $clientData["PrimaryNumber"];
+    $Clientnumber = $code . $clientData["PrimaryNumber"];
 
     $changing = (intval($selectedPlan) !== intval($currentPlan));
     $daysRemaining = calculateLeftDays($clientData["ExpireDate"]);

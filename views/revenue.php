@@ -1,4 +1,5 @@
 <?php require_once "../controllers/session_Config.php"; ?>
+<?php require_once "style.config.php"; ?>
 <?php require_once "header.php"; ?>
 <?php
 require_once  '../database/pdo.php';
@@ -18,6 +19,10 @@ $symbol = $settings[0]["CurrencySymbol"];
 
 ?>
 <style>
+    #user_select {
+        background-color: var(--light-dark);
+    }
+
     .container {
         width: 100%;
         display: flex;
@@ -120,6 +125,10 @@ $symbol = $settings[0]["CurrencySymbol"];
     .data-table th {
         background-color: #f2f2f2;
     }
+
+    p {
+        color: var(--light-dark);
+    }
 </style>
 <!-- SIDEBAR -->
 <?php require_once "side_nav.php"; ?>
@@ -149,11 +158,6 @@ $symbol = $settings[0]["CurrencySymbol"];
                     </li>
                 </ul>
             </div>
-
-            <a href="#" class="btn-download">
-                <i class='bx bxs-cloud-download'></i>
-                <span class="text">Download PDF</span>
-            </a>
         </div>
 
         <!-- content-container -->
@@ -180,13 +184,13 @@ $symbol = $settings[0]["CurrencySymbol"];
                         <div class="active page">
 
                             <?php
-                            $invoicesData = getAllInvoices($connect);
+                            $totalIncome = getTotalIncome($connect);
+
                             $totalAmount = 0;
-                            if ($invoicesData) {
-                                foreach ($invoicesData as $invoice) {
-                                    $totalAmount += $invoice['TotalAmount'];
-                                }
+                            if ($totalIncome !== false) {
+                                $totalAmount = $totalIncome;
                             }
+
                             $formattedTotalAmount = number_format($totalAmount, 2);
                             ?>
                             <div class="content">
@@ -197,20 +201,27 @@ $symbol = $settings[0]["CurrencySymbol"];
                             </div>
 
 
+
+
                             <div class="content">
                                 <?php
                                 $bestSellingArea = getBestSellingArea($connect);
-
+                                $invoiceTotalIncome = 0;
+                                $salesTotalIncome = 0;
+                                $geoTotalIncome = 0;
                                 if ($bestSellingArea) {
                                     $areaName = $bestSellingArea['AreaName'];
-                                    $totalIncome = $bestSellingArea['total_income'];
+                                    $invoiceTotalIncome = $bestSellingArea['total_invoice_income'];
+                                    $salesTotalIncome = $bestSellingArea['total_sales_income'];
+                                    $geoTotalIncome = $bestSellingArea['total_invoice_income'] + $bestSellingArea['total_sales_income'];
                                 } else {
                                     $areaName = "Unknown";
-                                    $totalIncome = 0;
+                                    $geoTotalIncome = 0;
                                 }
+                                $geoTotalIncome = intval($geoTotalIncome);
                                 ?>
                                 <h4>Best Geography</h4>
-                                <p class="text">Total Income: <span class="number"><?= $symbol; ?> <?= number_format($totalIncome, 2); ?></span></p>
+                                <p class="text">Total Income: <span class="number"><?= $symbol; ?> <?= number_format($geoTotalIncome, 2); ?></span></p>
                                 <canvas id="myChartgeo" class="canvasChart"></canvas>
                             </div>
 
@@ -312,8 +323,8 @@ $symbol = $settings[0]["CurrencySymbol"];
                             <label for="yearInput">Select Day:</label>
                             <input type="date" class="form-control mb-5" name="" id="IncomeDateInput">
                             <p id="errorMsg"></p>
-                            <button id="IncomeDateBtn" class="btn btn-primary">Check</button>
-                            <p id="totalIncomeText">Total Income This Day:</p>
+                            <button id="IncomeDateBtn" class="btn btn-primary mb-3">Check</button>
+                            <p id="totalIncomeText" class="text">Total Income This Day: <span class="number"><?= $symbol; ?> <span id="totalDay">0.00</span></span></p>
                             <canvas id="dayChart" class="canvasChart"></canvas>
                         </div>
 
@@ -482,7 +493,7 @@ $symbol = $settings[0]["CurrencySymbol"];
                                 ?>
                             </select>
                             <button id="getAreaByIdBtn" class="btn btn-primary">Check</button>
-                            <p class="text">Total Income : <span class="number"><?= $symbol; ?><span id="totalAreaIncome">0.00</span></span></p>
+                            <p class="text">Total Income : <span class="number"><?= $symbol; ?> <span id="totalAreaIncome">0.00</span></span></p>
                             <canvas id="revenuearea" class="canvasChart"></canvas>
 
 
@@ -503,18 +514,6 @@ $symbol = $settings[0]["CurrencySymbol"];
                                 <p class="text">Total Income : <span class="number"><?= $symbol; ?><span id="totalSubAreaIncome">0.00</span></span></p>
                                 <canvas id="subarea" class="canvasChart"></canvas>
                             </div>
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -595,16 +594,8 @@ $symbol = $settings[0]["CurrencySymbol"];
                             </select>
                             <p id="producterrorMsg"></p>
                             <button id="getProductByIdBtn" class="btn btn-primary">Check</button>
-                            <p class="text">Total Income: <span class="number"><?= $symbol; ?><span id="totalProductIncome"></span></span></p>
+                            <p class="text">Total Income: <span class="number"><?= $symbol; ?> <span id="totalProductIncome">0.00</span></span></p>
                             <canvas id="productchart" class="canvasChart"></canvas>
-
-
-                            <script>
-
-                            </script>
-
-
-
 
 
 
@@ -630,11 +621,11 @@ $symbol = $settings[0]["CurrencySymbol"];
                                 <canvas id="productallchart" class="canvasChart"></canvas>
                             </div>
 
-                            <div class="content mt-5">
+                            <!-- <div class="content mt-5">
                                 <h4>Income Summary for Highest vs Lowest</h4>
                                 <p>Total Income This Product: $ 0.00</p>
                                 <canvas id="HvsLproductchart" class="canvasChart"></canvas>
-                            </div>
+                            </div> -->
                         </div>
 
 
@@ -657,7 +648,7 @@ $symbol = $settings[0]["CurrencySymbol"];
                             </select>
                             <p id="planerrorMsg"></p>
                             <button id="getPlanByIdBtn" class="btn btn-primary">Check</button>
-                            <p class="text">Total Income: <span class="number"><?= $symbol; ?><span id="totalPlanIncome"></span></span></p>
+                            <p class="text">Total Income: <span class="number"><?= $symbol; ?><span id="totalPlanIncome">0.00</span></span></p>
                             <canvas id="planchart" class="canvasChart"></canvas>
 
 
@@ -709,114 +700,16 @@ $symbol = $settings[0]["CurrencySymbol"];
                                     </select>
                                 </div>
                                 <p id="customererrorMsg"></p>
-                                <div class="row-md-2">
-                                    <div class="d-grid mt-md-4">
-                                        <button id="getCustomerBtn" class="btn btn-primary" style="width: 10%;">Search</button>
+                                <div class="row-md-1">
+                                    <div class="col-md-6 mt-4">
+                                        <button id="getCustomerBtn" class="btn btn-primary">Search</button>
                                     </div>
                                 </div>
                             </div>
-                            <p class="text">Total Income: <span class="number"><?= $symbol; ?><span id="totalCustomerIncome">0.00</span></span></p>
+                            <p class="text">Total Income: <span class="number"><?= $symbol; ?> <span id="totalCustomerIncome">0.00</span></span></p>
                             <canvas id="customerchart" class="canvasChart"></canvas>
 
-
-
-
-                            <script>
-                                var getCustomerBtn = document.querySelector("#getCustomerBtn");
-
-                                getCustomerBtn.addEventListener("click", function() {
-                                    var clientSelected = document.getElementById("user_select").value;
-
-                                    if (!clientSelected) {
-                                        displayMessage("customererrorMsg", "Choose a Customer First", true);
-                                        return;
-                                    }
-                                    var formData = new FormData();
-                                    formData.append("clientSelected", clientSelected);
-
-                                    fetch("../controllers/Income_contr.php", {
-                                            method: 'POST',
-                                            body: formData
-                                        })
-                                        .then(response => response.json())
-                                        .then(data => {
-                                            if (data.success) {
-                                                let totalInvoices = parseFloat(data.results.totalInvoices);
-                                                let totalSales = parseFloat(data.results.totalSales);
-                                                let customerName = data.results.clientName;
-                                                let total = totalInvoices + totalSales;
-
-                                                if (totalInvoices === null) {
-                                                    totalInvoices = "0.00";
-                                                }
-                                                if (totalSales === null) {
-                                                    totalSales = "0.00";
-                                                }
-                                                if (total === null) {
-                                                    total = "0.00";
-                                                }
-                                                if (customerName === null) {
-                                                    customerName = "No Data";
-                                                }
-                                                document.getElementById('totalCustomerIncome').innerText = total;
-
-                                                // Update the chart with the new data
-                                                updateCustomerChart(totalInvoices, total, customerName);
-                                            } else {
-                                                console.error("Error: " + data.message);
-                                                updateCustomerChart(0, 0, "");
-                                            }
-                                        })
-                                        .catch(error => {
-                                            console.error('Error:', error);
-                                        });
-                                });
-
-
-                                var customerChart = null;
-
-                                function updateCustomerChart(totalInvoices, total, customerName) {
-                                    var ctx = document.getElementById('customerchart').getContext('2d');
-
-                                    if (customerChart) {
-                                        // If a Chart instance exists, destroy it
-                                        customerChart.destroy();
-                                    }
-
-
-                                    customerChart = new Chart(ctx, {
-                                        type: 'bar',
-                                        data: {
-                                            labels: ['Income Summary For ' + customerName],
-                                            datasets: [{
-                                                label: 'Total Income',
-                                                data: [total],
-                                                backgroundColor: ['rgba(75, 192, 192, 0.5)', 'rgba(255, 99, 132, 0.5)'],
-                                                borderWidth: 1
-                                            }]
-                                        },
-                                        options: {
-                                            scales: {
-                                                y: {
-                                                    beginAtZero: true,
-                                                    title: {
-                                                        display: true,
-                                                        text: 'Amount (' + CurrencyCode + ')'
-                                                    }
-                                                },
-                                                x: {
-                                                    title: {
-                                                        display: false
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    });
-                                }
-                            </script>
-
-
-
+                            <?php require_once "footer.php"; ?>
 
 
 
@@ -850,8 +743,8 @@ $symbol = $settings[0]["CurrencySymbol"];
                     updateAreaChart(0, "");
                     updateSubAreaChart(0, "");
                     updateProductChart(0, "");
-                    updatePlanChart(0, "");
-                    updateCustomerChart(0, 0, "");
+                    updatePlanChart(0, "", "");
+                    updateCustomerChart(0, 0, 0, "");
                 })
 
 
@@ -908,81 +801,6 @@ $symbol = $settings[0]["CurrencySymbol"];
 
 
 
-                // JavaScript function to dynamically populate a dropdown
-                function populateDropdown(selectElement, options) {
-                    var dropdown = document.getElementById(selectElement);
-                    options.forEach(function(option) {
-                        var optionElement = document.createElement("option");
-                        optionElement.value = option.value;
-                        optionElement.text = option.text;
-                        dropdown.appendChild(optionElement);
-                    });
-                }
-
-                // Populate the year dropdown
-                var yearOptions = [];
-                for (var year = 2010; year <= 2024; year++) {
-                    yearOptions.push({
-                        value: year,
-                        text: year.toString()
-                    });
-                }
-
-
-                // Populate the month dropdowns
-                var monthOptions = [{
-                        value: 1,
-                        text: "January"
-                    },
-                    {
-                        value: 2,
-                        text: "February"
-                    },
-                    {
-                        value: 3,
-                        text: "March"
-                    },
-                    {
-                        value: 4,
-                        text: "April"
-                    },
-                    {
-                        value: 5,
-                        text: "May"
-                    },
-                    {
-                        value: 6,
-                        text: "June"
-                    },
-                    {
-                        value: 7,
-                        text: "July"
-                    },
-                    {
-                        value: 8,
-                        text: "August"
-                    },
-                    {
-                        value: 9,
-                        text: "September"
-                    },
-                    {
-                        value: 10,
-                        text: "October"
-                    },
-                    {
-                        value: 11,
-                        text: "November"
-                    },
-                    {
-                        value: 12,
-                        text: "December"
-                    }
-                ];
-
-
-
-
 
 
 
@@ -1025,7 +843,7 @@ $symbol = $settings[0]["CurrencySymbol"];
                         datasets: [{
                             label: 'Total Income',
                             data: [formattedTotalAmount],
-                            backgroundColor: '#3C91E6',
+                            backgroundColor: 'rgb(75, 192, 192)',
                             borderWidth: 1
                         }]
                     },
@@ -1035,7 +853,7 @@ $symbol = $settings[0]["CurrencySymbol"];
                                 beginAtZero: true,
                                 title: {
                                     display: true,
-                                    text: 'Amount (' + CurrencyCode + ')'
+                                    text: 'Amount ( ' + CurrencyCode + ' )'
                                 }
                             },
                             x: {
@@ -1051,7 +869,8 @@ $symbol = $settings[0]["CurrencySymbol"];
 
 
                 const area = <?= json_encode($areaName); ?>;
-                const total = <?= json_encode($totalIncome); ?>;
+                const total = <?= json_encode($geoTotalIncome); ?>;
+
                 var ctx = document.getElementById('myChartgeo').getContext('2d');
                 var myChart = new Chart(ctx, {
                     type: 'bar',
@@ -1060,7 +879,7 @@ $symbol = $settings[0]["CurrencySymbol"];
                         datasets: [{
                             label: 'Refresh',
                             data: [total],
-                            backgroundColor: '#3C91E6',
+                            backgroundColor: 'rgb(75, 192, 192)',
                             borderWidth: 1
                         }]
                     },
@@ -1070,7 +889,7 @@ $symbol = $settings[0]["CurrencySymbol"];
                                 beginAtZero: true,
                                 title: {
                                     display: true,
-                                    text: 'Amount (' + CurrencyCode + ')'
+                                    text: 'Amount ( ' + CurrencyCode + ' )'
                                 }
                             },
                             x: {
@@ -1094,7 +913,7 @@ $symbol = $settings[0]["CurrencySymbol"];
                         datasets: [{
                             label: 'Refresh',
                             data: [productIncome],
-                            backgroundColor: '#3C91E6',
+                            backgroundColor: 'rgb(75, 192, 192)',
                             borderWidth: 1
                         }]
                     },
@@ -1104,7 +923,7 @@ $symbol = $settings[0]["CurrencySymbol"];
                                 beginAtZero: true,
                                 title: {
                                     display: true,
-                                    text: 'Amount (' + CurrencyCode + ')'
+                                    text: 'Amount ( ' + CurrencyCode + ' )'
                                 }
                             },
                             x: {
@@ -1130,7 +949,7 @@ $symbol = $settings[0]["CurrencySymbol"];
                         datasets: [{
                             label: 'Refresh',
                             data: [planIncome],
-                            backgroundColor: '#3C91E6',
+                            backgroundColor: 'rgb(75, 192, 192)',
                             borderWidth: 1
                         }]
                     },
@@ -1140,7 +959,7 @@ $symbol = $settings[0]["CurrencySymbol"];
                                 beginAtZero: true,
                                 title: {
                                     display: true,
-                                    text: 'Amount (' + CurrencyCode + ')'
+                                    text: 'Amount ( ' + CurrencyCode + ' )'
                                 }
                             },
                             x: {
@@ -1165,7 +984,7 @@ $symbol = $settings[0]["CurrencySymbol"];
                         datasets: [{
                             label: 'Refresh',
                             data: [monthIncome],
-                            backgroundColor: '#3C91E6',
+                            backgroundColor: 'rgb(75, 192, 192)',
                             borderWidth: 1
                         }]
                     },
@@ -1175,7 +994,7 @@ $symbol = $settings[0]["CurrencySymbol"];
                                 beginAtZero: true,
                                 title: {
                                     display: true,
-                                    text: 'Amount (' + CurrencyCode + ')'
+                                    text: 'Amount ( ' + CurrencyCode + ' )'
                                 }
                             },
                             x: {
@@ -1201,7 +1020,7 @@ $symbol = $settings[0]["CurrencySymbol"];
                         datasets: [{
                             label: 'Refresh',
                             data: [yearIncome],
-                            backgroundColor: '#3C91E6',
+                            backgroundColor: 'rgb(75, 192, 192)',
                             borderWidth: 1
                         }]
                     },
@@ -1211,7 +1030,7 @@ $symbol = $settings[0]["CurrencySymbol"];
                                 beginAtZero: true,
                                 title: {
                                     display: true,
-                                    text: 'Amount (' + CurrencyCode + ')'
+                                    text: 'Amount ( ' + CurrencyCode + ' )'
                                 }
                             },
                             x: {
@@ -1227,8 +1046,6 @@ $symbol = $settings[0]["CurrencySymbol"];
 
 
                 function fetchTotalIncome(date) {
-                    // Fetch total income for the given date using AJAX or fetch API
-                    // Assuming the server-side script is named getTotalIncomeByDate.php
                     fetch('../controllers/getTotalIncomeByDate_contr.php?d=' + date)
                         .then(response => response.json())
                         .then(data => {
@@ -1239,12 +1056,14 @@ $symbol = $settings[0]["CurrencySymbol"];
                                 if (total === null) {
                                     total = "0.00";
                                 }
-                                document.getElementById('totalIncomeText').textContent = "Total Income This Day: $ " + total;
+                                formattedtotal = numberFormatJS(total);
+                                document.getElementById('totalDay').innerText = formattedtotal;
+
 
                                 // Update the chart
                                 updateChart(total);
                             } else {
-                                document.getElementById('totalIncomeText').textContent = "No data available";
+                                document.getElementById('totalDay').textContent = "No data available";
                                 updateChart("0");
                             }
 
@@ -1275,7 +1094,7 @@ $symbol = $settings[0]["CurrencySymbol"];
                             datasets: [{
                                 label: 'Total Income',
                                 data: [totalIncome],
-                                backgroundColor: '#3C91E6',
+                                backgroundColor: 'rgb(75, 192, 192)',
                                 borderWidth: 1
                             }]
                         },
@@ -1285,7 +1104,7 @@ $symbol = $settings[0]["CurrencySymbol"];
                                     beginAtZero: true,
                                     title: {
                                         display: true,
-                                        text: 'Amount (' + CurrencyCode + ')'
+                                        text: 'Amount ( ' + CurrencyCode + ' )'
                                     }
                                 },
                                 x: {
@@ -1323,9 +1142,8 @@ $symbol = $settings[0]["CurrencySymbol"];
                                 if (total === null) {
                                     total = "0.00";
                                 }
-                                // Display the total income in the HTML element
-                                // document.getElementById('totalIncomeMonth').innerText = "Total Income: $" + total;
-                                document.getElementById('totalMonth').innerText = total;
+                                formattedtotal = numberFormatJS(total);
+                                document.getElementById('totalMonth').innerText = formattedtotal;
 
                                 // Update the chart with the new data
                                 updatemonthChart(total);
@@ -1357,7 +1175,7 @@ $symbol = $settings[0]["CurrencySymbol"];
                             datasets: [{
                                 label: 'Total Income',
                                 data: [totalIncome],
-                                backgroundColor: '#3C91E6',
+                                backgroundColor: 'rgb(75, 192, 192)',
                                 borderWidth: 1
                             }]
                         },
@@ -1367,7 +1185,7 @@ $symbol = $settings[0]["CurrencySymbol"];
                                     beginAtZero: true,
                                     title: {
                                         display: true,
-                                        text: 'Amount (' + CurrencyCode + ')'
+                                        text: 'Amount ( ' + CurrencyCode + ' )'
                                     }
                                 },
                                 x: {
@@ -1382,8 +1200,6 @@ $symbol = $settings[0]["CurrencySymbol"];
 
 
                 var ctx = document.getElementById('threemonth').getContext('2d');
-                // Get the total income data for the last three months from PHP
-                // Extract the total income values for each month
                 var threemonths = <?php echo json_encode($months); ?>;
                 var totalIcomePerMonth = <?php echo json_encode($totalIncomeLastThreeMonths); ?>;
                 var existingChart = Chart.getChart(ctx); // Get the existing chart instance associated with the canvas
@@ -1420,7 +1236,7 @@ $symbol = $settings[0]["CurrencySymbol"];
                                 beginAtZero: true,
                                 title: {
                                     display: true,
-                                    text: 'Amount (' + CurrencyCode + ')'
+                                    text: 'Amount ( ' + CurrencyCode + ' )'
                                 }
                             },
                             x: {
@@ -1456,7 +1272,7 @@ $symbol = $settings[0]["CurrencySymbol"];
                                 beginAtZero: true,
                                 title: {
                                     display: true,
-                                    text: 'Amount (' + CurrencyCode + ')'
+                                    text: 'Amount ( ' + CurrencyCode + ' )'
                                 }
                             },
                             x: {
@@ -1494,9 +1310,8 @@ $symbol = $settings[0]["CurrencySymbol"];
                                 if (total === null) {
                                     total = "0.00";
                                 }
-                                // Display the total income in the HTML element
-                                // document.getElementById('totalIncomeMonth').innerText = "Total Income: $" + total;
-                                document.getElementById('totalYear').innerText = total;
+                                formattedtotal = numberFormatJS(total);
+                                document.getElementById('totalYear').innerText = formattedtotal;
 
                                 // Update the chart with the new data
                                 updateyearChart(total);
@@ -1539,7 +1354,7 @@ $symbol = $settings[0]["CurrencySymbol"];
                                     beginAtZero: true,
                                     title: {
                                         display: true,
-                                        text: 'Amount (' + CurrencyCode + ')'
+                                        text: 'Amount ( ' + CurrencyCode + ' )'
                                     }
                                 },
                                 x: {
@@ -1576,7 +1391,7 @@ $symbol = $settings[0]["CurrencySymbol"];
                                 beginAtZero: true,
                                 title: {
                                     display: true,
-                                    text: 'Amount (' + CurrencyCode + ')'
+                                    text: 'Amount ( ' + CurrencyCode + ' )'
                                 }
                             },
                             x: {
@@ -1615,7 +1430,7 @@ $symbol = $settings[0]["CurrencySymbol"];
                                 beginAtZero: true,
                                 title: {
                                     display: true,
-                                    text: 'Amount (' + CurrencyCode + ')'
+                                    text: 'Amount ( ' + CurrencyCode + ' )'
                                 }
                             },
                             x: {
@@ -1656,9 +1471,8 @@ $symbol = $settings[0]["CurrencySymbol"];
                                 if (areaName === null) {
                                     areaName = "No Data";
                                 }
-                                // Display the total income in the HTML element
-                                // document.getElementById('totalIncomeMonth').innerText = "Total Income: $" + total;
-                                document.getElementById('totalAreaIncome').innerText = total;
+                                formattedtotal = numberFormatJS(total);
+                                document.getElementById('totalAreaIncome').innerText = formattedtotal;
 
                                 // Update the chart with the new data
                                 updateAreaChart(total, areaName);
@@ -1700,7 +1514,7 @@ $symbol = $settings[0]["CurrencySymbol"];
                                     beginAtZero: true,
                                     title: {
                                         display: true,
-                                        text: 'Amount (' + CurrencyCode + ')'
+                                        text: 'Amount ( ' + CurrencyCode + ' )'
                                     }
                                 },
                                 x: {
@@ -1743,9 +1557,8 @@ $symbol = $settings[0]["CurrencySymbol"];
                                 if (subAreaName === null) {
                                     subAreaName = "No Data";
                                 }
-                                // Display the total income in the HTML element
-                                // document.getElementById('totalIncomeMonth').innerText = "Total Income: $" + total;
-                                document.getElementById('totalSubAreaIncome').innerText = total;
+                                formattedtotal = numberFormatJS(total);
+                                document.getElementById('totalSubAreaIncome').innerText = formattedtotal;
 
                                 // Update the chart with the new data
                                 updateSubAreaChart(total, subAreaName);
@@ -1787,7 +1600,7 @@ $symbol = $settings[0]["CurrencySymbol"];
                                     beginAtZero: true,
                                     title: {
                                         display: true,
-                                        text: 'Amount (' + CurrencyCode + ')'
+                                        text: 'Amount ( ' + CurrencyCode + ' )'
                                     }
                                 },
                                 x: {
@@ -1878,7 +1691,7 @@ $symbol = $settings[0]["CurrencySymbol"];
                 var allAreaIncomes = <?php echo json_encode($allAreaIncomes); ?>;
                 var combinedLabels = [];
                 for (var i = 0; i < allAreas.length; i++) {
-                    combinedLabels.push([allAreas[i], allAreaIncomes[i]]); // Push an array containing area name and income
+                    combinedLabels.push([allAreas[i], numberFormatJS(allAreaIncomes[i])]); // Push an array containing area name and income
                 }
 
 
@@ -1906,7 +1719,7 @@ $symbol = $settings[0]["CurrencySymbol"];
                                 beginAtZero: true,
                                 title: {
                                     display: true,
-                                    text: 'Amount (' + CurrencyCode + ')'
+                                    text: 'Amount ( ' + CurrencyCode + ' )'
                                 }
                             },
                             x: {
@@ -1938,7 +1751,7 @@ $symbol = $settings[0]["CurrencySymbol"];
                 var allSubAreaIncomes = <?php echo json_encode($allSubAreaIncomes); ?>;
                 var combinedLabels = [];
                 for (var i = 0; i < allAreas.length; i++) {
-                    combinedLabels.push([allSubAreas[i], allSubAreaIncomes[i]]); // Push an array containing area name and income
+                    combinedLabels.push([allSubAreas[i], numberFormatJS(allSubAreaIncomes[i])]); // Push an array containing area name and income
                 }
 
 
@@ -1967,7 +1780,7 @@ $symbol = $settings[0]["CurrencySymbol"];
                                 beginAtZero: true,
                                 title: {
                                     display: true,
-                                    text: 'Amount (' + CurrencyCode + ')'
+                                    text: 'Amount ( ' + CurrencyCode + ' )'
                                 }
                             },
                             x: {
@@ -2026,7 +1839,8 @@ $symbol = $settings[0]["CurrencySymbol"];
                                 if (productName === null) {
                                     productName = "No Data";
                                 }
-                                document.getElementById('totalProductIncome').innerText = total;
+                                formattedtotal = numberFormatJS(total);
+                                document.getElementById('totalProductIncome').innerText = formattedtotal;
 
                                 // Update the chart with the new data
                                 updateProductChart(total, productName);
@@ -2069,7 +1883,7 @@ $symbol = $settings[0]["CurrencySymbol"];
                                     beginAtZero: true,
                                     title: {
                                         display: true,
-                                        text: 'Amount (' + CurrencyCode + ')'
+                                        text: 'Amount ( ' + CurrencyCode + ' )'
                                     }
                                 },
                                 x: {
@@ -2118,7 +1932,7 @@ $symbol = $settings[0]["CurrencySymbol"];
                                 beginAtZero: true,
                                 title: {
                                     display: true,
-                                    text: 'Amount (' + CurrencyCode + ')'
+                                    text: 'Amount ( ' + CurrencyCode + ' )'
                                 }
                             },
                             x: {
@@ -2168,19 +1982,22 @@ $symbol = $settings[0]["CurrencySymbol"];
                             if (data.success) {
                                 let total = data.results.totalIncome;
                                 let planName = data.results.Name;
+                                let planVolume = data.results.Volume;
                                 if (total === null) {
                                     total = "0.00";
                                 }
                                 if (planName === null) {
                                     planName = "No Data";
+                                    planVolume = "";
                                 }
-                                document.getElementById('totalPlanIncome').innerText = total;
+                                formattedtotal = numberFormatJS(total);
+                                document.getElementById('totalPlanIncome').innerText = formattedtotal;
 
                                 // Update the chart with the new data
-                                updatePlanChart(total, planName);
+                                updatePlanChart(total, planName, planVolume);
                             } else {
                                 console.error("Error: " + data.message);
-                                updatePlanChart(0, "");
+                                updatePlanChart(0, "", "");
                             }
                         })
                         .catch(error => {
@@ -2191,7 +2008,7 @@ $symbol = $settings[0]["CurrencySymbol"];
 
                 var planChart = null;
 
-                function updatePlanChart(totalIncome, planName) {
+                function updatePlanChart(totalIncome, planName, planVolume) {
                     var ctx = document.getElementById('planchart').getContext('2d');
 
                     if (planChart) {
@@ -2203,11 +2020,11 @@ $symbol = $settings[0]["CurrencySymbol"];
                     planChart = new Chart(ctx, {
                         type: 'bar',
                         data: {
-                            labels: ['Income For ' + planName],
+                            labels: [planName + ' ( ' + planVolume + ' )'],
                             datasets: [{
                                 label: 'Total Income',
                                 data: [totalIncome],
-                                backgroundColor: '#3C91E6',
+                                backgroundColor: 'rgb(75, 192, 192)',
                                 borderWidth: 1
                             }]
                         },
@@ -2217,7 +2034,7 @@ $symbol = $settings[0]["CurrencySymbol"];
                                     beginAtZero: true,
                                     title: {
                                         display: true,
-                                        text: 'Amount (' + CurrencyCode + ')'
+                                        text: 'Amount ( ' + CurrencyCode + ' )'
                                     }
                                 },
                                 x: {
@@ -2274,8 +2091,9 @@ $symbol = $settings[0]["CurrencySymbol"];
                 var allPlansVolume = <?php echo json_encode($allPlansVolume); ?>;
                 var combinedLabel = [];
                 for (var i = 0; i < allPlans.length; i++) {
-                    combinedLabel.push([allPlans[i] + ' ' + allPlansVolume[i], allPlanIncomes[i]]); // Push an array containing area name and income
+                    combinedLabel.push([allPlans[i] + ' ' + allPlansVolume[i], numberFormatJS(allPlanIncomes[i])]);
                 }
+
 
                 var ctx = document.getElementById('allplanchart').getContext('2d');
                 var myChart = new Chart(ctx, {
@@ -2301,7 +2119,7 @@ $symbol = $settings[0]["CurrencySymbol"];
                                 beginAtZero: true,
                                 title: {
                                     display: true,
-                                    text: 'Amount (' + CurrencyCode + ')'
+                                    text: 'Amount ( ' + CurrencyCode + ' )'
                                 }
                             },
                             x: {
@@ -2326,6 +2144,120 @@ $symbol = $settings[0]["CurrencySymbol"];
                         }
                     }
                 });
+
+
+
+
+
+                var getCustomerBtn = document.querySelector("#getCustomerBtn");
+
+                getCustomerBtn.addEventListener("click", function() {
+                    var clientSelected = document.getElementById("user_select").value;
+
+                    if (!clientSelected) {
+                        displayMessage("customererrorMsg", "Choose a Customer First", true);
+                        return;
+                    }
+                    var formData = new FormData();
+                    formData.append("clientSelected", clientSelected);
+
+                    fetch("../controllers/Income_contr.php", {
+                            method: 'POST',
+                            body: formData
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                let totalInvoices = parseFloat(data.results.totalInvoices);
+                                let totalSales = parseFloat(data.results.totalSales);
+                                let customerName = data.results.clientName;
+                                let total = totalInvoices + totalSales;
+
+                                if (totalInvoices === null) {
+                                    totalInvoices = "0.00";
+                                }
+                                if (totalSales === null) {
+                                    totalSales = "0.00";
+                                }
+                                if (total === null) {
+                                    total = "0.00";
+                                }
+                                if (customerName === null) {
+                                    customerName = "No Data";
+                                }
+                                formattedtotal = numberFormatJS(total);
+                                document.getElementById('totalCustomerIncome').innerText = formattedtotal;
+
+                                // Update the chart with the new data
+                                updateCustomerChart(totalInvoices, totalSales, total, customerName);
+                            } else {
+                                console.error("Error: " + data.message);
+                                updateCustomerChart(0, 0, 0, "");
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                        });
+                });
+
+
+                var customerChart = null;
+
+                function updateCustomerChart(totalInvoices, totalSales, total, customerName) {
+                    var ctx = document.getElementById('customerchart').getContext('2d');
+
+                    if (customerChart) {
+                        // If a Chart instance exists, destroy it
+                        customerChart.destroy();
+                    }
+
+
+                    customerChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: ['Total Invoices', 'Total Sales'],
+                            datasets: [{
+                                label: 'Total Income',
+                                data: [totalInvoices, totalSales],
+                                backgroundColor: ['rgba(75, 192, 192, 0.5)', 'rgba(255, 99, 132, 0.5)'],
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    title: {
+                                        display: true,
+                                        text: 'Amount ( ' + CurrencyCode + ' )'
+                                    }
+                                },
+                                x: {
+                                    title: {
+                                        display: false
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
                 /*

@@ -1,13 +1,3 @@
-<?php
-$settings = get_Settings($connect);
-$code = $settings[0]["CurrencyCode"];
-$symbol = $settings[0]["CurrencySymbol"];
-
-$clientId = $clientData["ClientID"];
-$clientTotalAmount = getSingleClientTotalAmount($connect, $clientId);
-?>
-
-
 <div class="page accounting">
     <a href="viewTransaction.php" class="btn btn-primary mb-3">View Transactions</a>
 

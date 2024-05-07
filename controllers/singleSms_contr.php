@@ -5,8 +5,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST["selectedCustomer"], $_POST["message"])) {
         // Include necessary files
         require_once '../database/pdo.php';
-        require_once '../modals/infobip_mod.php';
+        require_once '../modals/sendSms_mod.php';
+        require_once  '../modals/setup_mod.php';
 
+        //get phone code
+        $connect = connectToDatabase($host, $dbname, $username, $password);
+        $settings = get_Settings($connect);
+        $code = $settings[0]["PhoneCode"];
 
         $selectedCustomer = $_POST["selectedCustomer"];
         $provider = $_POST["provider"];
@@ -27,7 +32,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             if ($client) {
                 // Get the client's email and other necessary details
-                $to = $client['PrimaryNumber'];
+                $number = $client['PrimaryNumber'];
+                $to = $code . $number;
                 $from = "MajorLink"; // Assuming you have a FirstName field in your clients table
                 $name = $client['FirstName'] . ' ' . $client['LastName']; // Assuming you have a FirstName field in your clients table
 
@@ -35,9 +41,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $replacements = array(
                     'client_name' => $name,
                     'business_name' => 'MajorLink ISP', // Replace with your actual business name
-                    'client_login_url' => 'https://example.com/login', // Replace with the client login URL
                     'client_email' => $to
                 );
+
 
                 // Replace template words in the message
                 $message = replaceTemplateWords($body, $replacements);

@@ -1,8 +1,9 @@
 <?php require_once "../controllers/session_Config.php"; ?>
 <section id="sidebar">
-  <a href="#" class="brand">
-    <i class='bx bxs-smile'></i>
-    <span class="text">MajorLink</span>
+  <a href="#" class="brand ml-2">
+    <!-- <i class='bx bxs-smile'></i> -->
+    <img src="../img/<?= $companyData[0]["LogoURL"] ?>" class="logoImg" alt="" style="width: 30px; height: 30px;">
+    <span class="text"><?= $companyData[0]["CompanyName"] ?></span>
   </a>
 
 
@@ -86,7 +87,7 @@
         <li><a href="revenue.php">Revenue</a></li>
         <li><a href="expense.php">Expense</a></li>
         <li><a href="incomeVsExpense.php">Income Vs Expense</a></li>
-        <li><a href="summary.php">Business Summary</a></li>
+        <!-- <li><a href="summary.php">Business Summary</a></li> -->
       </ul>
     </li>
     <li>
@@ -117,7 +118,7 @@
       <ul class="sub-menu">
         <li><a class="link_name" href="#">Management</a></li>
         <li><a href="Settings.php" data-target="Settings">Settings</a></li>
-        <li><a href="#" data-target="invoice">System Logs</a></li>
+        <li><a href="profile.php" data-target="systemlogs">Profile</a></li>
         <li><a href="plugins.php" data-target="email">Plugins</a></li>
       </ul>
     </li>

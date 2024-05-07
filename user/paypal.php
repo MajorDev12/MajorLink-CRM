@@ -13,11 +13,14 @@ require_once  '../database/pdo.php';
 require_once  '../modals/addPlan_mod.php';
 require_once  '../modals/setup_mod.php';
 require_once  '../modals/viewSingleUser_mod.php';
+require_once  '../modals/config.php';
 
 $connect = connectToDatabase($host, $dbname, $username, $password);
 
 $clientID = $_SESSION["clientID"];
-
+$settings = get_Settings($connect);
+$initialCurrency = $settings[0]["CurrencyCode"];
+$initialSymbol = $settings[0]["CurrencySymbol"];
 
 
 $clientData = getClientDataById($connect, $clientID);
@@ -101,7 +104,8 @@ $clientData = getClientDataById($connect, $clientID);
                             <div class="form-group col-md-4">
                                 <label for="Plan" class="form-label">Subscribed Plan</label>
 
-                                <input type="text" class="form-control" disabled id="Plan" name="Plan" value="<?= $clientData['PlanName'] . ' ' . ' - ' . $clientData['Plan'] ?>">
+                                <input type="text" class="form-control" data-planId="<?= $clientData['PlanID'] ?>" disabled id="Plan" name="Plan" value="<?= $clientData['PlanName'] . ' - ' . $clientData['Plan'] ?>">
+
                             </div>
 
 
@@ -153,76 +157,105 @@ $clientData = getClientDataById($connect, $clientID);
                 </div>
             </div>
 
-            <script src="https://www.paypal.com/sdk/js?client-id=Ae4orbdIICDrUSBdOqXB0HbAwz41DvXZwYt9UXlCOska-hYHUEw2YkXEblL0N4VNgBmtAt9G8H7Gq1Mt&currency=USD&disable-funding=credit,card"></script>
+            <?php require_once "../views/footer.php"; ?>
+
+
+            <script src="https://www.paypal.com/sdk/js?client-id=<?= CLIENT_ID; ?>&currency=USD&disable-funding=credit,card"></script>
             <script>
+                var amount = $('#PlanAmount').val();
+                var startDate = $('#startDate').val();
+                var paymentDate = $('#paymentDate').val();
+                var selectedMonths = $('#selectedMonths').val();
+                const planId = $('#Plan').data('planid');
+                const changing = false;
+                const changingNow = false;
+                amount = amount * selectedMonths;
+
+
                 paypal.Buttons({
                     createOrder: function(data, actions) {
-                        // var planId = $('#Plan').val();
-                        var amount = $('#PlanAmount').val();
-                        var startDate = $('#startDate').val();
-                        var paymentDate = $('#paymentDate').val();
 
                         if (!amount) {
                             displayMessage("errorMsg", "Please enter amount to be paid before proceeding.", true);
                             return actions.reject();
                         }
 
-                        var startDate = $('#startDate').val();
-                        var expireDate = startDate;
 
-                        <?php $settings = get_Settings($connect); ?>
-                        var originalExpireDate = new Date(expireDate);
-                        var timezone = <?= json_encode($settings[0]["TimeZone"]); ?>;
-                        // console.log(timezone);
-                        // Create a Date object with the specified timezone
-                        var dateOptions = {
-                            timeZone: timezone
-                        };
+                        // Parsing the input value to a floating-point number
+                        const initialCurrency = '<?= $initialCurrency; ?>';
 
-                        var originalExpireDate = new Date(expireDate);
+                        if (initialCurrency !== "USD") {
+                            // Convert the amount to USD
+                            return convertToUSD(amount, initialCurrency)
+                                .then(convertedAmount => {
 
-                        // Perform operations on the originalExpireDate
-                        originalExpireDate.setMonth(originalExpireDate.getMonth() + 1);
-
-                        // Format the updated date
-                        var expireDate = originalExpireDate.toLocaleString('en-US', dateOptions);
-
-
-                        return actions.order.create({
-                            purchase_units: [{
-                                amount: {
-                                    value: amount,
-                                    currency_code: 'USD',
+                                    // Create the order with the converted amount
+                                    return actions.order.create({
+                                        purchase_units: [{
+                                            amount: {
+                                                value: convertedAmount, // Use the converted amount here
+                                                currency_code: 'USD',
+                                            },
+                                        }],
+                                        application_context: {
+                                            shipping_preference: 'NO_SHIPPING',
+                                        },
+                                    });
+                                })
+                                .catch(error => {
+                                    // Handle the error
+                                    displayMessage("errorMsg", "Failed!!! Please try again later or contact customer support.", true);
+                                    console.error('Error converting to USD:', error.message);
+                                    // Display an error message to the user or take appropriate action
+                                });
+                        } else {
+                            // If the initial currency is already USD, create the order with the original amount
+                            return actions.order.create({
+                                purchase_units: [{
+                                    amount: {
+                                        value: amount,
+                                        currency_code: 'USD',
+                                    },
+                                }],
+                                application_context: {
+                                    shipping_preference: 'NO_SHIPPING',
                                 },
-                            }],
-                            application_context: {
-                                shipping_preference: 'NO_SHIPPING',
-                            },
-                        });
+                            });
+                        }
+
                     },
                     onApprove: function(data, actions) {
                         return actions.order.capture().then(function(details) {
-                            console.log(data)
-                            return;
-                            // Send details to your server for verification.
+
+
                             $.ajax({
                                 url: '../controllers/process_Paypalpayment_contr.php', // Replace with your server-side processing script
                                 method: 'POST',
                                 data: {
-                                    orderID: data.orderID,
-                                    payerID: data.payerID,
-                                    payerEmail: data.payerID,
-                                    paymentID: details.id,
+                                    details: details,
+                                    paymentData: data,
+                                    planID: planId,
+                                    paidMonths: selectedMonths,
+                                    changing: changing,
+                                    changingNow: changingNow,
+                                    amount: amount,
+                                    startDate: startDate
                                 },
                                 success: function(response) {
                                     // Handle the response from the server
-                                    alert(response.message);
-                                    if (response.success) {
+                                    console.log(response);
+                                    if (response.paymentInserted && response.planUpdated && response.statusChanged && response.transactionSet && response.invoiceAdded && response.productsAdded) {
                                         // Payment was successful, redirect or perform further actions
-                                        // window.location.href = 'index.php?success=payment success';
+                                        displayMessage("errorMsg", "Successfully paid", false);
+                                        setTimeout(() => {
+                                            window.location.href = 'paypal.php?success=paymentsuccess';
+                                        }, 1000);
+
                                     } else {
                                         // Payment failed, handle accordingly
-                                        // window.location.href = 'index.php?error=payment error';
+                                        displayMessage("errorMsg", "Failed", true);
+                                        console.log(response);
+                                        // window.location.href = 'paypal.php?error=payment error';
                                     }
                                 },
                                 error: function() {
@@ -243,25 +276,37 @@ $clientData = getClientDataById($connect, $clientID);
 
 
 
-                function displayMessage(messageElement, message, isError) {
-                    // Get the HTML element where the message should be displayed
-                    var targetElement = document.getElementById(messageElement);
+                function convertToUSD(amount, initialCurrency) {
+                    // API endpoint for ExchangeRatesAPI
+                    const apiEndpoint = '<?= ENDPOINT; ?>';
 
-                    // Set the message text
-                    targetElement.innerText = message;
+                    // API request to get the latest exchange rates
+                    const apiUrl = `${apiEndpoint}?base=${initialCurrency}&symbols=USD`;
 
-                    // Add styling based on whether it's an error or success
-                    if (isError) {
-                        targetElement.style.color = 'red';
-                    } else {
-                        targetElement.style.color = 'green';
-                    }
+                    // Fetch API to get exchange rates
+                    return fetch(apiUrl)
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            // Decode the API response
+                            const exchangeRates = data;
 
-                    // Set a timeout to hide the message with the fade-out effect
-                    setTimeout(function() {
-                        targetElement.innerText = '';
-                    }, 2000);
+                            // Check if the exchange rates were successfully retrieved
+                            if (exchangeRates && exchangeRates.rates.USD) {
+                                // Convert amount to USD using the exchange rate and round off
+                                const exchangeRate = exchangeRates.rates.USD;
+                                return Math.round(amount * exchangeRate * 100) / 100; // Round to two decimal places
+                            } else {
+                                throw new Error('Failed to retrieve exchange rates');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error converting to USD:', error);
+                            throw error; // Rethrow the error to propagate it to the caller
+                        });
                 }
             </script>
-
-            <?php require_once "../views/footer.php"; ?>

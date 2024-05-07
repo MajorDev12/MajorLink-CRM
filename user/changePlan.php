@@ -21,6 +21,9 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
 $clientID = $_SESSION["clientID"];
 $clientData = getClientDataById($connect, $clientID);
 
+$settings = get_Settings($connect);
+$initialCurrency = $settings[0]["CurrencyCode"];
+
 $currentPlan = $clientData["PlanID"];
 
 $preferedmethodid = $clientData["PreferedPaymentMethod"];
@@ -52,6 +55,7 @@ $PaymentMethods = getPaymentMethods($connect);
         top: 15%;
         left: 30%;
         width: 40%;
+        height: 70vh;
         background-color: var(--light);
         display: flex;
         flex-direction: column;
@@ -59,12 +63,13 @@ $PaymentMethods = getPaymentMethods($connect);
         align-items: center;
         z-index: 1001;
         display: none;
+        padding: 10px;
     }
 
     .note {
-        position: absolute;
-        top: 4%;
-        width: 70%;
+        width: 50%;
+        padding: 10px;
+        margin: 10px;
         background-color: var(--light-green);
     }
 
@@ -78,6 +83,11 @@ $PaymentMethods = getPaymentMethods($connect);
 
     #plandiv {
         background-color: var(--light);
+    }
+
+    .radiodiv {
+        display: flex;
+        flex-direction: row;
     }
 </style>
 <div id="overlay"></div>
@@ -126,10 +136,10 @@ $PaymentMethods = getPaymentMethods($connect);
 
 
                     <!-- stripe modal -->
-                    <div id="stripeModal" class="modal shadow-sm p-3 mb-5 rounded">
+                    <div id="stripeModal" class="modal-container">
 
                         <p class="note p-2">
-                            note that changing subscription Now plan will remove any past payment
+                            note that changing subscription plan now will remove any past payment
                         </p>
                         <form action="">
                             <div class="row">
@@ -171,48 +181,63 @@ $PaymentMethods = getPaymentMethods($connect);
 
 
                     <!-- paypal modal -->
-                    <div id="paypalModal" class="modal shadow-sm p-3 mb-5 rounded">
+                    <div id="paypalModal" class="modal-container">
 
                         <p class="note p-2">
                             note that changing subscription plan Now will remove any past payment
                         </p>
-                        <form action="">
-                            <div class="row">
-                                <div class="form-group">
-                                    <button type="button" id="closepaypalModal" class="close" data-dismiss="modal">&times;</button>
-                                    <label for="Plan" class="form-label">Payment Date</label>
-                                    <input type="text" class="form-control" readonly value="<?php echo date('Y-m-d'); ?>">
-                                    <input type="hidden" class="form-control" readonly value="<?php echo date('Y-m-d'); ?>">
-                                    <label for="Plan" class="form-label">Amount</label>
-                                    <input type="text" class="form-control" readonly id="paypalAmount" name="Plan">
-                                    <label for="Plan" class="form-label">Months</label>
-                                    <select id="selectedMonths" class="form-select">
-                                        <option selected value="1">1 - month</option>
-                                        <option value="2">2 - months</option>
-                                        <option value="3">3 - months</option>
-                                        <option value="4">4 - months</option>
-                                        <option value="5">5 - months</option>
-                                        <option value="6">6 - months</option>
-                                        <option value="7">7 - months</option>
-                                        <option value="8">8 - months</option>
-                                        <option value="9">9 - months</option>
-                                        <option value="10">10 - months</option>
-                                        <option value="11">11 - months</option>
-                                        <option value="12">12 - months</option>
-                                    </select>
-                                    <input type="hidden" id="currencyCode" value="">
-                                    <input type="hidden" id="currencySymbol" value="">
-                                    <input type="hidden" id="PlanName" value="">
-                                    <input type="hidden" id="PlanID" value="">
-                                    <input type="hidden" class="">
-                                </div>
 
-                                <button type="button" id="payNow" class="btn btn-success mt-4">Change Now</button>
-                                <button type="button" id="payLater" class="btn btn-success mt-2">Change Later</button>
-
+                        <div class="row">
+                            <div class="form-group">
+                                <button type="button" id="closepaypalModal" class="close" data-dismiss="modal">&times;</button>
+                                <label for="Plan" class="form-label">Payment Date</label>
+                                <input type="text" class="form-control" readonly value="<?php echo date('Y-m-d'); ?>">
+                                <label for="Plan" class="form-label">Amount</label>
+                                <input type="text" class="form-control" data-planID="" readonly id="paypalAmount" name="Plan">
+                                <label for="Plan" class="form-label">Months</label>
+                                <select id="paypalSelectedMonths" class="form-select">
+                                    <option selected value="1">1 - month</option>
+                                    <option value="2">2 - months</option>
+                                    <option value="3">3 - months</option>
+                                    <option value="4">4 - months</option>
+                                    <option value="5">5 - months</option>
+                                    <option value="6">6 - months</option>
+                                    <option value="7">7 - months</option>
+                                    <option value="8">8 - months</option>
+                                    <option value="9">9 - months</option>
+                                    <option value="10">10 - months</option>
+                                    <option value="11">11 - months</option>
+                                    <option value="12">12 - months</option>
+                                </select>
+                                <input type="hidden" id="currencyCode" value="">
+                                <input type="hidden" id="currencySymbol" value="">
+                                <input type="hidden" id="PlanName" value="">
+                                <input type="hidden" id="PlanID" value="">
+                                <input type="hidden" class="">
                             </div>
 
-                        </form>
+
+                            <div class="radiodiv mt-3">
+                                <input type="radio" value="" id="nowRadio" name="fav_language">
+                                <label class="form-check-label" for="nowRadio">
+                                    Change Now
+                                </label>
+                            </div>
+
+                            <div class="radiodiv">
+                                <input type="radio" value="" id="laterRadio" name="fav_language">
+                                <label class="form-check-label" for="laterRadio">
+                                    Change Later
+                                </label>
+                            </div>
+
+
+                            <p id="errorMsg"></p>
+                            <div id="paypalButtonNow"></div>
+
+                        </div>
+
+
                     </div>
 
 
@@ -264,7 +289,196 @@ $PaymentMethods = getPaymentMethods($connect);
 
             <?php require_once "../views/footer.php"; ?>
             <script src="https://js.stripe.com/v3/"></script>
+            <script src="https://www.paypal.com/sdk/js?client-id=<?= CLIENT_ID; ?>&currency=USD&disable-funding=credit,card"></script>
             <script>
+                var changing = true;
+                var changingNow = false;
+                var changingLater = false;
+                var amount = '';
+                var selectedMonths = '';
+                var paidPlanID = '';
+
+
+
+                paypal.Buttons({
+                    createOrder: function(data, actions) {
+                        changingNow = document.getElementById("nowRadio");
+                        changingLater = document.getElementById("laterRadio");
+                        amount = document.getElementById("paypalAmount").value;
+                        selectedMonths = document.getElementById("paypalSelectedMonths").value;
+                        paidPlanID = $('#paypalAmount').data('planid');
+                        amount = amount * selectedMonths;
+
+
+                        if (!changingNow.checked && !changingLater.checked) {
+                            displayMessage("errorMsg", "Check the now or later button to continue", true);
+                            return actions.reject();
+                        }
+
+
+
+                        if (!amount) {
+                            displayMessage("errorMsg", "Please enter amount to be paid before proceeding.", true);
+                            return actions.reject();
+                        }
+
+
+                        // Parsing the input value to a floating-point number
+                        const initialCurrency = '<?= $initialCurrency; ?>';
+
+                        if (initialCurrency !== "USD") {
+                            // Convert the amount to USD
+                            return convertToUSD(amount, initialCurrency)
+                                .then(convertedAmount => {
+
+                                    // Create the order with the converted amount
+                                    return actions.order.create({
+                                        purchase_units: [{
+                                            amount: {
+                                                value: convertedAmount, // Use the converted amount here
+                                                currency_code: 'USD',
+                                            },
+                                        }],
+                                        application_context: {
+                                            shipping_preference: 'NO_SHIPPING',
+                                        },
+                                    });
+                                })
+                                .catch(error => {
+                                    // Handle the error
+                                    displayMessage("errorMsg", "Failed!!! Please try again later or contact customer support.", true);
+                                    console.error('Error converting to USD:', error.message);
+                                    // Display an error message to the user or take appropriate action
+                                });
+                        } else {
+                            // If the initial currency is already USD, create the order with the original amount
+                            return actions.order.create({
+                                purchase_units: [{
+                                    amount: {
+                                        value: amount,
+                                        currency_code: 'USD',
+                                    },
+                                }],
+                                application_context: {
+                                    shipping_preference: 'NO_SHIPPING',
+                                },
+                            });
+                        }
+
+                    },
+                    onApprove: function(data, actions) {
+                        return actions.order.capture().then(function(details) {
+
+
+                            $.ajax({
+                                url: '../controllers/process_Paypalpayment_contr.php', // Replace with your server-side processing script
+                                method: 'POST',
+                                data: {
+                                    details: details,
+                                    paymentData: data,
+                                    paidPlanID: paidPlanID,
+                                    paidMonths: selectedMonths,
+                                    changing: changing,
+                                    changingNow: changingNow.checked,
+                                    amount: amount
+                                },
+                                success: function(response) {
+                                    // Handle the response from the server
+                                    console.log(response);
+                                    if (response.paymentInserted && response.planUpdated && response.statusChanged && response.transactionSet && response.invoiceAdded && response.productsAdded) {
+                                        // Payment was successful, redirect or perform further actions
+                                        displayMessage("errorMsg", "Successfully paid", false);
+                                        setTimeout(() => {
+                                            window.location.href = 'paypal.php?success=paymentsuccess';
+                                        }, 1000);
+
+                                    } else {
+                                        // Payment failed, handle accordingly
+                                        displayMessage("errorMsg", "Failed", true);
+                                        console.log(response);
+                                        // window.location.href = 'paypal.php?error=payment error';
+                                    }
+                                },
+                                error: function() {
+                                    // Handle errors or server-side issues
+                                    // alert('Error processing payment.');
+                                    console.log("Error processing payment.")
+                                },
+                            });
+                        });
+                    },
+                    onCancel: function(data) {
+                        console.log("payment cancelled" + data);
+                        // window.location.replace('index.php');
+                    }
+                }).render('#paypalButtonNow');
+
+
+
+
+
+
+                function convertToUSD(amount, initialCurrency) {
+                    // API endpoint for ExchangeRatesAPI
+                    const apiEndpoint = '<?= ENDPOINT; ?>';
+
+                    // API request to get the latest exchange rates
+                    const apiUrl = `${apiEndpoint}?base=${initialCurrency}&symbols=USD`;
+
+                    // Fetch API to get exchange rates
+                    return fetch(apiUrl)
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            // Decode the API response
+                            const exchangeRates = data;
+
+                            // Check if the exchange rates were successfully retrieved
+                            if (exchangeRates && exchangeRates.rates.USD) {
+                                // Convert amount to USD using the exchange rate and round off
+                                const exchangeRate = exchangeRates.rates.USD;
+                                return Math.round(amount * exchangeRate * 100) / 100; // Round to two decimal places
+                            } else {
+                                throw new Error('Failed to retrieve exchange rates');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error converting to USD:', error);
+                            throw error; // Rethrow the error to propagate it to the caller
+                        });
+                }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                 document.querySelector("#closestripeModal").addEventListener('click', () => {
                     document.querySelector(".modal").style.display = "none";
                     document.getElementById("overlay").style.display = "none";
@@ -306,6 +520,7 @@ $PaymentMethods = getPaymentMethods($connect);
                                                 document.getElementById('paypalModal').style.display = 'flex';
                                                 document.getElementById('overlay').style.display = 'flex';
                                                 document.getElementById('paypalAmount').value = price;
+                                                $('#paypalAmount').data('planid', planID);
                                                 document.getElementById('currencyCode').value = currencyCode;
                                                 document.getElementById('PlanName').value = PlanName;
                                                 break;
@@ -363,10 +578,6 @@ $PaymentMethods = getPaymentMethods($connect);
 
                 payNow.addEventListener("click", (e) => {
                     e.preventDefault();
-
-
-
-
                     months = document.querySelector("#selectedMonths").value;
                     // Assign values to the global variables
                     paymentDate = document.querySelector("#PaymentDate").value;
@@ -377,8 +588,8 @@ $PaymentMethods = getPaymentMethods($connect);
                     currency = document.querySelector("#currencySymbol").value;
                     PlanAmount = document.getElementById("Amount").value;
                     selectedMonths = document.getElementById("selectedMonths").value;
-                    changing = 1;
-                    changingNow = 1;
+                    changing = true;
+                    changingNow = true;
 
 
                     if (PlanAmount === '') {
@@ -422,8 +633,8 @@ $PaymentMethods = getPaymentMethods($connect);
                     currency = document.querySelector("#currencySymbol").value;
                     PlanAmount = document.getElementById("Amount").value;
                     selectedMonths = document.getElementById("selectedMonths").value;
-                    changing = 0;
-                    changingNow = 0;
+                    changing = true;
+                    changingNow = false;
 
 
 

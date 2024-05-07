@@ -13,8 +13,8 @@ if (isset($_POST["ClientId"])) {
     require_once  '../modals/setup_mod.php';
     require_once  '../modals/addInvoice_mod.php';
     require_once  '../modals/addPlan_mod.php';
-    require_once  '../modals/infobip_mod.php';
     require_once  '../modals/notification_mod.php';
+    require_once  '../modals/sendSms_mod.php';
 
     $connect  = connectToDatabase($host, $dbname, $username, $password);
     $settings = get_Settings($connect);

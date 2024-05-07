@@ -145,17 +145,18 @@ $clientID = $_SESSION["clientID"];
 
                     <?php $clientData = getClientDataById($connect, $clientID); ?>
 
-                    <?php echo $clientData["PreferedPaymentMethod"];
-                    ?>
 
                     <?php if (!empty($PaymentMethods)) : ?>
                         <?php foreach ($PaymentMethods as $PaymentMethod) : ?>
                             <?php
-                            // echo $PaymentMethod['PaymentOptionID'];
+                            // Skip options with PaymentOptionName equal to "Cash"
+                            if ($PaymentMethod['PaymentOptionName'] === 'Cash') {
+                                continue;
+                            }
+
                             // Set a class for the default selected div based on the preferred payment ID
                             $selectedClass = ($PaymentMethod['PaymentOptionID'] === $clientData["PreferedPaymentMethod"]) ? '3px solid #3C91E6' : '';
                             $changeIcon = ($PaymentMethod['PaymentOptionID'] === $clientData["PreferedPaymentMethod"]) ? 'flex' : '';
-
                             ?>
                             <div class="Choosenoption">
                                 <div class="div" style="border: <?= $selectedClass; ?>;">
@@ -169,6 +170,7 @@ $clientID = $_SESSION["clientID"];
                     <?php else : ?>
                         <p class="text-center">No chosen options available</p>
                     <?php endif; ?>
+
                     <p id="error"></p>
 
                     <div class="actions">
@@ -202,11 +204,11 @@ $clientID = $_SESSION["clientID"];
 
                     selectedPaymentId = div.querySelector(".PaymentOptionID").value;
 
-                    setTimeout(() => {
-                        div.style.border = '3px solid var(--blue)';
-                        checkIcon.style.display = 'flex';
-                        loader.style.display = "none";
-                    }, 1000);
+
+                    div.style.border = '3px solid var(--blue)';
+                    checkIcon.style.display = 'flex';
+                    loader.style.display = "none";
+
                 });
             });
 

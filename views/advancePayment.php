@@ -11,7 +11,7 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
 $settings = get_Settings($connect);
 $symbol = $settings[0]["CurrencySymbol"];
 ?>
-
+<?php require_once "style.config.php"; ?>
 <?php require_once "header.php"; ?>
 
 <style>

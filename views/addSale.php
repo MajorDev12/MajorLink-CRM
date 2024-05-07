@@ -19,7 +19,7 @@ $settings = get_Settings($connect);
 <?php require_once "style.config.php"; ?>
 
 <style>
-    span {
+    .radios {
         color: var(--light-dark);
     }
 </style>
@@ -48,15 +48,11 @@ $settings = get_Settings($connect);
                     </li>
                     <li><i class='bx bx-chevron-right'></i></li>
                     <li>
-                        <a class="active" href="#">Home</a>
+                        <a class="active" href="#">Add Sale</a>
                     </li>
                 </ul>
             </div>
 
-            <a href="#" class="btn-download">
-                <i class='bx bxs-cloud-download'></i>
-                <span class="text">Download PDF</span>
-            </a>
         </div>
 
         <!-- content-container -->
@@ -140,9 +136,9 @@ $settings = get_Settings($connect);
 
                     <div class="col-md-6">
                         <label for="paymentDate">Tax Symbol</label>
-                        <span><?= $settings[0]["CurrencySymbol"]; ?></span>
+                        <span class="radios"><?= $settings[0]["CurrencySymbol"]; ?></span>
                         <input type="radio" name="taxType" value="<?= $settings[0]["CurrencySymbol"]; ?>" checked id="taxCurrency">
-                        <span>%</span>
+                        <span class="radios">%</span>
                         <input type="radio" id="taxPercent" name="taxType" value="%">
                     </div>
                     <div class="col-md-6">
@@ -368,30 +364,4 @@ $settings = get_Settings($connect);
 
 
                 })
-
-
-
-
-
-
-
-                function displayMessage(messageElement, message, isError, ) {
-                    // Get the HTML element where the message should be displayed
-                    var targetElement = document.getElementById(messageElement);
-
-                    // Set the message text
-                    targetElement.innerText = message;
-
-                    // Add styling based on whether it's an error or success
-                    if (isError) {
-                        targetElement.style.color = 'red';
-                    } else {
-                        targetElement.style.color = 'green';
-                    }
-
-                    // Set a timeout to hide the message with the fade-out effect
-                    setTimeout(function() {
-                        targetElement.innerText = '';
-                    }, 1000);
-                }
             </script>

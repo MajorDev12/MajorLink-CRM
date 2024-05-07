@@ -15,12 +15,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($results !== false) {
 
-
-
-            // Counter for indexing
             $table = '';
+            $paymentStatus = '';
+
             foreach ($results as $result) {
                 $amount = isset($result['PaymentAmount']) ? $result['PaymentAmount'] : $result['amount'];
+
+                // Check if 'PaymentStatus' index exists in the current result
+                $paymentStatus = isset($result['PaymentStatus']) ? $result['PaymentStatus'] : $result['status'];
+
 
                 $table .= '
                     <tr>
@@ -28,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <td>' . $result['PaymentDate'] . '</td>
                         <td>' . ($result['PaymentOptionName'] ?? '') . '</td>
                         <td>' . $amount . '</td>
-                        <td>' . ($result['PaymentStatus'] ?? '') . '</td>
+                        <td>' . $paymentStatus . '</td>
                         <td>' . $result['type'] . '</td>
                     </tr>
                 ';
@@ -37,9 +40,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 
 
+
             // Return the results as JSON
             header('Content-Type: application/json');
             echo json_encode($table);
+            exit();
         } else {
             // Return a response indicating no data
             $response = false;

@@ -287,10 +287,10 @@ $clientID = $_SESSION['clientID'];
                     </div>
 
                     <div id="div" class="acceptEmail shadow-sm p-3 mb-2 rounded">
-                        <h5>Send my Email</h5>
-                        <p>This means you will get instant notifications in your email</p>
-                        <div class="form-check">
-                            <input class="form-check-input checkbox p-2" type="checkbox" value="" id="defaultCheck1">
+                        <h5>Edit Profile</h5>
+                        <p>Change Name, Email, Address and other personal details.</p>
+                        <div class="actions">
+                            <button type="button"><a href="profile.php">Setup</a></button>
                         </div>
                     </div>
                 </div>

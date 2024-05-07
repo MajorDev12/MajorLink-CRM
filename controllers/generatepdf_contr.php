@@ -8,6 +8,8 @@ if (!isset($_GET["i"]) && !isset($_GET["c"])) {
 require_once  '../database/pdo.php';
 require_once  '../modals/addInvoice_mod.php';
 require_once  '../modals/viewSingleUser_mod.php';
+require_once  '../modals/setup_mod.php';
+
 $connect = connectToDatabase($host, $dbname, $username, $password);
 
 //get invoice data
@@ -18,6 +20,18 @@ $clientID = $_GET["c"];
 $invoice = getInvoiceData($connect, $invoiceID);
 //get clientInfo
 $clientData = getClientDataById($connect, $clientID);
+
+$settings = get_Settings($connect);
+$Symbol = $settings[0]["CurrencySymbol"];
+$CompanyAddress = $settings[0]["Address"];
+$CompanyCity = $settings[0]["City"];
+$CompanyZipcode = $settings[0]["Zipcode"];
+$CompanyCountry = $settings[0]["Country"];
+
+$CompanyWebsite = $settings[0]["Website"];
+$CompanyEmail = $settings[0]["Email"];
+$CompanyPhoneNumber = $settings[0]["PhoneNumber"];
+
 
 if (!$clientData) {
     echo "something went wrong";
@@ -32,6 +46,10 @@ if (empty($invoice)) {
 //clientInfo
 $firstName = $clientData["FirstName"];
 $LastName = $clientData["LastName"];
+$Address = $clientData["Address"];
+$City = $clientData["City"];
+$Zipcode = $clientData["Zipcode"] != 0 ? $clientData["Zipcode"] : '';
+$Country = $clientData["Country"];
 
 
 //invoiceInfo
@@ -41,6 +59,9 @@ $paymentDate = date("Y-m-d", strtotime($invoice["paymentDate"]));
 $StartDate = date("Y-m-d", strtotime($invoice["StartDate"]));
 $expireDate = date("Y-m-d", strtotime($invoice["DueDate"]));
 $status = $invoice["Status"];
+
+$statusClass = strtolower(str_replace(' ', '-', $status));
+
 
 $totalAmount = number_format($invoice["TotalAmount"], 2);
 $tax = number_format($invoice["Taxamount"], 2);
@@ -91,7 +112,7 @@ foreach ($products as $product) {
 // Load the HTML and replace placeholders with values from the form
 $html = file_get_contents("../views/pdfTemplate.php");
 
-$html = str_replace(["{{ firstName }}", "{{ LastName }}", "{{ invoiceNumber }}", "{{ paymentDate }}", "{{ StartDate }}", "{{ expireDate }}", "{{ totalAmount }}", "{{ Status }}", "{{ tax }}", "{{ taxSymbol }}", "{{ htmlProducts }}", "{{ subtotal }}"], [$firstName, $LastName, $invoiceNumber, $paymentDate, $StartDate, $expireDate, $totalAmount, $status, $tax, $taxSymbol, $htmlProducts, number_format($subtotal, 2)], $html);
+$html = str_replace(["{{ firstName }}", "{{ LastName }}", "{{ Address }}", "{{ City }}", "{{ Zipcode }}", "{{ Country }}",  "{{ CompanyAddress }}", "{{ CompanyCity }}", "{{ CompanyZipcode }}", "{{ CompanyCountry }}", "{{ CompanyWebsite }}", "{{ CompanyEmail }}", "{{ CompanyPhoneNumber }}", "{{ invoiceNumber }}", "{{ paymentDate }}", "{{ StartDate }}", "{{ expireDate }}", "{{ totalAmount }}", "{{ Status }}", "{{ statusClass }}", "{{ tax }}", "{{ taxSymbol }}", "{{ Symbol }}", "{{ htmlProducts }}", "{{ subtotal }}"], [$firstName, $LastName, $Address, $City, $Zipcode, $Country, $CompanyAddress, $CompanyCity, $CompanyZipcode, $CompanyCountry, $CompanyWebsite, $CompanyEmail, $CompanyPhoneNumber, $invoiceNumber, $paymentDate, $StartDate, $expireDate, $totalAmount, $status, $statusClass, $tax, $taxSymbol, $Symbol, $htmlProducts, number_format($subtotal, 2)], $html);
 
 
 

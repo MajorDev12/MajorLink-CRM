@@ -1,10 +1,10 @@
 <?php
-
+require_once "../modals/config.php";
 // db info
-$host = "localhost";
-$dbname = "majorlink";
-$username = "root";
-$password = "123456";
+$host = DB_HOST;
+$dbname = DATABASE_NAME;
+$username = DB_USERNAME;
+$password = DB_PASSWORD;
 
 function connectToDatabase($host, $dbname, $username, $password)
 {

@@ -9,12 +9,20 @@ require_once  '../modals/addPlan_mod.php';
 require_once  '../modals/addPlan_mod.php';
 require_once  '../modals/reports_mod.php';
 require_once  '../modals/addInvoice_mod.php';
+require_once  '../modals/setup_mod.php';
 
 $connect = connectToDatabase($host, $dbname, $username, $password);
 $invoicesData = getInvoicesByClientID($connect, $clientID);
+
+$settings = get_Settings($connect);
+$code = $settings[0]["CurrencyCode"];
+$symbol = $settings[0]["CurrencySymbol"];
+
+$clientId = $clientData["ClientID"];
+$clientTotalAmount = getSingleClientTotalAmount($connect, $clientId);
 ?>
 <?php require_once "header.php"; ?>
-
+<?php require_once "style.config.php"; ?>
 <style>
     .map {
         min-width: 200px;
@@ -28,7 +36,7 @@ $invoicesData = getInvoicesByClientID($connect, $clientID);
         background-color: var(--latto);
     }
 
-    h1 {
+    .main-content h1 {
         display: flex;
         justify-content: center;
         align-items: center;
@@ -50,7 +58,7 @@ $invoicesData = getInvoicesByClientID($connect, $clientID);
         text-align: center;
         cursor: pointer;
         font-weight: 600;
-        transition: .3s;
+        transition: .1s;
         margin: 0;
     }
 
@@ -61,7 +69,6 @@ $invoicesData = getInvoicesByClientID($connect, $clientID);
 
     .content .tabs button {
         margin: 2px;
-        color: var(--dark);
     }
 
     .tab-content h4 {
@@ -211,7 +218,11 @@ $invoicesData = getInvoicesByClientID($connect, $clientID);
                 <h1>Dashboard</h1>
                 <ul class="breadcrumb">
                     <li>
-                        <a href="viewClient.php">List Customers</a>
+                        <a href="index.php">Dashboard</a>
+                    </li>
+                    <li><i class='bx bx-chevron-right'></i></li>
+                    <li>
+                        <a class="active" href="viewClient.php">List Customers</a>
                     </li>
                     <li><i class='bx bx-chevron-right'></i></li>
                     <li>
@@ -238,7 +249,6 @@ $invoicesData = getInvoicesByClientID($connect, $clientID);
         </div>
         <!-- toast -->
 
-        <div id="loader">Loading...</div>
         <!-- content-container -->
         <div class="main-content">
 
@@ -392,6 +402,11 @@ $invoicesData = getInvoicesByClientID($connect, $clientID);
 
 
 
+            <!-- change plan Page -->
+            <?php require_once "modifySubscription_page.php"; ?>
+
+
+
             <!-- Accounting Page -->
             <?php require_once "accounting_page.php"; ?>
 
@@ -399,13 +414,6 @@ $invoicesData = getInvoicesByClientID($connect, $clientID);
 
             <!-- Invoices Page -->
             <?php require_once "invoice_page.php"; ?>
-
-
-
-
-
-            <!-- message Page -->
-
 
 
 

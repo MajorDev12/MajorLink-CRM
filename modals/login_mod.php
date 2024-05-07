@@ -50,3 +50,43 @@ function isClient($email, $hashedPassword, $connect)
         return false;
     }
 }
+
+
+
+
+function maskEmail($email)
+{
+    // Separate the username and domain parts of the email
+    $parts = explode('@', $email);
+    $username = $parts[0];
+    $domain = $parts[1];
+
+    // Mask the username, leaving the first, second, and last characters visible
+    $maskedUsername = substr($username, 0, 2) . str_repeat('*', strlen($username) - 3) . substr($username, -1);
+
+    // Concatenate the masked username and the domain to form the masked email
+    $maskedEmail = $maskedUsername . '@' . $domain;
+
+    return $maskedEmail;
+}
+
+
+
+
+
+
+// Function to mask phone number
+function maskPhoneNumber($number)
+{
+    // Check if phone number has at least 7 digits
+    if (strlen($number) >= 7) {
+        // Get the first three and last two characters of the phone number
+        $maskedNumber = substr($number, 0, 3) . str_repeat('*', strlen($number) - 5) . substr($number, -2);
+    } else {
+        // If phone number has less than 7 digits, mask all but the last two digits
+        $maskedNumber = str_repeat('*', strlen($number) - 2) . substr($number, -2);
+    }
+
+    // Return masked phone number
+    return $maskedNumber;
+}

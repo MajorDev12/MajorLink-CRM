@@ -7,13 +7,24 @@ require_once  '../modals/addArea_mod.php';
 
 $connect = connectToDatabase($host, $dbname, $username, $password);
 ?>
+<?php require_once "style.config.php"; ?>
 <?php require_once "header.php"; ?>
 
 <style>
   #areaName {
     background-color: var(--light);
     color: var(--dark);
+    border-bottom: 1px solid var(--grey);
+    border-left: 1px solid var(--grey);
+    border-bottom-left-radius: 10px;
+
   }
+
+  #areaName:hover {
+    background-color: var(--light);
+    color: var(--dark);
+  }
+
 
   #modalAreaName {
     color: var(--light-dark);
@@ -57,12 +68,6 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
 
     <!-- content-container -->
     <div class="main-content">
-      <div id="loader">
-        <div class="spinner-grow text-Primary" role="status">
-          <span class="visually-hidden">Loading...</span>
-        </div>
-      </div>
-
 
       <div class="content">
 
@@ -129,7 +134,7 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                 <?php
                 $areas = getData($connect);
                 foreach ($areas as $area) {
-                  echo '<button type="button" id="areaName" class="list-group-item list-group-item-action area" aria-current="true" data-area-name="' . $area['AreaName'] . '" data-area-id="' . $area['AreaID'] . '">' . $area['AreaName'] . '</button>';
+                  echo '<span class="list-group-item list-group-item-action area" id="areaName" aria-current="true" data-area-name="' . $area['AreaName'] . '" data-area-id="' . $area['AreaID'] . '">' . $area['AreaName'] . '</span>';
                 }
                 ?>
               </div>

@@ -6,6 +6,7 @@ require_once  '../modals/addExpenseType_mod.php';
 
 $connect = connectToDatabase($host, $dbname, $username, $password);
 ?>
+<?php require_once "style.config.php"; ?>
 <?php require_once "header.php"; ?>
 <style>
     .icon {
@@ -14,6 +15,7 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
         padding: 4px;
         cursor: pointer;
     }
+
 
     .icon img {
         width: 30px;
@@ -35,10 +37,18 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
         background-color: var(--red);
     }
 
-    .area {
+    .expense {
         background-color: var(--light);
         color: var(--light-dark);
         border-right: none;
+    }
+
+    button {
+        background-color: var(--blue) !important;
+    }
+
+    #closeModal {
+        background-color: var(--light) !important;
     }
 </style>
 
@@ -66,7 +76,7 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                     </li>
                     <li><i class='bx bx-chevron-right'></i></li>
                     <li>
-                        <a class="active" href="#">Home</a>
+                        <a class="active" href="#">Expense Type</a>
                     </li>
                 </ul>
             </div>
@@ -75,7 +85,6 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
         </div>
 
         <!-- content-container -->
-        <div id="loader" class="loader">Loading...</div>
         <div id="overlay"></div>
 
         <div class="main-content">
@@ -162,11 +171,9 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                                 $expenseTypeName = $expense['ExpenseTypeName'];
 
                                 echo '<div class="d-flex justify-content-between align-items-center">';
-                                echo '<span class="list-group-item list-group-item-action area" aria-current="true" data-area-name="' . $expenseTypeName . '" data-area-id="' . $expenseTypeID . '">' . $expenseTypeName . '</span>';
+                                echo '<span class="list-group-item list-group-item-action expense" aria-current="true" data-area-name="' . $expenseTypeName . '" data-area-id="' . $expenseTypeID . '">' . $expenseTypeName . '</span>';
 
-                                echo '<a href="#" class="icon view ml-3" data-area-id="' . $expenseTypeID . '" onclick="editPlan(' . $expenseTypeID . ', \'' . $expenseTypeName . '\')"><img src="../img/eyeIcon.png" alt=""></a>';
-
-                                // echo '<a href="#" class="icon print"  data-area-id="' . $expenseTypeID . '" onclick="confirmDelete(' . $expenseTypeID . ')"><img id="delImg" src="../img/deleteIcon.png" alt=""></a>';
+                                echo '<button type="button" id="editBtn" class="btn ml-3 text-light" data-area-id="' . $expenseTypeID . '" onclick="editPlan(' . $expenseTypeID . ', \'' . $expenseTypeName . '\')">Edit</button>';
 
                                 echo '</div>';
                             }
@@ -245,7 +252,6 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                 function editPlan(expenseTypeID, expenseTypeName) {
                     document.getElementById('expenseTypeId').value = expenseTypeID;
                     document.getElementById('edit-expenseType').value = initialexpenseType = expenseTypeName;
-                    // Show the modal (you need to implement your own showModal function)
                     showModal();
                 }
 
@@ -279,8 +285,6 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                         loader.style.display = "flex";
 
                         // Changes detected, send data for update
-                        // Perform your AJAX request here
-                        // You can use the Fetch API for this purpose
                         var sendData = new FormData();
                         sendData.append('expenseTypeID', expenseTypeID);
                         sendData.append('updatedexpenseType', updatedexpenseType);
@@ -385,40 +389,6 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                function displayMessage(messageElement, message, isError) {
-                    // Get the HTML element where the message should be displayed
-                    var targetElement = document.getElementById(messageElement);
-
-                    // Set the message text
-                    targetElement.innerText = message;
-
-                    // Add styling based on whether it's an error or success
-                    if (isError) {
-                        targetElement.style.color = 'red';
-                    } else {
-                        targetElement.style.color = 'green';
-                    }
-
-                    // Set a timeout to hide the message with the fade-out effect
-                    setTimeout(function() {
-                        targetElement.innerText = '';
-                    }, 2000);
-                }
 
 
                 closeModal.addEventListener('click', function() {

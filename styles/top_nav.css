@@ -50,7 +50,7 @@
 #content .top-nav .nav-items{
 	width: 15%;
 	position: relative;
-	right: -55%;
+	right: -50%;
 	display: flex;
 	justify-content: space-between;
 	/* background-color: blueviolet; */
@@ -87,6 +87,7 @@
 	width: min(30%, 30%);
 	padding: 10px;
 	background-color: var(--light) !important;
+	color: var(--dark) !important;
 }
 #content .top-nav .custom-dropdown {
     max-height: 400px; 
@@ -109,27 +110,33 @@
 	width: 100%;
 	display: flex;
 	flex-direction: column;
-	border: none;
 	margin: 5px;
 	padding: 0;
 	border-bottom: 1px solid var(--green);
 	border-bottom-left-radius: 10px;
 	word-wrap: break-word;
+	cursor: pointer;
 }
 #content .top-nav .dropdown-menu .not:hover{
-	background-color: var(--light);
+	background-color: var(--light) !important;
+	color: var(--dark) !important;
 }
 #content .top-nav .dropdown-menu .not p{
 	padding: 0px;
 	width: 100%;
 	overflow-x: hidden;
 }
+#content .top-nav .dropdown-menu .not p:hover{
+	background-color: var(--light) !important;
+	color: var(--dark) !important;
+}
 #content .top-nav .messageTime{
 	font-size: 10px;
 	display: flex;
 	justify-content: space-between;
-	color: var(--dark-grey);
+	color: var(--dark);
 }
+
 #content .top-nav .messageTime .msgType{
 	padding-left: 20px;
 }

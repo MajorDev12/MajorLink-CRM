@@ -7,7 +7,7 @@ require_once "../modals/changePaymentMethod_mod.php";
 $connect  = connectToDatabase($host, $dbname, $username, $password);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    sleep(2);
+    sleep(1);
 
     $clientID = inputValidation($_POST["clientID"]);
     $selectedPaymentId = inputValidation($_POST["selectedPaymentId"]);

@@ -69,7 +69,7 @@ input, select, textarea{
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-    background: var(--grey); /* Color of the scrollbar handle */
+    background: var(--dark-grey); /* Color of the scrollbar handle */
 }
 
 /* Handle on hover */
@@ -110,15 +110,15 @@ table{
 }
 table th{
 	color: var(--dark);
-	padding-bottom: 12px;
+	padding-bottom: 15px;
     font-size: 13px;
-    text-align: left;
+    text-align: center;
     border-bottom: 1px solid var(--grey);
 }
 table td{
 	color: var(--light-dark);
 	padding: 16px 0;
-    text-align: left;
+    text-align: center;
 }
 table tbody tr:hover {
 	background: var(--grey);
@@ -137,7 +137,27 @@ table td .view {
   }
 
 
+/* change color according to status */
+.invoiceContainer .status.paid {
+	color: var(--green);
+	background-color: var(--light-green);
+}
 
+.invoiceContainer .status.partially-paid {
+	color: var(--yellow);
+	background-color: var(--light-yellow);
+}
+
+.invoiceContainer .status.pending {
+	color: var(--orange);
+	background-color: var(--light-orange);
+}
+
+.invoiceContainer .status.cancelled {
+	color: var(--red);
+	background-color: var(--light-orange);
+}
+/* change color according to status */
 
 
 
@@ -152,10 +172,10 @@ table td .view {
 	width: 100%;
 	height: 100%;
 	text-align: center;
-	background-color: rgba(0, 0, 0, 0.7);
-	color: var(--light);
+	background: #F9F9F9 url(../img/loader.gif) no-repeat center center;
+	background-size: 7%;
 	font-size: 1.5em;
-	z-index: 120;
+	z-index: 3000;
   }
 
 #overlay {
@@ -171,6 +191,12 @@ table td .view {
 
 /* tab changer */
 .tabs button{
+	background-color: var(--latto);
+	color: var(--light-dark);
+	border: 1px solid var(--dark);
+}
+.tabs button:hover{
+	color: var(--light-dark);
 	background-color: var(--latto);
 	border: 1px solid var(--dark);
 }
@@ -212,13 +238,14 @@ table td .view {
 	padding-bottom: 10px;
 }
 
-.modal-header .close-btn {
+.modal-header .close-btn,
+.modal-header .close {
 	cursor: pointer;
 	background: none;
 	border: none;
 	font-size: 20px;
+	color: var(--light-dark);
 }
-
 .modal-body {
 	padding: 10px 0;
 }
@@ -249,6 +276,7 @@ table td .view {
 }
 #closeModal{
 	background: none;
+	color: var(--light-dark);
 
 }
 #deleteModal{
@@ -278,8 +306,23 @@ table td .view {
 	justify-content: center;
 	align-items: center;
 	text-align: center;
-	background-color: var(--light);
-	z-index: 300;
+	background: #F9F9F9 url(../img/loader.gif) no-repeat center center;
+	background-size: 7%;
+	z-index: 3000;
+}
+#spinner{
+	position: fixed;
+	width: 100%;
+	height: 100%;
+	top: 0;
+	left: 0;
+	display: block;
+	justify-content: center;
+	align-items: center;
+	text-align: center;
+	background: #F9F9F9 url(../img/loader.gif) no-repeat center center;
+	background-size: 7%;
+	z-index: 3000;
 }
 .removeLoader {
 	/* Styles to hide or remove the loading div */
@@ -465,7 +508,7 @@ label {
 	width: calc(100% - 280px);
 	left: 280px;
 	transition: .3s ease;
-	overflow: auto;
+	overflow: hidden;
 	margin: 0;
 }
 #content::--webkit-scrollbar {
@@ -585,6 +628,13 @@ label {
 #content main .box-info li:nth-child(3) .bx {
 	background: var(--light-orange);
 	color: var(--orange);
+}
+#content main .box-info li:nth-child(4) .bx {
+	background: var(--light-green);
+	color: var(--green);
+}
+#content main .box-info li:nth-child(5) .bx {
+	color: var(--light-dark);
 }
 #content main .box-info li .text h3 {
 	font-size: 24px;

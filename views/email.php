@@ -9,6 +9,7 @@ require_once  '../modals/getClientsNames_mod.php';
 $connect = connectToDatabase($host, $dbname, $username, $password);
 
 ?>
+<?php require_once "style.config.php"; ?>
 <?php require_once "header.php"; ?>
 
 
@@ -55,7 +56,7 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
     /* textarea */
 
     .textContainer {
-        background-color: #ffffff;
+        background-color: var(--grey);
         padding: 50px 30px;
         border-radius: 10px;
     }
@@ -74,9 +75,9 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
         place-items: center;
         border-radius: 3px;
         border: none;
-        background-color: #ffffff;
+        background-color: var(--grey);
         outline: none;
-        color: #020929;
+        color: var(--dark);
     }
 
 
@@ -123,6 +124,8 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
         border: 1px solid #dddddd;
         padding: 20px;
         min-height: 50vh;
+        color: var(--dark);
+        background-color: var(--light);
     }
 
     #text-input1 {
@@ -130,6 +133,8 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
         border: 1px solid #dddddd;
         padding: 20px;
         min-height: 50vh;
+        color: var(--dark);
+        background-color: var(--light);
     }
 
     .options .active {
@@ -177,12 +182,9 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                 </ul>
             </div>
 
-            <a href="#" class="btn-download">
-                <i class='bx bxs-cloud-download'></i>
-                <span class="text">Download PDF</span>
-            </a>
         </div>
 
+        <div id="loader">Sending...</div>
         <!-- content-container -->
         <div class="main-content">
             <div class="content">
@@ -203,24 +205,6 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                         </div>
                     </div>
 
-
-
-
-
-                    <?php $emailTemplates = getEmailTemplate($connect); ?>
-                    <?php if ($emailTemplates) : ?>
-                        <div class="col-md-6">
-                            <div class="dropdown">
-                                <label for="">Choose Message</label>
-                                <select id="templateSelect" class="form-select">
-                                    <option value="" selected disabled>Template Message</option>
-                                    <?php foreach ($emailTemplates as $template) : ?>
-                                        <option value="<?= $template["TemplateID"]; ?>"><?= $template["Name"]; ?></option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-                        </div>
-                    <?php endif; ?>
 
                 </div>
 
@@ -361,7 +345,7 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                             <div id="text-input" class="massmessage" contenteditable="true"></div>
                         </div>
                         <!-- Textarea -->
-                        <p id="errorMsg"></p>
+                        <p class="mt-2" id="errorMsg"></p>
                         <button id="massSend" class="btn btn-primary">Send</button>
             </div>
 
@@ -376,7 +360,7 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                 <h3 class="mb-5">Single User</h3>
                 <div class="row">
 
-                    <div class="col-md-6">
+                    <div class="col-md-4 me-3">
                         <label for="customer">Customer</label>
                         <select id="customer" class="form-select">
                             <option value="" selected hidden>--Search--</option>
@@ -384,20 +368,6 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                     </div>
 
 
-
-                    <?php if ($emailTemplates) : ?>
-                        <div class="col-md-6">
-                            <div class="dropdown">
-                                <label for="">Choose Message</label>
-                                <select id="templateSelect1" class="form-select">
-                                    <option value="" selected disabled>Template Message</option>
-                                    <?php foreach ($emailTemplates as $template) : ?>
-                                        <option value="<?= $template["TemplateID"]; ?>"><?= $template["Name"]; ?></option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-                        </div>
-                    <?php endif; ?>
 
                 </div>
                 <!-- Textarea -->
@@ -498,10 +468,13 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                     <div id="text-input1" contenteditable="true"></div>
                 </div>
                 <!-- Textarea -->
-                <p id="errorMsg1"></p>
+                <p class="mt-2" id="errorMsg1"></p>
                 <button id="singleSend" class="btn btn-primary">Send</button>
             </div>
             <?php require_once "footer.php"; ?>
+
+
+
 
             <script>
                 var recipientSelect = document.querySelector("#recipientSelect");
@@ -514,6 +487,7 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                 var masssubject = document.querySelector(".masssubject");
                 var singlemessage = document.querySelector("#text-input1");
                 var massmessage = document.querySelector(".massmessage");
+                var loader = document.querySelector("#loader");
 
 
                 massSend.addEventListener("click", function() {
@@ -562,7 +536,7 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
 
 
 
-
+                    loader.style.display = 'flex';
                     var formData = new FormData();
                     formData.append("selectedValue", selectedValue);
                     formData.append("checkedValues", checkedValues);
@@ -576,17 +550,25 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                         .then(response => response.json())
                         .then(data => {
                             if (data.success) {
+                                loader.style.display = 'none';
                                 // Handle the response from the server
                                 displayMessage("errorMsg", data.message, false);
-                                // localStorage.setItem('AddNewClientPaymentToast', 'true');
                                 setTimeout(() => {
                                     window.location.href = "email.php";
                                 }, 2000);
                             } else {
-                                displayMessage("errorMsg", data.message, true);
+                                setTimeout(() => {
+                                    loader.style.display = 'none';
+                                    displayMessage("errorMsg", data.message, true);
+                                }, 2000);
+
                             }
                         })
                         .catch(error => {
+                            setTimeout(() => {
+                                loader.style.display = 'none';
+                                displayMessage("errorMsg", "Network Error", true);
+                            }, 2000);
                             console.error('Error:', error);
                         });
 
@@ -611,7 +593,7 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                     }
 
 
-
+                    loader.style.display = 'flex';
                     var formData = new FormData();
                     formData.append("selectedCustomer", selectedCustomer);
                     formData.append("subject", subject);
@@ -624,17 +606,24 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                         .then(response => response.json())
                         .then(data => {
                             if (data.success) {
+                                loader.style.display = 'none';
                                 // Handle the response from the server
                                 displayMessage("errorMsg1", data.message, false);
-                                // localStorage.setItem('AddNewClientPaymentToast', 'true');
                                 setTimeout(() => {
                                     window.location.href = "email.php";
                                 }, 2000);
                             } else {
-                                displayMessage("errorMsg1", data.message, true);
+                                setTimeout(() => {
+                                    loader.style.display = 'none';
+                                    displayMessage("errorMsg1", data.message, true);
+                                }, 2000);
                             }
                         })
                         .catch(error => {
+                            setTimeout(() => {
+                                loader.style.display = 'none';
+                                displayMessage("errorMsg", "Network Error", true);
+                            }, 2000);
                             console.error('Error:', error);
                         });
 
@@ -723,59 +712,6 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                         areacheckbox.style.display = 'none';
                     }
                 });
-
-
-
-
-
-
-
-                document.getElementById('templateSelect').addEventListener('change', function() {
-                    var templateId = this.value;
-                    if (!templateId) return;
-
-                    // Fetch the email template data
-                    fetchEmailTemplate(templateId)
-                        .then(data => {
-                            // Populate the subject and body inputs with template data
-                            document.getElementById('subjectInput').value = data.Subject;
-                            document.getElementById('text-input').innerText = data.Body;
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                        });
-                });
-
-
-
-
-                document.getElementById('templateSelect1').addEventListener('change', function() {
-                    var templateId = this.value;
-                    if (!templateId) return;
-
-                    // Fetch the email template data
-                    fetchEmailTemplate(templateId)
-                        .then(data => {
-                            // Populate the subject and body inputs with template data
-                            document.getElementById('subjectInput1').value = data.Subject;
-                            document.getElementById('text-input1').innerText = data.Body;
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                        });
-                });
-
-
-
-
-
-
-                function fetchEmailTemplate(templateId) {
-                    return fetch('../controllers/getEmailTemplate_contr.php?t=' + templateId)
-                        .then(response => response.json());
-                }
-
-
 
 
 
@@ -917,29 +853,4 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                 };
 
                 window.onload = initializer();
-
-
-
-
-
-
-                function displayMessage(messageElement, message, isError, ) {
-                    // Get the HTML element where the message should be displayed
-                    var targetElement = document.getElementById(messageElement);
-
-                    // Set the message text
-                    targetElement.innerText = message;
-
-                    // Add styling based on whether it's an error or success
-                    if (isError) {
-                        targetElement.style.color = 'red';
-                    } else {
-                        targetElement.style.color = 'green';
-                    }
-
-                    // Set a timeout to hide the message with the fade-out effect
-                    setTimeout(function() {
-                        targetElement.innerText = '';
-                    }, 1000);
-                }
             </script>

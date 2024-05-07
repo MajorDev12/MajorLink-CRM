@@ -4,7 +4,8 @@
 function insertPaymentData($clientId, $PlanID, $invoiceNumber, $PlanAmount, $paymentStatus, $paymentDate, $paymentMethodID, $InstallationFees, $connect)
 {
     try {
-        $query = "INSERT INTO Payments (ClientID, PlanID, InvoiceNumber, PaymentAmount, PaymentStatus, PaymentDate, PaymentOptionID, InstallationFees) VALUES (:clientId, :PlanID, :invoiceNumber, :PlanAmount, :paymentStatus, :paymentDate, :paymentMethodID, :InstallationFees)";
+        $query = "INSERT INTO Payments (ClientID, PlanID, InvoiceNumber, PaymentAmount, PaymentStatus, PaymentDate, PaymentOptionID, InstallationFees) VALUES
+         (:clientId, :PlanID, :invoiceNumber, :PlanAmount, :paymentStatus, :paymentDate, :paymentMethodID, :InstallationFees)";
         $statement = $connect->prepare($query);
         $statement->bindParam(':clientId', $clientId);
         $statement->bindParam(':PlanID', $PlanID);

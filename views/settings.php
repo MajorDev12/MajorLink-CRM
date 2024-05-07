@@ -26,7 +26,9 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
         min-height: 10vh;
         background-color: var(--light);
         padding: 20px;
-        border-radius: 10px;
+        border-bottom: 2px solid var(--grey);
+        border-left: 1px solid var(--grey);
+        border-bottom-left-radius: 10px;
     }
 
     .actions {
@@ -80,10 +82,6 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                 </ul>
             </div>
 
-            <a href="#" class="btn-download">
-                <i class='bx bxs-cloud-download'></i>
-                <span class="text">Download PDF</span>
-            </a>
         </div>
 
         <!-- content-container -->
@@ -94,22 +92,16 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                 </div>
 
                 <div class="content-container">
-                    <div class="setting shadow-sm p-3 mb-2 bg-body-tertiary rounded">
+                    <!-- <div class="setting shadow-sm p-3 mb-2 bg-body-tertiary rounded">
                         <h5>Change Currency</h5>
                         <p>Choose your prefered currency from 168 different international currencies</p>
                         <div class="actions">
                             <button type="button"><a href="changeCurrency.php">Setup</a></button>
                         </div>
-                    </div>
+                    </div> -->
 
-                    <div class="setting shadow-sm p-3 mb-2 bg-body-tertiary rounded">
-                        <h5>Set Another Timezone</h5>
-                        <p>You can use upto 24 international currency</p>
-                        <div class="actions">
-                            <button type="button"><a href="changePassword.php">Setup</a></button>
-                        </div>
-                    </div>
-                    <div class="setting shadow-sm p-3 mb-2 bg-body-tertiary rounded">
+
+                    <div class="setting shadow-sm p-3 mb-2 rounded">
                         <h5>Email Templates</h5>
                         <p>Create and send your desired message here</p>
                         <div class="actions">
@@ -117,7 +109,8 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                         </div>
                     </div>
 
-                    <div class="setting shadow-sm p-3 mb-2 bg-body-tertiary rounded">
+
+                    <div class="setting shadow-sm p-3 mb-2 rounded">
                         <h5>Sms Templates</h5>
                         <p>Create and send your desired message here</p>
                         <div class="actions">
@@ -125,13 +118,32 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                         </div>
                     </div>
 
-                    <div class="setting shadow-sm p-3 mb-2 bg-body-tertiary rounded">
-                        <h5>Import Data</h5>
-                        <p>You can use upto 24 international currency</p>
+
+                    <div class="setting shadow-sm p-3 mb-2 rounded">
+                        <h5>Export Data</h5>
+                        <p>Download customer details, payments, invoices and more</p>
                         <div class="actions">
-                            <button type="button"><a href="changePassword.php">Setup</a></button>
+                            <button type="button"><a href="export.php">Setup</a></button>
                         </div>
                     </div>
+
+                    <div class="setting shadow-sm p-3 mb-2 rounded">
+                        <h5>System Setup</h5>
+                        <p>modify the country, timezone, currencies and more</p>
+                        <div class="actions">
+                            <button type="button"><a href="system.php">Setup</a></button>
+                        </div>
+                    </div>
+
+
+                    <div class="setting shadow-sm p-3 mb-2 rounded">
+                        <h5>Company Settings</h5>
+                        <p>modify the name, website, Email, Logo and other related company details.</p>
+                        <div class="actions">
+                            <button type="button"><a href="companySetting.php">Setup</a></button>
+                        </div>
+                    </div>
+
                 </div>
 
             </div>

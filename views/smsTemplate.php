@@ -20,6 +20,8 @@ $texts = getSmsTemplate($connect);
 
     .modal-container {
         width: 60%;
+        height: 90%;
+        overflow-y: auto;
     }
 
     .textContainer {

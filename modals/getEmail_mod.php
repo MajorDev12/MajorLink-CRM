@@ -1,9 +1,10 @@
 <?php
-function insertEmailTemplate($connect, $name, $subject, $body, $status)
+function insertEmailTemplate($connect, $category, $name, $subject, $body, $status)
 {
     try {
-        $query = "INSERT INTO emailtemplate (Name, Subject, Body, Status) VALUES (:name, :subject, :body, :status)";
+        $query = "INSERT INTO emailtemplate (Category, Name, Subject, Body, Status) VALUES (:category, :name, :subject, :body, :status)";
         $statement = $connect->prepare($query);
+        $statement->bindParam(':category', $category);
         $statement->bindParam(':name', $name);
         $statement->bindParam(':subject', $subject);
         $statement->bindParam(':body', $body);
@@ -93,7 +94,7 @@ use PHPMailer\PHPMailer\SMTP;
 
 function sendEmail($to, $name, $subject, $message)
 {
-
+    require_once "config.php";
     $mail = new PHPMailer(true);
 
     try {
@@ -102,12 +103,12 @@ function sendEmail($to, $name, $subject, $message)
         $mail->isSMTP();
         $mail->SMTPAuth = true;
 
-        $mail->Host = "smtp.gmail.com";
+        $mail->Host = MAILERHOST;
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-        $mail->Port = 587;
+        $mail->Port = PORT;
 
-        $mail->Username = "majordev12@gmail.com";
-        $mail->Password = "jhdi bxqh tlfh bgwp";
+        $mail->Username = USERNAME;
+        $mail->Password = PASSWORD;
 
         $mail->setFrom($to, $name);
         $mail->addAddress($to, $name);
@@ -115,8 +116,16 @@ function sendEmail($to, $name, $subject, $message)
         $mail->Subject = $subject;
         $mail->Body = $message;
 
-        $mail->send();
-        // Redirect or any other action after successful email sending
+        $isDelivered = $mail->send();
+
+        // Check if the email was accepted for delivery
+        if ($isDelivered) {
+            // Email accepted for delivery
+            return true;
+        } else {
+            // Email not accepted for delivery
+            return false;
+        }
         return true;
     } catch (Exception $e) {
         echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";

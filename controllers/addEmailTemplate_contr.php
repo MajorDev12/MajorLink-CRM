@@ -10,14 +10,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $name = $_POST["newname"];
         $subject = $_POST["newsubject"];
         $message = $_POST["newMessage"];
+        $category = $_POST["category"];
         $status = "custom";
-        $category = "custom";
 
 
         $connect = connectToDatabase($host, $dbname, $username, $password);
 
         // Call the function to insert the email template
-        $inserted = insertEmailTemplate($connect, $name, $subject, $message, $status);
+        $inserted = insertEmailTemplate($connect, $category, $name, $subject, $message, $status);
 
         $output = array(
             'success'  =>   $inserted ? true : false

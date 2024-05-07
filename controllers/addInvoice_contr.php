@@ -5,6 +5,7 @@ if (isset($_POST["selectedClientId"])) {
     require_once  '../database/pdo.php';
     require_once  '../modals/validate_mod.php';
     require_once  '../modals/addInvoice_mod.php';
+    require_once  '../modals/setup_mod.php';
 
     $connect  = connectToDatabase($host, $dbname, $username, $password);
 
@@ -22,7 +23,7 @@ if (isset($_POST["selectedClientId"])) {
     $status = inputValidation($_POST["status"]);
 
     if (empty($invoiceNumber)) {
-        $invoiceNumber = 'INV' . str_pad(mt_rand(1, 99999), 5, '0', STR_PAD_LEFT);
+        $invoiceNumber = generateInvoiceNumber();
     }
 
     if (empty($tax)) {

@@ -12,9 +12,15 @@ sendPaymentReminders($connect);
 function sendPaymentReminders($connect)
 {
     try {
-        $expirationDate = date('Y-m-d', strtotime('+2 days'));
+        // Calculate the expiration date as two days before today
+        $expirationDate = date('Y-m-d', strtotime('-2 days'));
 
-        $query = "SELECT * FROM clients WHERE ExpireDate = :expirationDate";
+        // Adjust the query to select clients whose invoices are two days overdue
+        $query = "SELECT clients.*, invoices.* 
+          FROM clients 
+          JOIN invoices ON clients.ClientID = invoices.ClientID 
+          WHERE invoices.DueDate = :expirationDate";
+
         $statement = $connect->prepare($query);
         $statement->bindParam(':expirationDate', $expirationDate);
         $statement->execute();
@@ -24,9 +30,16 @@ function sendPaymentReminders($connect)
             foreach ($clients as $client) {
                 $to = $client['PrimaryEmail'];
                 $name = $client['FirstName'];
-                $from = "MajorLink";
+                $clientId = $client['ClientID'];
 
-                $templateID = 9;
+                // Get invoice details for the current client
+                $invoiceId = $client['InvoiceID'];
+                $invoiceNumber = $client['InvoiceNumber'];
+                $invoiceAmount = number_format($client['TotalAmount'], 2);
+                $invoiceDate = date('j F Y', strtotime($client['paymentDate']));
+                $invoiceDueDate = date('j F Y', strtotime($client['DueDate']));
+
+                $templateID = 2;
                 $emails = getEmailTemplateById($connect, $templateID);
                 $Subject = $emails["Subject"];
                 $body = $emails["Body"];
@@ -34,20 +47,30 @@ function sendPaymentReminders($connect)
                 // Replacements for template words
                 $replacements = array(
                     'client_name' => $name,
-                    'business_name' => 'MajorLink ISP', // Replace with your actual business name
-                    'client_login_url' => 'https://example.com/login', // Replace with the client login URL
-                    'client_email' => $to
+                    'business_name' => 'MajorLink ISP',
+                    'client_login_url' => 'https://example.com/login',
+                    'client_email' => $to,
+                    'invoice_id' => $invoiceNumber,
+                    'invoice_date' => $invoiceDate,
+                    'invoice_url' => 'http://localhost/majorlink/user/viewInvoice.php?i=' . $invoiceId . '&c=' . $clientId,
+                    'invoice_amount' => $invoiceAmount,
+                    'invoice_due_date' => $invoiceDueDate
                 );
 
                 // Replace template words in the message
                 $message = replaceTemplateWords($body, $replacements);
                 $subject = replaceTemplateWords($Subject, $replacements);
 
-
-                sendEmail($to, $from, $subject, $message);
+                // sendEmail($to, $name, $subject, $message);
+                $sent = sendOverdueReminder($connect, $clientId, $invoiceId, $to, $name, $subject, $message);
+            }
+            if ($sent) {
+                echo "reminders sent successfully";
+            } else {
+                echo "No clients need a reminder.";
             }
         } else {
-            echo "no data";
+            echo "No clients with overdue invoices for now.";
         }
 
         // echo "Payment reminders sent successfully.";
@@ -72,4 +95,34 @@ function replaceTemplateWords($message, $replacements)
 
     // Return the message with replaced template words
     return $message;
+}
+
+
+
+
+function sendOverdueReminder($connect, $clientId, $invoiceId, $to, $name, $subject, $message)
+{
+    // Check if a reminder has already been sent for the specific invoice
+    $query = "SELECT * FROM sent_email_reminders WHERE ClientID = :clientId AND InvoiceID = :invoiceId";
+    $statement = $connect->prepare($query);
+    $statement->bindParam(':clientId', $clientId);
+    $statement->bindParam(':invoiceId', $invoiceId);
+    $statement->execute();
+    $existingReminder = $statement->fetch(PDO::FETCH_ASSOC);
+
+    if (!$existingReminder) {
+        // Send the reminder email
+        sendEmail($to, $name, $subject, $message);
+
+        // Insert a record into the database indicating that a reminder has been sent
+        $insertQuery = "INSERT INTO sent_email_reminders (ClientID, InvoiceID, ReminderSentDate) VALUES (:clientId, :invoiceId, NOW())";
+        $insertStatement = $connect->prepare($insertQuery);
+        $insertStatement->bindParam(':clientId', $clientId);
+        $insertStatement->bindParam(':invoiceId', $invoiceId);
+        $insertStatement->execute();
+
+        return true; // Reminder sent successfully
+    } else {
+        return false; // Reminder already sent
+    }
 }

@@ -11,7 +11,7 @@ $initialCurrency = $settings[0]["CurrencyCode"];
 $initialSymbol = $settings[0]["CurrencySymbol"];
 ?>
 <?php require_once "header.php"; ?>
-
+<?php require_once "style.config.php"; ?>
 <style>
     .invoiceContainer {
         width: 80%;
@@ -24,42 +24,44 @@ $initialSymbol = $settings[0]["CurrencySymbol"];
         z-index: 1;
     }
 
-    .invoiceContainer .status {
-        position: absolute;
-        left: 60%;
-        top: 60%;
-        font-size: 3em;
-        rotate: -10deg;
-        color: #ecfaf6;
-        z-index: -1;
-    }
-
     .invoiceContainer h5 {
         color: var(--dark);
     }
 
     .invoiceContainer .header {
         background-color: var(--blue);
-        padding: 20px;
+        padding: 25px 15px;
         position: relative;
     }
 
-    .invoiceContainer .header h1 {
-        color: var(--light);
-        font-size: 3.5em;
-        padding-bottom: 10px;
+    .invoiceContainer .header .companyInfo {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .invoiceContainer .header h2 {
+        color: #F9F9F9;
+        font-size: 2.5em;
+        display: flex;
+        justify-content: space-around;
+        align-items: flex-start;
+        margin-right: 50px;
     }
 
     .invoiceContainer .header p {
-        color: var(--grey);
-        font-size: 14px;
-        line-height: 10px;
+        color: #eee;
+        font-size: 12px;
+        line-height: 7px;
     }
 
-    .invoiceContainer .header .companyInfo .first {
-        padding-bottom: 10px;
+    .invoiceContainer .header .companyInfo .first,
+    .invoiceContainer .header .companyInfo .second {
+        text-align: end;
     }
 
+    /* second container */
     .invoiceContainer .secondContainer {
         margin: 7% 0;
         display: flex;
@@ -68,12 +70,12 @@ $initialSymbol = $settings[0]["CurrencySymbol"];
     }
 
     .invoiceContainer .secondContainer p {
-        color: var(--dark-grey);
+        color: #AAAAAA;
         font-size: 14px;
     }
 
     .invoiceContainer .secondContainer h5 {
-        color: var(--dark);
+        color: #342E37;
         font-size: 16px;
     }
 
@@ -83,11 +85,12 @@ $initialSymbol = $settings[0]["CurrencySymbol"];
 
     .invoiceContainer input {
         border: none;
-        color: var(--dark);
+        color: #342E37 !important;
+        background-color: #eee !important;
     }
 
     .invoiceContainer input::placeholder {
-        color: var(--dark);
+        color: #342E37;
         font-size: 16px;
         font-weight: 500;
     }
@@ -96,25 +99,76 @@ $initialSymbol = $settings[0]["CurrencySymbol"];
         color: var(--blue);
     }
 
+    .invoiceContainer .status {
+        font-size: 18px;
+        color: var(--light);
+        z-index: -1;
+        text-align: center;
+        border-radius: 10px;
+        padding: 5px;
+    }
+
+    .invoiceContainer .status.paid {
+        color: var(--green);
+        background-color: var(--light-green);
+    }
+
+    .invoiceContainer .status.partially-paid {
+        color: var(--yellow);
+        background-color: var(--light-yellow);
+    }
+
+    .invoiceContainer .status.pending {
+        color: var(--orange);
+        background-color: var(--light-orange);
+    }
+
+    .invoiceContainer .status.cancelled {
+        color: var(--red);
+        background-color: var(--light-orange);
+    }
+
+
+
+
+
+    /* table */
     .invoiceContainer table {
         margin-top: 10%;
     }
 
     .invoiceContainer .table thead {
         margin-bottom: 10px;
-        background-color: transparent;
+        background-color: white;
     }
 
     .invoiceContainer .table thead tr th {
         color: var(--blue);
         border-bottom: 2px solid var(--blue);
+    }
 
+    .invoiceContainer .table td {
+        background-color: white;
+        color: #342E37;
+    }
+
+    .invoiceContainer .table tbody tr {
+        color: #342E37 !important;
+    }
+
+    .invoiceContainer .table tbody tr .totaltd {
+        border: none !important;
+    }
+
+    .invoiceContainer .table tbody tr:hover {
+        background-color: white;
     }
 
     .invoiceContainer .table tr .Subtotal,
     .invoiceContainer .table tr #Tax {
         color: var(--dark-grey);
     }
+
 
     .invoiceContainer .table input {
         width: 80%;
@@ -130,19 +184,19 @@ $initialSymbol = $settings[0]["CurrencySymbol"];
         display: flex;
         flex-direction: row;
         justify-content: end;
+        color: var(--dark);
     }
 
     .actions a {
         margin-left: 5px;
         background-color: transparent;
+        color: var(--dark);
     }
 
-    .invoiceContainer footer {
-        text-align: center;
-        position: relative;
-        bottom: 0%;
-        width: 90%;
-        color: var(--dark-grey);
+    .invoiceContainer .footer {
+        position: absolute;
+        top: 90%;
+        left: 20%;
     }
 
 
@@ -243,7 +297,7 @@ $initialSymbol = $settings[0]["CurrencySymbol"];
 
                     <div class="col-md-2">
                         <?php $status = $invoice["Status"]; ?>
-                        <select name="status" class="form-select" style="border: 1px solid black;" onchange="openChangeModal(this)">
+                        <select name="status" class="form-select" onchange="openChangeModal(this)">
                             <option value="" disabled selected>Mark as</option>
                             <?php if ($status !== "Paid") : ?>
                                 <option value="Paid">Paid</option>
@@ -263,30 +317,29 @@ $initialSymbol = $settings[0]["CurrencySymbol"];
                     <a href="invoice.php" class="btn active">Go Back</a>
                     <?php if ($invoiceID !== null && $clientID !== null) : ?>
                         <a href="../controllers/generatepdf_contr.php?i=<?= $invoiceID; ?>&c=<?= $clientID; ?>" target="_blank" class="btn active">Download PDF</a>
-                        <a href="../user/printInvoice.php?i=<?= $invoiceID; ?>&c=<?= $clientID; ?>" target="_blank" class="btn active">Print</a>
+                        <a href="../views/printInvoice.php?i=<?= $invoiceID; ?>&c=<?= $clientID; ?>" target="_blank" class="btn active">Print</a>
                 </div>
 
                 <div class="invoiceContainer shadow-sm bg-body rounded">
 
-                    <h1 class="status"><?= $status; ?></h1>
+
 
                     <!-- header -->
                     <div class="header">
 
                         <div class="companyInfo">
                             <div class="">
-                                <h1>INVOICE</h1>
+                                <h2>INVOICE</h2>
                             </div>
                             <div class="first">
-                                <p class="website">www.majorlink.com</p>
-                                <p class="email">majorlink@gmail.com</p>
-                                <p class="phonenumber">(254) 718 317 726</p>
+                                <p class="website"><?= $settings[0]["Website"]; ?></p>
+                                <p class="email"><?= $settings[0]["Email"]; ?></p>
+                                <p class="phonenumber"><?= $settings[0]["PhoneNumber"]; ?></p>
                             </div>
                             <div class="second">
-                                <p class="Address">Pipeline, Nakuru</p>
-                                <p class="City">Nakuru City</p>
-                                <p class="country">Kenya</p>
-                                <p class="zipCode">20100</p>
+                                <p class="Address"><?= $settings[0]["Address"]; ?></p>
+                                <p class="City"><?= $settings[0]["City"]; ?> <?= $settings[0]["Country"]; ?></p>
+                                <p class="zipCode"><?= $settings[0]["Zipcode"]; ?></p>
                             </div>
                         </div>
                     </div>
@@ -298,10 +351,10 @@ $initialSymbol = $settings[0]["CurrencySymbol"];
                             <p>Billed To</p>
                             <?php if ($clientData) : ?>
                                 <h5 class="clientNames"><?= $clientData["FirstName"] . ' ' . $clientData["LastName"]; ?></h5>
-                                <h5 class="address">Nakuru, Pipeline</h5>
-                                <h5 class="City">Nakuru City</h5>
-                                <h5 class="zipcode">20100</h5>
-                                <h5 class="country">Kenya</h5>
+                                <h5 class="address"><?= $clientData["Address"]; ?></h5>
+                                <h5 class="City"><?= $clientData["City"]; ?></h5>
+                                <h5 class="zipcode"><?= $clientData["Zipcode"] != 0 ? $clientData["Zipcode"] : ''; ?></h5>
+                                <h5 class="country"><?= $clientData["Country"]; ?></h5>
                             <?php endif; ?>
                         </div>
                         <?php if (!empty($invoice)) : ?>
@@ -319,7 +372,18 @@ $initialSymbol = $settings[0]["CurrencySymbol"];
                                 <h5><?= date("Y-m-d", strtotime($invoice["DueDate"])); ?></h5>
                                 <p>Invoice Total</p>
                                 <h4 class="topTotal"><span class="currency"><?= $initialSymbol; ?> </span><?= number_format($invoice["TotalAmount"], 2); ?></h4>
+
+
+
+                                <?php
+                                // Assuming $status contains the status value
+                                $statusClass = strtolower(str_replace(' ', '-', $status)); // Convert status to lowercase and replace spaces with hyphens
+                                ?>
+
+                                <h1 class="status mt-4 <?= $statusClass; ?>"><?= $status; ?></h1>
                             </div>
+
+
                         <?php endif; ?>
                     </div>
 
@@ -365,7 +429,7 @@ $initialSymbol = $settings[0]["CurrencySymbol"];
                             <tr>
                                 <td colspan="3" class="border-0"></td>
                                 <td colspan="" class="Subtotal">Subtotal</td>
-                                <td class="subtotalAmount"><?= number_format($subtotal, 2); ?></td>
+                                <td class="subtotalAmount"><?= $subtotal; ?></td>
                             </tr>
 
                             <tr>
@@ -374,18 +438,25 @@ $initialSymbol = $settings[0]["CurrencySymbol"];
                                 <td class="taxAmount"><?= $invoice["Taxamount"]; ?></td>
                             </tr>
                             <tr>
-                                <td colspan="3" class="border-0"></td>
+                                <td colspan="3" class="totaltd"></td>
                                 <td colspan="" class="Total">Total</td>
                                 <td class="totalPrice"><?= $initialSymbol; ?> <?= number_format($invoice["TotalAmount"], 2); ?></td>
                             </tr>
                         </tbody>
                     </table>
 
+
+                    <p class="footer" style="font-style: italic;">
+                        If you are not the intended recipient, no action is required.
+                    </p>
+
                 </div>
             <?php else : ?>
 
                 <?php echo "No Data to Show"; ?>
             <?php endif; ?>
+
+
 
             </div>
 

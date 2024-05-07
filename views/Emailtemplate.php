@@ -20,12 +20,22 @@ $emails = getEmailTemplate($connect);
 
     .modal-container {
         width: 60%;
+        height: 90%;
+        overflow-y: auto;
+    }
+
+    #cancel {
+        cursor: pointer;
+        border: none;
+        font-size: 20px;
+        color: var(--light-dark);
     }
 
     .textContainer {
-        background-color: white;
+        background-color: var(--light);
         padding: 20px;
         border-radius: 10px;
+        box-shadow: 0 4px 8px 0 var(--grey);
     }
 
     .textContainer .options {
@@ -33,6 +43,7 @@ $emails = getEmailTemplate($connect);
         flex-wrap: wrap;
         align-items: center;
         gap: 10px;
+        background-color: var(--light);
     }
 
     .textContainer .options button {
@@ -42,9 +53,9 @@ $emails = getEmailTemplate($connect);
         place-items: center;
         border-radius: 3px;
         border: none;
-        background-color: #ffffff;
+        background-color: var(--light);
         outline: none;
-        color: #020929;
+        color: var(--dark);
     }
 
 
@@ -201,6 +212,7 @@ $emails = getEmailTemplate($connect);
         <div class="main-content">
 
 
+            <div id="overlay"></div>
             <!-- modal -->
             <div id="overlay"></div>
             <div class="modal-container" id="deleteModal">
@@ -208,7 +220,7 @@ $emails = getEmailTemplate($connect);
                 <div id="modalBackground"></div>
                 <div class="modal-content">
                     <div class="modal-header">
-                        <p id="title" class="modal-title">Delete Email Template</p>
+                        <p class="modal-title">Delete Email Template</p>
                         <button type="button" id="delcancelBtn" class="close" data-dismiss="modal">&times;</button>
                     </div>
                     <div class="modal-body mt-3">
@@ -217,10 +229,8 @@ $emails = getEmailTemplate($connect);
                     <div class="modal-footer">
                         <p id="modalerror"></p>
                         <button type="button" id="deleteEmailBtn" class="btn btn-danger">Delete</button>
-
                     </div>
                 </div>
-
             </div>
 
 
@@ -575,7 +585,7 @@ $emails = getEmailTemplate($connect);
                         return;
                     }
 
-
+                    loader.style.display = 'flex';
                     var formData = new FormData();
                     formData.append("newname", newname.value);
                     formData.append("newsubject", newsubject.value);
@@ -589,12 +599,12 @@ $emails = getEmailTemplate($connect);
                         .then(response => response.json())
                         .then(data => {
                             if (data.success) {
+                                loader.style.display = 'none';
                                 // Handle the response from the server
                                 displayMessage("newmodalerror", "Added Successfully!!", false);
-                                // localStorage.setItem('AddNewClientPaymentToast', 'true');
-                                document.getElementById('overlay').style.display = 'none';
-                                document.getElementById('newModal').style.display = 'none';
-                                location.href = "Emailtemplate.php";
+                                setTimeout(() => {
+                                    window.location.href = "Emailtemplate.php";
+                                }, 1000);
                             } else {
                                 displayMessage("newmodalerror", "something went wrong!!", false);
                                 document.getElementById('overlay').style.display = 'none';

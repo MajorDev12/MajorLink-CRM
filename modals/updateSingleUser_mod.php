@@ -104,3 +104,58 @@ function updateUserDetails($clientId, $firstName, $lastName, $primaryEmail, $sec
         $connect = null; // Close the database connection
     }
 }
+
+
+
+
+
+
+function updateUserPassword($clientId, $hashedPassword, $connect)
+{
+    // Perform your update logic here, for example, updating a database
+    try {
+
+        // Use prepared statement to prevent SQL injection
+        $query = "UPDATE clients SET PasswordHash = :hashedPassword WHERE ClientID = :clientId";
+
+        $stmt = $connect->prepare($query);
+
+        // Bind parameters
+        $stmt->bindParam(':clientId', $clientId);
+        $stmt->bindParam(':hashedPassword', $hashedPassword);
+        $stmt->execute();
+        return true;
+    } catch (PDOException $e) {
+        echo $e->getMessage();
+        return false;
+    } finally {
+        $connect = null; // Close the database connection
+    }
+}
+
+
+
+
+
+function updateAdminPassword($clientId, $hashedPassword, $connect)
+{
+    // Perform your update logic here, for example, updating a database
+    try {
+
+        // Use prepared statement to prevent SQL injection
+        $query = "UPDATE clients SET PasswordHash = :hashedPassword WHERE ClientID = :clientId";
+
+        $stmt = $connect->prepare($query);
+
+        // Bind parameters
+        $stmt->bindParam(':clientId', $clientId);
+        $stmt->bindParam(':hashedPassword', $hashedPassword);
+        $stmt->execute();
+        return true;
+    } catch (PDOException $e) {
+        echo $e->getMessage();
+        return false;
+    } finally {
+        $connect = null; // Close the database connection
+    }
+}

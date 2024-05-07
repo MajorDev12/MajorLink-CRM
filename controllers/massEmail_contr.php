@@ -18,6 +18,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $connect = connectToDatabase($host, $dbname, $username, $password);
 
 
+
+
         // Check if the selected value is "Area"
         if ($selectedValue === "Area") {
             try {
@@ -40,13 +42,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $from = "MajorLink"; // Assuming you have a FirstName field in your clients table
                         $name = $client['FirstName'] . ' ' . $client['LastName']; // Assuming you have a FirstName field in your clients table
 
+
                         // Replacements for template words
                         $replacements = array(
                             'client_name' => $name,
                             'business_name' => 'MajorLink ISP', // Replace with your actual business name
-                            'client_login_url' => 'https://example.com/login', // Replace with the client login URL
                             'client_email' => $to
                         );
+
 
                         // Replace template words in the message
                         $message = replaceTemplateWords($body, $replacements);
@@ -66,7 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 } else {
                     $output = array(
                         'success'  =>  false,
-                        'message'  =>  'No Recipient found'
+                        'message'  =>  'No Recipient found in Area selected'
                     );
                     echo json_encode($output);
                     exit();
@@ -106,9 +109,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $replacements = array(
                             'client_name' => $name,
                             'business_name' => 'MajorLink ISP', // Replace with your actual business name
-                            'client_login_url' => 'https://example.com/login', // Replace with the client login URL
                             'client_email' => $to
                         );
+
 
                         // Replace template words in the message
                         $message = replaceTemplateWords($body, $replacements);
@@ -128,7 +131,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 } else {
                     $output = array(
                         'success'  =>  false,
-                        'message'  =>  'No Recipient found'
+                        'message'  =>  'No Recipient found in Sub area selected'
                     );
                     echo json_encode($output);
                     exit();
@@ -168,9 +171,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $replacements = array(
                             'client_name' => $name,
                             'business_name' => 'MajorLink ISP', // Replace with your actual business name
-                            'client_login_url' => 'https://example.com/login', // Replace with the client login URL
                             'client_email' => $to
                         );
+
 
                         // Replace template words in the message
                         $message = replaceTemplateWords($body, $replacements);
@@ -190,7 +193,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 } else {
                     $output = array(
                         'success'  =>  false,
-                        'message'  =>  'No Recipient found'
+                        'message'  =>  'No Active user found'
                     );
                     echo json_encode($output);
                     exit();
@@ -228,9 +231,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $replacements = array(
                             'client_name' => $name,
                             'business_name' => 'MajorLink ISP', // Replace with your actual business name
-                            'client_login_url' => 'https://example.com/login', // Replace with the client login URL
                             'client_email' => $to
                         );
+
 
                         // Replace template words in the message
                         $message = replaceTemplateWords($body, $replacements);
@@ -251,7 +254,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 } else {
                     $output = array(
                         'success'  =>  false,
-                        'message'  =>  'No Recipient found'
+                        'message'  =>  'No Inactive User found'
                     );
                     echo json_encode($output);
                     exit();
@@ -288,7 +291,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $replacements = array(
                             'client_name' => $name,
                             'business_name' => 'MajorLink ISP', // Replace with your actual business name
-                            'client_login_url' => 'https://example.com/login', // Replace with the client login URL
                             'client_email' => $to
                         );
 
@@ -310,7 +312,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 } else {
                     $output = array(
                         'success'  =>  false,
-                        'message'  =>  'No Recipient found'
+                        'message'  =>  'No Recipient found in database'
                     );
                     echo json_encode($output);
                     exit();

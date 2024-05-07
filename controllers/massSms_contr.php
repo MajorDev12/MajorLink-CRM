@@ -7,9 +7,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST["selectedValue"])) {
         // Include necessary files
         require_once '../database/pdo.php';
-        require_once '../modals/getEmail_mod.php';
-        require_once '../modals/infobip_mod.php';
+        require_once '../modals/sendSms_mod.php';
         require "../includes/phpmailer/vendor/autoload.php";
+        require_once  '../modals/setup_mod.php';
+
+        //get phone code
+        $connect = connectToDatabase($host, $dbname, $username, $password);
+        $settings = get_Settings($connect);
+        $code = $settings[0]["PhoneCode"];
 
         // Retrieve data 
         $selectedValue = $_POST["selectedValue"];
@@ -37,7 +42,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     // Loop through each client and send the message
                     foreach ($clients as $client) {
                         // Get the client's email and other necessary details
-                        $to = $client['PrimaryNumber'];
+                        $number = $client['PrimaryNumber'];
+                        $to = $code . $number;
                         $from = "MajorLink"; // Assuming you have a FirstName field in your clients table
                         $name = $client['FirstName'] . ' ' . $client['LastName']; // Assuming you have a FirstName field in your clients table
 
@@ -45,9 +51,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $replacements = array(
                             'client_name' => $name,
                             'business_name' => 'MajorLink ISP', // Replace with your actual business name
-                            'client_login_url' => 'https://example.com/login', // Replace with the client login URL
                             'client_email' => $to
                         );
+
 
                         // Replace template words in the message
                         $message = replaceTemplateWords($body, $replacements);
@@ -99,7 +105,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     // Loop through each client and send the message
                     foreach ($clients as $client) {
                         // Get the client's email and other necessary details
-                        $to = $client['PrimaryNumber'];
+                        $number = $client['PrimaryNumber'];
+                        $to = $code . $number;
                         $from = "MajorLink"; // Assuming you have a FirstName field in your clients table
                         $name = $client['FirstName'] . ' ' . $client['LastName']; // Assuming you have a FirstName field in your clients table
 
@@ -107,9 +114,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $replacements = array(
                             'client_name' => $name,
                             'business_name' => 'MajorLink ISP', // Replace with your actual business name
-                            'client_login_url' => 'https://example.com/login', // Replace with the client login URL
                             'client_email' => $to
                         );
+
 
                         // Replace template words in the message
                         $message = replaceTemplateWords($body, $replacements);
@@ -160,7 +167,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     // Loop through each client and send the message
                     foreach ($clients as $client) {
                         // Get the client's email and other necessary details
-                        $to = $client['PrimaryNumber'];
+                        $number = $client['PrimaryNumber'];
+                        $to = $code . $number;
                         $from = "MajorLink"; // Assuming you have a FirstName field in your clients table
                         $name = $client['FirstName'] . ' ' . $client['LastName']; // Assuming you have a FirstName field in your clients table
 
@@ -168,7 +176,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $replacements = array(
                             'client_name' => $name,
                             'business_name' => 'MajorLink ISP', // Replace with your actual business name
-                            'client_login_url' => 'https://example.com/login', // Replace with the client login URL
                             'client_email' => $to
                         );
 
@@ -219,7 +226,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     // Loop through each client and send the message
                     foreach ($clients as $client) {
                         // Get the client's email and other necessary details
-                        $to = $client['PrimaryNumber'];
+                        $number = $client['PrimaryNumber'];
+                        $to = $code . $number;
                         $from = "MajorLink"; // Assuming you have a FirstName field in your clients table
                         $name = $client['FirstName'] . ' ' . $client['LastName']; // Assuming you have a FirstName field in your clients table
 
@@ -227,7 +235,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $replacements = array(
                             'client_name' => $name,
                             'business_name' => 'MajorLink ISP', // Replace with your actual business name
-                            'client_login_url' => 'https://example.com/login', // Replace with the client login URL
                             'client_email' => $to
                         );
 
@@ -277,7 +284,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     // Loop through each client and send the message
                     foreach ($clients as $client) {
                         // Get the client's email and other necessary details
-                        $to = $client['PrimaryNumber'];
+                        $number = $client['PrimaryNumber'];
+                        $to = $code . $number;
                         $from = "MajorLink"; // Assuming you have a FirstName field in your clients table
                         $name = $client['FirstName'] . ' ' . $client['LastName']; // Assuming you have a FirstName field in your clients table
 
@@ -285,9 +293,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $replacements = array(
                             'client_name' => $name,
                             'business_name' => 'MajorLink ISP', // Replace with your actual business name
-                            'client_login_url' => 'https://example.com/login', // Replace with the client login URL
                             'client_email' => $to
                         );
+
 
                         // Replace template words in the message
                         $message = replaceTemplateWords($body, $replacements);

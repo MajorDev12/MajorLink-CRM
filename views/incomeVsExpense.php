@@ -1,4 +1,5 @@
 <?php require_once "../controllers/session_Config.php"; ?>
+<?php require_once "style.config.php"; ?>
 <?php require_once "header.php"; ?>
 <?php
 require_once  '../database/pdo.php';
@@ -52,7 +53,7 @@ $symbol = $settings[0]["CurrencySymbol"];
         text-align: justify;
         line-height: 1.9;
         letter-spacing: 0.4px;
-        color: #202238;
+        color: var(--light-dark);
     }
 
     .tab-content .page {
@@ -138,15 +139,11 @@ $symbol = $settings[0]["CurrencySymbol"];
                     </li>
                     <li><i class='bx bx-chevron-right'></i></li>
                     <li>
-                        <a class="active" href="#">Home</a>
+                        <a class="active" href="#">Income Vs Expense</a>
                     </li>
                 </ul>
             </div>
 
-            <a href="#" class="btn-download">
-                <i class='bx bxs-cloud-download'></i>
-                <span class="text">Download PDF</span>
-            </a>
         </div>
 
         <!-- content-container -->
@@ -167,14 +164,13 @@ $symbol = $settings[0]["CurrencySymbol"];
                         <div class="active page">
                             <?php
                             // get total income/revenue
-                            $invoicesData = getAllInvoices($connect);
-                            $totalRevenueAmount = 0;
-                            if ($invoicesData) {
-                                foreach ($invoicesData as $invoice) {
-                                    $totalRevenueAmount += $invoice['TotalAmount'];
-                                }
+                            $totalRevenueAmount = getTotalIncome($connect);
+
+                            $totalRevenue = 0;
+                            if ($totalRevenueAmount !== false) {
+                                $totalRevenue = $totalRevenueAmount;
                             }
-                            $TotalIncomeAmount = number_format($totalRevenueAmount, 2);
+                            $TotalIncomeAmount = number_format($totalRevenue, 2);
                             // get total expenses
                             $expenseSummary = getTotalExpenseSummary($connect);
                             $TotalExpenseAmount = number_format($expenseSummary, 2);
@@ -182,7 +178,7 @@ $symbol = $settings[0]["CurrencySymbol"];
                                 $expenseSummary = 0;
                             }
                             // Calculate net profit
-                            $TotalnetProfit = $totalRevenueAmount - $expenseSummary;
+                            $TotalnetProfit = $totalRevenue - $expenseSummary;
                             ?>
                             <h4>Income vs Expense Summary</h4>
                             <p>Total Income: <?= $code; ?> <?= $TotalIncomeAmount; ?></p>
@@ -251,7 +247,7 @@ $symbol = $settings[0]["CurrencySymbol"];
                         <div class="page">
                             <h4>Net Profit By Day</h4>
                             <label for="yearInput">Select Day:</label>
-                            <input type="date" class="mb-5" name="" id="dateNetProfitInput">
+                            <input type="date" value="<?= date('Y-m-d'); ?>" class="mb-5" name="" id="dateNetProfitInput">
                             <button id="getProfitByDayBtn" class="btn btn-primary">Check</button>
 
                             <p>Total Income This Day: <?= $code; ?> <span id="incomeDay">0.00</span></p>
@@ -314,11 +310,19 @@ $symbol = $settings[0]["CurrencySymbol"];
             <div class="content">
 
             </div>
+
+            <?php require_once "footer.php"; ?>
+
+
+
             <script>
                 document.addEventListener("DOMContentLoaded", function() {
                     updateDayChart(0.00, "");
                     updateMonthChart(0.00, "");
                     updateYearChart(0.00, "");
+                    populateDropdown("monthInput", monthOptions);
+                    populateDropdown("yearInput", yearOptions);
+                    populateDropdown("byYear", yearOptions);
                 })
 
 
@@ -343,42 +347,6 @@ $symbol = $settings[0]["CurrencySymbol"];
                 });
 
 
-                // JavaScript code to dynamically populate the year dropdown
-                let yearInput = document.getElementById("yearInput");
-                let minYear = 2010; // Set the minimum year
-                let maxYear = 2024; // Set the maximum year
-
-                for (let year = minYear; year <= maxYear; year++) {
-                    let option = document.createElement("option");
-                    option.value = year;
-                    option.innerText = year;
-                    yearInput.appendChild(option);
-                }
-
-
-                // JavaScript code to dynamically populate the year dropdown
-                let byYear = document.getElementById("byYear");
-                let minbyYear = 2010; // Set the minimum year
-                let maxbyYear = 2024; // Set the maximum year
-
-                for (let year = minbyYear; year <= maxbyYear; year++) {
-                    let option = document.createElement("option");
-                    option.value = year;
-                    option.innerText = year;
-                    byYear.appendChild(option);
-                }
-
-                // JavaScript code to dynamically populate the month dropdown
-                let monthInput = document.getElementById("monthInput");
-                let monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-
-                for (let i = 0; i < 12; i++) {
-                    let option = document.createElement("option");
-                    option.value = i + 1; // Month values are 1-based
-                    option.text = monthNames[i];
-                    monthInput.appendChild(option);
-                }
-
 
 
 
@@ -386,14 +354,15 @@ $symbol = $settings[0]["CurrencySymbol"];
                 const TotalIncomeAmount = <?= json_encode($totalRevenueAmount); ?>;
                 const expenseSummary = <?= json_encode($expenseSummary); ?>;
                 const CurrencyCode = <?= json_encode($code); ?>;
-
+                const incomeLabel = numberFormatJS(TotalIncomeAmount);
+                const expenseLabel = numberFormatJS(expenseSummary);
 
 
                 var ctx = document.getElementById('netProfitChart').getContext('2d');
                 var myChart = new Chart(ctx, {
                     type: 'bar',
                     data: {
-                        labels: ['Income', 'Expense'],
+                        labels: [incomeLabel, expenseLabel],
                         datasets: [{
                             label: 'Total Amount',
                             data: [TotalIncomeAmount, expenseSummary], // Swap positions
@@ -401,7 +370,8 @@ $symbol = $settings[0]["CurrencySymbol"];
                                 'rgb(255, 99, 132)',
                                 'rgb(75, 192, 192)'
                             ],
-                            borderWidth: 5
+                            borderWidth: 5,
+                            color: '#AAAAAA'
                         }]
                     },
                     options: {
@@ -410,13 +380,15 @@ $symbol = $settings[0]["CurrencySymbol"];
                                 beginAtZero: true,
                                 title: {
                                     display: true,
-                                    text: 'Amount (' + CurrencyCode + ')'
+                                    text: 'Amount ( ' + CurrencyCode + ' )',
+                                    color: '#AAAAAA'
                                 }
                             },
                             x: {
                                 title: {
                                     display: true,
-                                    text: ''
+                                    text: 'Income Vs Expense',
+                                    color: '#AAAAAA'
                                 }
                             }
                         },
@@ -453,15 +425,18 @@ $symbol = $settings[0]["CurrencySymbol"];
 
 
 
+
                 // chart.js
 
                 const allTotalPlan = <?= json_encode($allTotalPlan); ?>;
+                const planLabel = numberFormatJS(allTotalPlan);
+
 
                 var ctx = document.getElementById('PlansChart').getContext('2d');
                 var myChart = new Chart(ctx, {
                     type: 'bar',
                     data: {
-                        labels: ['Plans', 'Expenses'],
+                        labels: [planLabel, expenseLabel],
                         datasets: [{
                             label: 'Total Amount',
                             data: [allTotalPlan, expenseSummary],
@@ -478,13 +453,15 @@ $symbol = $settings[0]["CurrencySymbol"];
                                 beginAtZero: true,
                                 title: {
                                     display: true,
-                                    text: 'Amount (' + CurrencyCode + ')'
+                                    text: 'Amount (' + CurrencyCode + ')',
+                                    color: '#AAAAAA'
                                 }
                             },
                             x: {
                                 title: {
                                     display: true,
-                                    text: 'Plans vs Expenses'
+                                    text: 'Plans vs Expenses',
+                                    color: '#AAAAAA'
                                 }
                             }
                         },
@@ -512,26 +489,13 @@ $symbol = $settings[0]["CurrencySymbol"];
 
                 let productsLabel = ['Products', 'Expenses'];
                 const allTotalProducts = <?= json_encode($allTotalProducts); ?>;
-
-
-
-                // var combinedLabels = [];
-                // for (var i = 0; i < productsLabel.length; i++) {
-                //     if (i === 0) {
-                //         combinedLabels.push([productsLabel[0], allTotalProducts]);
-                //     }
-                //     if (i === 1) {
-                //         combinedLabels.push([productsLabel[1], expenseSummary]); // Push an array containing area name and income
-
-                //     }
-                //     // Push an array containing area name and income
-                // }
+                const productLabel = numberFormatJS(allTotalProducts);
 
                 var ctx = document.getElementById('ProductsChart').getContext('2d');
                 var myChart = new Chart(ctx, {
                     type: 'bar',
                     data: {
-                        labels: ['Products', 'Expenses'],
+                        labels: [productLabel, expenseLabel],
                         datasets: [{
                             label: 'Total Amount',
                             data: [allTotalProducts, expenseSummary],
@@ -548,13 +512,15 @@ $symbol = $settings[0]["CurrencySymbol"];
                                 beginAtZero: true,
                                 title: {
                                     display: true,
-                                    text: 'Amount (' + CurrencyCode + ')'
+                                    text: 'Amount (' + CurrencyCode + ')',
+                                    color: '#AAAAAA'
                                 }
                             },
                             x: {
                                 title: {
                                     display: true,
-                                    text: 'Products vs Expenses'
+                                    text: 'Products vs Expenses',
+                                    color: '#AAAAAA'
                                 }
                             }
                         },
@@ -623,6 +589,8 @@ $symbol = $settings[0]["CurrencySymbol"];
                     const CurrencyCode = <?= json_encode($code); ?>;
                     var ctx = document.getElementById('dayNetChart').getContext('2d');
 
+
+
                     if (dayNetChart) {
                         // If a Chart instance exists, destroy it
                         dayNetChart.destroy();
@@ -649,13 +617,15 @@ $symbol = $settings[0]["CurrencySymbol"];
                                     beginAtZero: true,
                                     title: {
                                         display: true,
-                                        text: 'Amount (' + CurrencyCode + ')'
+                                        text: 'Amount (' + CurrencyCode + ')',
+                                        color: '#AAAAAA'
                                     }
                                 },
                                 x: {
                                     title: {
                                         display: true,
-                                        text: 'Net Profit By Day'
+                                        text: 'Net Profit By Day',
+                                        color: '#AAAAAA'
                                     }
                                 }
                             },
@@ -773,13 +743,15 @@ $symbol = $settings[0]["CurrencySymbol"];
                                     beginAtZero: true,
                                     title: {
                                         display: true,
-                                        text: 'Amount (' + CurrencyCode + ')'
+                                        text: 'Amount (' + CurrencyCode + ')',
+                                        color: '#AAAAAA'
                                     }
                                 },
                                 x: {
                                     title: {
                                         display: true,
-                                        text: 'Net Profit By Month'
+                                        text: 'Net Profit By Month',
+                                        color: '#AAAAAA'
                                     }
                                 }
                             },
@@ -880,13 +852,15 @@ $symbol = $settings[0]["CurrencySymbol"];
                                     beginAtZero: true,
                                     title: {
                                         display: true,
-                                        text: 'Amount (' + CurrencyCode + ')'
+                                        text: 'Amount (' + CurrencyCode + ')',
+                                        color: '#AAAAAA'
                                     }
                                 },
                                 x: {
                                     title: {
                                         display: true,
-                                        text: 'Net Profit By Year'
+                                        text: 'Net Profit By Year',
+                                        color: '#AAAAAA'
                                     }
                                 }
                             },

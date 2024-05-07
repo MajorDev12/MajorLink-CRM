@@ -5,9 +5,8 @@ require_once  '../modals/addPayment_mod.php';
 
 $connect = connectToDatabase($host, $dbname, $username, $password);
 $payments = getAllPayments($connect);
-
-
 ?>
+<?php require_once "style.config.php"; ?>
 <?php require_once "header.php"; ?>
 <style>
     .main-content .content {
@@ -154,7 +153,7 @@ $payments = getAllPayments($connect);
                     </li>
                     <li><i class='bx bx-chevron-right'></i></li>
                     <li>
-                        <a class="active" href="#">View Client</a>
+                        <a class="active" href="#">View Transactions</a>
                     </li>
                 </ul>
             </div>
@@ -173,7 +172,7 @@ $payments = getAllPayments($connect);
         </div>
         <!-- toast -->
 
-        <div id="loader">Loading...</div>
+
         <!-- content-container -->
         <div class="main-content">
             <div class="content">
@@ -201,7 +200,7 @@ $payments = getAllPayments($connect);
                     <table class="mt-5">
                         <thead id="thead1">
                             <tr>
-                                <th>TransactID</th>
+                                <th class="pl-3">TransactID</th>
                                 <th>Payment Date</th>
                                 <th>Payment Method</th>
                                 <th>Amount</th>
@@ -213,7 +212,7 @@ $payments = getAllPayments($connect);
                             <?php if ($payments) : ?>
                                 <?php foreach ($payments as $payment) : ?>
                                     <tr>
-                                        <td><?= $payment['InvoiceNumber'] ?></td>
+                                        <td class="pl-3"><?= $payment['InvoiceNumber'] ?></td>
                                         <td><?= $payment['PaymentDate'] ?></td>
                                         <td><?= isset($payment['PaymentOptionName']) ? $payment['PaymentOptionName'] : '' ?></td>
                                         <td><?= isset($payment['PaymentAmount']) ? $payment['PaymentAmount'] : $payment['Total'] ?></td>

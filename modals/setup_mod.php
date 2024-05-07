@@ -30,6 +30,72 @@ function set_setup($countryName, $countryTimezone, $currencyName, $currencySymbo
 }
 
 
+
+function updateCompanyDetails($settingID, $nameInput, $emailInput, $websiteInput, $addressInput, $cityInput, $zipcodeInput, $numberInput, $connect)
+{
+    try {
+        $query = "UPDATE companysettings SET 
+        CompanyName = :nameInput,
+        Email = :emailInput,
+        Website = :websiteInput,
+        Address = :addressInput,
+        City = :cityInput,
+        Zipcode = :zipcodeInput,
+        PhoneNumber = :numberInput
+        WHERE SettingID = :settingID";
+
+        $statement = $connect->prepare($query);
+        $statement->bindParam(':nameInput', $nameInput);
+        $statement->bindParam(':emailInput', $emailInput);
+        $statement->bindParam(':websiteInput', $websiteInput);
+        $statement->bindParam(':addressInput', $addressInput);
+        $statement->bindParam(':cityInput', $cityInput);
+        $statement->bindParam(':zipcodeInput', $zipcodeInput);
+        $statement->bindParam(':numberInput', $numberInput);
+        $statement->bindParam(':settingID', $settingID);
+        $statement->execute();
+        return true;
+    } catch (PDOException $e) {
+        echo "Error: " . $e->getMessage();
+        return false;
+    }
+}
+
+
+
+function updateSystemSettings($settingID, $countrySelect, $timezoneSelect, $phoneCodeSelect, $currencySelect, $currencyCode, $currencySymbol, $connect)
+{
+    try {
+        $query = "UPDATE companysettings SET 
+        Country = :countrySelect,
+        TimeZone = :timezoneSelect,
+        PhoneCode = :phoneCodeSelect,
+        CurrencyName = :currencySelect,
+        CurrencyCode = :currencyCode,
+        CurrencySymbol = :currencySymbol
+        WHERE SettingID = :settingID";
+
+        $statement = $connect->prepare($query);
+        $statement->bindParam(':countrySelect', $countrySelect);
+        $statement->bindParam(':timezoneSelect', $timezoneSelect);
+        $statement->bindParam(':phoneCodeSelect', $phoneCodeSelect);
+        $statement->bindParam(':currencySelect', $currencySelect);
+        $statement->bindParam(':currencyCode', $currencyCode);
+        $statement->bindParam(':currencySymbol', $currencySymbol);
+        $statement->bindParam(':settingID', $settingID);
+        $statement->execute();
+        return true;
+    } catch (PDOException $e) {
+        echo "Error: " . $e->getMessage();
+        return false;
+    }
+}
+
+
+
+
+
+
 function get_setup($connect)
 {
     $query = "SELECT * FROM companysettings";

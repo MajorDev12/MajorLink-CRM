@@ -16,17 +16,12 @@ allSideMenu.forEach(item=> {
 
 // TOGGLE SIDEBAR
 const menuBar = document.querySelector('#content nav .bx.bx-menu');
-const sidebar = document.getElementById('sidebar');
+
 
 menuBar.addEventListener('click', function () {
+	const sidebar = document.getElementById('sidebar');
 	sidebar.classList.toggle('hide');
 })
-
-
-//loader
-$(document).ready(function() {
-	$('#loading').addClass("removeLoader");
-});
 
 
 
@@ -65,16 +60,61 @@ $(document).ready(function() {
 // })
 
 
+const spinner = document.querySelector('#spinner');
+//loader
+window.addEventListener("load", function(){
+	fadeOutSpinner();
+	const mode = localStorage.getItem('mode');
+    if (mode === 'dark') {
+        switchMode.checked = true;
+        document.body.classList.add('dark');
+    } else {
+        switchMode.checked = false;
+        document.body.classList.remove('dark');
+    }
+})
+
+
+
+// Function to fade out the spinner
+function fadeOutSpinner() {
+    let opacity = 1; // Initial opacity
+    
+    // Interval function to decrease opacity gradually
+    const fadeInterval = setInterval(() => {
+        opacity -= 0.4; // Decrease opacity by 0.1
+        
+        // Apply the new opacity
+        spinner.style.opacity = opacity;
+        
+        // Check if opacity is less than or equal to 0
+        if (opacity <= 0) {
+            clearInterval(fadeInterval); // Stop the interval
+            spinner.style.display = 'none'; // Hide the spinner
+        }
+    }, 100); // Interval duration in milliseconds (adjust as needed)
+}
+
+
+
 
 const switchMode = document.getElementById('switch-mode');
 
+// Check the localStorage for the switch mode state when the page loads
+
+
+// Toggle the switch mode and store its state in localStorage
 switchMode.addEventListener('change', function () {
-	if(this.checked) {
-		document.body.classList.add('dark');
-	} else {
-		document.body.classList.remove('dark');
-	}
-})
+    if(this.checked) {
+        document.body.classList.add('dark');
+        localStorage.setItem('mode', 'dark');
+    } else {
+        document.body.classList.remove('dark');
+        localStorage.setItem('mode', 'light');
+    }
+});
+
+
 
 
 
@@ -305,6 +345,110 @@ function exportToCSV(tableHeader, tableBody) {
 }
 
 
+function numberFormatJS(number) {
+    // Convert the input to a float
+    var floatNumber = parseFloat(number);
+    
+    // Check if the input is a valid number
+    if (isNaN(floatNumber)) {
+        return "Invalid input";
+    }
+    
+    // Convert the float to a string with two decimal places
+    var formattedNumber = floatNumber.toFixed(2);
+    
+    // Split the number into integer and decimal parts
+    var parts = formattedNumber.split(".");
+    
+    // Add comma separators for thousands
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    
+    // Join the integer and decimal parts back together
+    formattedNumber = parts.join(".");
+    
+    return formattedNumber;
+}
+
+
+
+	  function populateDropdown(selectElement, options, defaultYear = 2024) {
+		var dropdown = document.getElementById(selectElement);
+		options.forEach(function(option) {
+			var optionElement = document.createElement("option");
+			optionElement.value = option.value;
+			optionElement.text = option.text;
+			if (option.value === defaultYear) {
+				optionElement.selected = true; // Set the default year as selected
+			}
+			dropdown.appendChild(optionElement);
+		});
+	}
+
+
+
+	
+
+
+                // Populate the year dropdown
+                var yearOptions = [];
+                for (var year = 2020; year <= 2030; year++) {
+                    yearOptions.push({
+                        value: year,
+                        text: year.toString()
+                    });
+                }
+
+
+                // Populate the month dropdowns
+                var monthOptions = [{
+                        value: 1,
+                        text: "January"
+                    },
+                    {
+                        value: 2,
+                        text: "February"
+                    },
+                    {
+                        value: 3,
+                        text: "March"
+                    },
+                    {
+                        value: 4,
+                        text: "April"
+                    },
+                    {
+                        value: 5,
+                        text: "May"
+                    },
+                    {
+                        value: 6,
+                        text: "June"
+                    },
+                    {
+                        value: 7,
+                        text: "July"
+                    },
+                    {
+                        value: 8,
+                        text: "August"
+                    },
+                    {
+                        value: 9,
+                        text: "September"
+                    },
+                    {
+                        value: 10,
+                        text: "October"
+                    },
+                    {
+                        value: 11,
+                        text: "November"
+                    },
+                    {
+                        value: 12,
+                        text: "December"
+                    }
+                ];
 
 
 
@@ -315,16 +459,20 @@ function displayMessage(messageElement, message, isError, ) {
 
 	// Set the message text
 	targetElement.innerText = message;
+	targetElement.style.fontWeight = '600';
 
 	// Add styling based on whether it's an error or success
 	if (isError) {
-		targetElement.style.color = 'red';
+		targetElement.style.color = '#DB504A';
+		
 	} else {
-		targetElement.style.color = 'green';
+		targetElement.style.color = '#2cce89';
 	}
 
 	// Set a timeout to hide the message with the fade-out effect
 	setTimeout(function() {
 		targetElement.innerText = '';
-	}, 1000);
+	}, 3000);
+
+
 }

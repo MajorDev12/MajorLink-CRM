@@ -13,7 +13,6 @@ Client Management: Efficiently add, edit, and manage client information.
 Billing and Payments: Seamlessly handle billing cycles, process payments, and manage invoices.
 Sales Management: Track product sales, manage inventory, and record transactions.
 Subscription Plans: Create and manage subscription plans to meet diverse client needs.
-Support System: Facilitate client support with a robust ticketing system.
 Messaging and Notifications: Enable communication with clients through messaging and SMS notifications.
 Reporting: Generate detailed usage reports for both clients and administrators.
 Security Measures: Implement robust security protocols to safeguard sensitive data.

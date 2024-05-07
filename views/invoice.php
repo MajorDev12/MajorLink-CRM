@@ -1,5 +1,7 @@
 <?php require_once "../controllers/session_Config.php"; ?>
+
 <?php
+
 require_once  '../database/pdo.php';
 require_once  '../modals/getClientsNames_mod.php';
 require_once  '../modals/viewSingleUser_mod.php';
@@ -15,14 +17,11 @@ $settings = get_Settings($connect);
 $code = $settings[0]["CurrencyCode"];
 $symbol = $settings[0]["CurrencySymbol"];
 ?>
+<?php require_once "style.config.php"; ?>
 <?php require_once "header.php"; ?>
 
-<style>
-    .page {
-        width: 100%;
-        height: 100%;
-    }
 
+<style>
     .newInvoice {
         width: 80%;
         min-height: 130vh;
@@ -34,46 +33,56 @@ $symbol = $settings[0]["CurrencySymbol"];
     }
 
     .newInvoice h5 {
-        color: var(--dark);
+        color: #342E37;
     }
 
     .newInvoice .header {
         background-color: var(--blue);
-        padding: 20px;
+        padding: 25px 15px;
         position: relative;
     }
 
-    .newInvoice .header h1 {
-        color: var(--light);
-        font-size: 3.5em;
-        padding-bottom: 10px;
+    .newInvoice .header .companyInfo {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .newInvoice .header h2 {
+        color: #F9F9F9;
+        font-size: 2.5em;
+        display: flex;
+        justify-content: space-around;
+        align-items: flex-start;
+        margin-right: 50px;
     }
 
     .newInvoice .header p {
-        color: var(--grey);
-        font-size: 14px;
-        line-height: 10px;
+        color: #eee;
+        font-size: 12px;
+        line-height: 7px;
     }
 
-    .newInvoice .header .companyInfo .first {
-        padding-bottom: 10px;
-    }
 
+
+
+
+    /* second container */
     .newInvoice .secondContainer {
         margin: 7% 0;
         display: flex;
         flex-direction: row;
         justify-content: space-around;
-        /* background-color: var(--yellow); */
     }
 
     .newInvoice .secondContainer p {
-        color: var(--dark-grey);
+        color: #222831;
         font-size: 14px;
     }
 
     .newInvoice .secondContainer h5 {
-        color: var(--dark);
+        color: #342E37;
         font-size: 16px;
     }
 
@@ -81,13 +90,15 @@ $symbol = $settings[0]["CurrencySymbol"];
         width: 140%;
     }
 
-    .newInvoice input {
+    .newInvoice input,
+    select {
         border: none;
-        color: var(--dark);
+        color: #342E37 !important;
+        background-color: #eee !important;
     }
 
     .newInvoice input::placeholder {
-        color: var(--dark);
+        color: #342E37;
         font-size: 16px;
         font-weight: 500;
     }
@@ -97,8 +108,14 @@ $symbol = $settings[0]["CurrencySymbol"];
         color: var(--blue);
     }
 
+    /* table invoice */
     .newInvoice table {
         margin-top: 10%;
+        background-color: white;
+    }
+
+    .newInvoice table tbody tr:hover {
+        background: white !important;
     }
 
     .newInvoice .table thead {
@@ -160,6 +177,7 @@ $symbol = $settings[0]["CurrencySymbol"];
     .main-content .content .page .tableActions .bx {
         padding: 5px;
         cursor: pointer;
+        color: var(--dark);
     }
 
     .main-content .content .page .tableActions .searchBtn,
@@ -222,6 +240,7 @@ $symbol = $settings[0]["CurrencySymbol"];
         border-collapse: collapse;
     }
 
+
     .main-content .content table th {
         padding-bottom: 12px;
         font-size: 13px;
@@ -282,6 +301,16 @@ $symbol = $settings[0]["CurrencySymbol"];
         width: 70%;
         background: var(--grey);
     }
+
+    .main-content .content #analytics li {
+        background-color: var(--grey);
+    }
+
+
+
+
+
+
 
     @media screen and (max-width: 920px) {
         .main-content .content {
@@ -359,9 +388,11 @@ $symbol = $settings[0]["CurrencySymbol"];
             <div class="content tab-content">
 
 
-
+                <!-- services page -->
                 <div class="page active" id="services">
-                    <h3>Services Records</h3>
+                    <div class="h4 pb-2 mt-2 mb-5 border-bottom">
+                        <h3>Service Records</h3>
+                    </div>
                     <div class="tableActions">
                         <input type="submit" value="Search" class="searchBtn" id="searchBtn1">
                         <input type="search" class="searchInput" id="searchInput1">
@@ -417,7 +448,7 @@ $symbol = $settings[0]["CurrencySymbol"];
                                         <td style="text-align:center">
                                             <a href="viewInvoice.php?i=<?= $invoice["InvoiceID"]; ?>&c=<?= $invoice["ClientID"]; ?>" class="icon view"><img src="../img/eyeIcon.png" alt=""></a>
                                             <abbr title="download pdf"><a href="../controllers/generatepdf_contr.php?i=<?= $invoice["InvoiceID"]; ?>&c=<?= $invoice["ClientID"]; ?>" target="_blank" class="icon pdf"><img src="../img/pdfIcon.png" alt=""></a></abbr>
-                                            <abbr title="print"><a href="../user/printInvoice.php?i=<?= $invoice["InvoiceID"]; ?>&c=<?= $invoice["ClientID"]; ?>" target="_blank" class="icon print"><img src="../img/printIcon.png" alt=""></a></abbr>
+                                            <abbr title="print"><a href="../views/printInvoice.php?i=<?= $invoice["InvoiceID"]; ?>&c=<?= $invoice["ClientID"]; ?>" target="_blank" class="icon print"><img src="../img/printIcon.png" alt=""></a></abbr>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>
@@ -436,9 +467,11 @@ $symbol = $settings[0]["CurrencySymbol"];
 
 
 
-
+                <!-- products page -->
                 <div class="page" id="products">
-                    <h3>Products Records</h3>
+                    <div class="h4 pb-2 mt-2 mb-5 border-bottom">
+                        <h3>Product Records</h3>
+                    </div>
                     <div class="tableActions">
                         <input type="submit" value="Search" class="searchBtn" id="searchBtn2">
                         <input type="search" class="searchInput" id="searchInput2">
@@ -470,6 +503,7 @@ $symbol = $settings[0]["CurrencySymbol"];
                         <thead id="thead2">
                             <tr>
                                 <th>#</th>
+                                <th>Invoice Number</th>
                                 <th>Name</th>
                                 <th>Amount</th>
                                 <th>Issue Date</th>
@@ -484,6 +518,7 @@ $symbol = $settings[0]["CurrencySymbol"];
                                 <?php foreach ($sales as $index => $sale) : ?>
                                     <tr>
                                         <td class="index pe-3"><?= $index + 1;  ?></td>
+                                        <td class=""><?php echo $sale['InvoiceNumber']; ?></td>
                                         <td class=""><?php echo $sale['FirstName'] . ' ' . $sale['LastName']; ?></td>
                                         <td><span class=""><?php echo $sale['Quantity'] * $sale['UnitPrice']; ?></span></td>
                                         <td><span class=""><?php echo $sale['SaleDate']; ?></span></td>
@@ -491,7 +526,7 @@ $symbol = $settings[0]["CurrencySymbol"];
                                         <td style="text-align:center">
                                             <a href="viewProduct.php?i=<?= $sale["SaleID"]; ?>&c=<?= $sale["ClientID"]; ?>" class="icon view"><img src="../img/eyeIcon.png" alt=""></a>
                                             <abbr title="download pdf"><a href="../controllers/generateSalesInvoice_contr.php?i=<?= $sale["SaleID"]; ?>&c=<?= $sale["ClientID"]; ?>" target="_blank" class="icon pdf"><img src="../img/pdfIcon.png" alt=""></a></abbr>
-                                            <abbr title="print"><a href="../views/printSaleInvoice.php?i=<?= $sale["SaleID"]; ?>&c=<?= $sale["ClientID"]; ?>" target="_blank" class="icon delete"><img src="../img/printIcon.png" alt=""></a></abbr>
+                                            <abbr title="print"><a href="../views/printSaleInvoice.php?i=<?= $sale["SaleID"]; ?>&c=<?= $sale["ClientID"]; ?>" target="_blank" class="icon print"><img src="../img/printIcon.png" alt=""></a></abbr>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>
@@ -509,15 +544,8 @@ $symbol = $settings[0]["CurrencySymbol"];
 
 
 
-
+                <!-- Create new invoice -->
                 <div class="page" id="newInvoice">
-                    <div class="tabs mb-2">
-                        <!-- <button type="button" class="btn active">Service Invoice</button>
-                    <button type="button" class="btn active">Product Invoice</button> -->
-                    </div>
-
-
-
 
                     <!-- the service modal -->
                     <div id="overlay"></div>
@@ -594,18 +622,17 @@ $symbol = $settings[0]["CurrencySymbol"];
 
                             <div class="companyInfo">
                                 <div class="">
-                                    <h1>INVOICE</h1>
+                                    <h2>INVOICE</h2>
                                 </div>
                                 <div class="first">
-                                    <p class="website">www.majorlink.com</p>
-                                    <p class="email">majorlink@gmail.com</p>
-                                    <p class="phonenumber">(254) 718 317 726</p>
+                                    <p id="website"><?= $settings[0]["Website"]; ?></p>
+                                    <p id="email"><?= $settings[0]["Email"]; ?></p>
+                                    <p id="phonenumber"><?= $settings[0]["PhoneNumber"]; ?></p>
                                 </div>
                                 <div class="second">
-                                    <p class="Address">Pipeline, Nakuru</p>
-                                    <p class="City">Nakuru City</p>
-                                    <p class="country">Kenya</p>
-                                    <p class="zipCode">20100</p>
+                                    <p id="Address"><?= $settings[0]["Address"]; ?></p>
+                                    <p id="City"><?= $settings[0]["City"]; ?> <?= $settings[0]["Country"]; ?></p>
+                                    <p id="ZipCode"><?= $settings[0]["Zipcode"]; ?></p>
                                 </div>
                             </div>
                         </div>
@@ -618,10 +645,10 @@ $symbol = $settings[0]["CurrencySymbol"];
                                 </select>
                                 <p>Billed To</p>
                                 <h5 class="clientNames"></h5>
-                                <h5 class="address">Nakuru, Pipeline</h5>
-                                <h5 class="City">Nakuru City</h5>
-                                <h5 class="zipcode">20100</h5>
-                                <h5 class="country">Kenya</h5>
+                                <h5 class="address"></h5>
+                                <h5 class="city"></h5>
+                                <h5 class="zipcode"></h5>
+                                <h5 class="country"></h5>
 
                             </div>
 
@@ -706,8 +733,29 @@ $symbol = $settings[0]["CurrencySymbol"];
 
 
 
+                <?php
+
+                $totalIncomeByStatus = getTotalIncomeByInvoiceStatus($connect);
+                if ($totalIncomeByStatus) {
+                    $totalPaid = $totalIncomeByStatus['total_paid'];
+                    $totalPending = $totalIncomeByStatus['total_pending'];
+                    $totalCancelled = $totalIncomeByStatus['total_cancelled'];
+                    $totalPartiallyPaid = $totalIncomeByStatus['total_partially_paid'];
+
+                    // Use the total income values as needed
+                } else {
+                    $totalPaid = '';
+                    $totalPending = '';
+                    $totalCancelled = '';
+                    $totalPartiallyPaid = '';
+                }
+                ?>
 
 
+
+
+
+                <!-- Transaction Report page -->
                 <div class="page" id="analytics">
                     <h3 class="pb-2 mt-2 mb-2 border-bottom">Reports</h3>
 
@@ -715,140 +763,89 @@ $symbol = $settings[0]["CurrencySymbol"];
                         <h5> Services Analytics</h5>
                         <div class="content.main">
                             <ul class="box-info">
-                                <li style="background-color: #eee;">
-
+                                <li>
                                     <span class="text">
-                                        <p> <?php
-                                            $settings = get_Settings($connect);
-                                            echo $settings[0]["CurrencySymbol"];
-                                            ?> 1020</p>
+                                        <p><?= $symbol . ' ' . number_format($totalPaid, 2); ?></p>
                                         <h3 style="color: #2cce89;">Paid</h3>
                                     </span>
                                 </li>
-                                <li style="background-color: #eee;">
-
+                                <li>
                                     <span class="text">
-                                        <p> <?php
-                                            $settings = get_Settings($connect);
-                                            echo $settings[0]["CurrencySymbol"];
-                                            ?> 934</p>
-                                        <h3 style="color: #FFCE26;">UnPaid</h3>
-                                    </span>
-                                </li>
-                                <li style="background-color: #eee;">
-
-                                    <span class="text">
-                                        <p> <?php
-                                            $settings = get_Settings($connect);
-                                            echo $settings[0]["CurrencySymbol"];
-                                            ?> 934</p>
+                                        <p><?= $symbol . ' ' . number_format($totalPartiallyPaid, 2); ?></p>
                                         <h3 style="color: #3C91E6;">Partially Paid</h3>
                                     </span>
                                 </li>
-                                <li style="background-color: #eee;">
-
+                                <li>
                                     <span class="text">
-                                        <p> <?php
-                                            $settings = get_Settings($connect);
-                                            echo $settings[0]["CurrencySymbol"];
-                                            ?> 2543</p>
-                                        <h3 style="color: #FD7238;">Pending</h3>
+                                        <p><?= $symbol . ' ' . number_format($totalPending, 2); ?></p>
+                                        <h3 style="color: #FFCE26;">Pending</h3>
                                     </span>
                                 </li>
-                                <li style="background-color: #eee;">
-
+                                <li>
                                     <span class="text">
-                                        <p> <?php
-                                            $settings = get_Settings($connect);
-                                            echo $settings[0]["CurrencySymbol"];
-                                            ?> 1020</p>
-                                        <h3 style="color: #342E37;">Cancelled</h3>
+                                        <p><?= $symbol . ' ' . number_format($totalCancelled, 2); ?></p>
+                                        <h3 style="color: #FD7238;">Cancelled</h3>
                                     </span>
                                 </li>
                             </ul>
+
                         </div>
 
 
                     </div>
 
 
+                    <?php
 
+                    $totalIncomeByStatus = getTotalIncomeBySalesStatus($connect);
+                    if ($totalIncomeByStatus) {
+                        $total_paid = $totalIncomeByStatus['total_paid'];
+                        $total_pending = $totalIncomeByStatus['total_pending'];
+                        $total_cancelled = $totalIncomeByStatus['total_cancelled'];
+                        $total_partially_paid = $totalIncomeByStatus['total_partially_paid'];
+
+                        // Use the total income values as needed
+                    } else {
+                        $total_paid = '';
+                        $total_pending = '';
+                        $total_cancelled = '';
+                        $total_partially_paid = '';
+                    }
+                    ?>
                     <div class="Plan mt-5">
                         <h5>Sales Analytics</h5>
 
                         <div class="content.main">
                             <ul class="box-info">
-                                <li style="background-color: #eee;">
-
+                                <li>
                                     <span class="text">
-                                        <p> <?php
-                                            $settings = get_Settings($connect);
-                                            echo $settings[0]["CurrencySymbol"];
-                                            ?> 1020</p>
+                                        <p><?= $symbol . ' ' . number_format($total_paid, 2); ?></p>
                                         <h3 style="color: #2cce89;">Paid</h3>
                                     </span>
                                 </li>
-                                <li style="background-color: #eee;">
-
+                                <li>
                                     <span class="text">
-                                        <p> <?php
-                                            $settings = get_Settings($connect);
-                                            echo $settings[0]["CurrencySymbol"];
-                                            ?> 934</p>
-                                        <h3 style="color: #FFCE26;">UnPaid</h3>
-                                    </span>
-                                </li>
-                                <li style="background-color: #eee;">
-
-                                    <span class="text">
-                                        <p> <?php
-                                            $settings = get_Settings($connect);
-                                            echo $settings[0]["CurrencySymbol"];
-                                            ?> 934</p>
+                                        <p><?= $symbol . ' ' . number_format($total_partially_paid, 2); ?></p>
                                         <h3 style="color: #3C91E6;">Partially Paid</h3>
                                     </span>
                                 </li>
-                                <li style="background-color: #eee;">
-
+                                <li>
                                     <span class="text">
-                                        <p> <?php
-                                            $settings = get_Settings($connect);
-                                            echo $settings[0]["CurrencySymbol"];
-                                            ?> 2543</p>
-                                        <h3 style="color: #FD7238;">Pending</h3>
+                                        <p><?= $symbol . ' ' . number_format($total_pending, 2); ?></p>
+                                        <h3 style="color: #FFCE26;">Pending</h3>
                                     </span>
                                 </li>
-                                <li style="background-color: #eee;">
-
+                                <li>
                                     <span class="text">
-                                        <p> <?php
-                                            $settings = get_Settings($connect);
-                                            echo $settings[0]["CurrencySymbol"];
-                                            ?> 1020</p>
-                                        <h3 style="color: #342E37;">Cancelled</h3>
+                                        <p><?= $symbol . ' ' . number_format($total_cancelled, 2); ?></p>
+                                        <h3 style="color: #FD7238;">Cancelled</h3>
                                     </span>
                                 </li>
                             </ul>
+
                         </div>
                     </div>
                 </div>
-
-
-
-
-
-
-                <div class="page" id="newrecurring"></div>
-
-
-
-
-
-
-
-
-
-
 
 
             </div>
@@ -1025,7 +1022,7 @@ $symbol = $settings[0]["CurrencySymbol"];
 
                 // new invoice code
                 var selectedClientId;
-                var taxSymbol = <?= json_encode($code); ?>;
+                var taxSymbol = <?= json_encode($symbol); ?>;
                 var dollarRadio = document.getElementById('dollarRadio');
                 var percentRadio = document.getElementById('percentRadio');
 
@@ -1060,10 +1057,10 @@ $symbol = $settings[0]["CurrencySymbol"];
                             success: function(response) {
                                 // Update the client information based on the response
                                 $('.clientNames').text(response.FirstName + ' ' + response.LastName);
-                                // $('.address').text(response.address);
-                                // $('.City').text(response.PrimaryEmail);
-                                // $('.zipcode').text(response.zipcode);
-                                // $('.country').text(response.country);
+                                $('.address').text(response.Address);
+                                $('.city').text(response.City);
+                                $('.zipcode').text(response.Zipcode);
+                                $('.country').text(response.Country);
                             },
                             error: function(error) {
                                 console.error('Error fetching client data:', error);
@@ -1088,7 +1085,7 @@ $symbol = $settings[0]["CurrencySymbol"];
                     dollarRadio.addEventListener('change', function() {
                         if (dollarRadio.checked) {
                             percentRadio.checked = false;
-                            taxSymbol = <?= json_encode($code); ?>;
+                            taxSymbol = <?= json_encode($symbol); ?>;
                         }
                         updateTotal();
                     });
@@ -1132,7 +1129,7 @@ $symbol = $settings[0]["CurrencySymbol"];
                         var topTotalElement = document.querySelector('.topTotal');
                         var currencyElement = document.querySelector('.currency');
                         if (totalPriceElement && topTotalElement) {
-                            totalPriceElement.textContent = <?= json_encode($symbol); ?> + ' ' + total.toFixed(2);
+                            totalPriceElement.textContent = total.toFixed(2);
                             topTotalElement.textContent = total.toFixed(2);
                             currencyElement.textContent = <?= json_encode($symbol); ?>;
                         }
@@ -1368,7 +1365,8 @@ $symbol = $settings[0]["CurrencySymbol"];
                     }
 
 
-                    // console.log(tax)
+                    // console.log('subtotal' + subtotalAmount)
+                    // console.log('total' + totalPrice)
                     // return
 
 

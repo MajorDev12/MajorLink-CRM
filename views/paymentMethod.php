@@ -6,13 +6,37 @@ require_once  '../modals/addPaymentMethod_mod.php';
 
 $connect = connectToDatabase($host, $dbname, $username, $password);
 ?>
-
+<?php require_once "style.config.php"; ?>
 <?php require_once "header.php"; ?>
 <style>
     .area {
         background-color: var(--light);
         color: var(--light-dark);
         border-right: none;
+    }
+
+    #editBtn {
+        background-color: var(--blue);
+        color: var(--light);
+    }
+
+    button {
+        background-color: var(--blue) !important;
+    }
+
+    .icon {
+        background-color: var(--blue);
+        border-radius: 5px;
+        padding: 4px;
+        cursor: pointer;
+    }
+
+    .icon img {
+        width: 30px;
+    }
+
+    #closeModal {
+        background-color: var(--light) !important;
     }
 </style>
 
@@ -48,7 +72,6 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
         </div>
 
         <!-- content-container -->
-        <div id="loader">Loading...</div>
         <div class="main-content">
             <div class="content">
 
@@ -136,7 +159,7 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
 
                                 echo '<div class="d-flex justify-content-between align-items-center">';
                                 echo '<span class="list-group-item list-group-item-action area" aria-current="true" data-area-name="' . $PaymentMethod . '" data-area-id="' . $PaymentMethodID . '">' . $PaymentMethod . '</span>';
-                                echo '<button type="button" class="btn btn-info ml-3" data-area-id="' . $PaymentMethodID . '" onclick="editPaymentMethod(' . $PaymentMethodID . ', \'' . $PaymentMethod . '\')">Edit</button>';
+                                echo '<button type="button" id="editBtn" class="btn ml-3 text-light" data-area-id="' . $PaymentMethodID . '" onclick="editPaymentMethod(' . $PaymentMethodID . ', \'' . $PaymentMethod . '\')">Edit</button>';
                                 // echo '<button type="button" class="btn btn-danger" data-area-id="' . $PaymentMethodID . '" onclick="confirmDelete(' . $PaymentMethodID . ')">Del</button>';
                                 echo '</div>';
                             }

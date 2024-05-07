@@ -23,12 +23,21 @@ require_once  '../modals/addPayment_mod.php';
 require_once  '../modals/notification_mod.php';
 require_once  '../modals/addInvoice_mod.php';
 require_once  '../modals/addPlan_mod.php';
-require_once  '../modals/infobip_mod.php';
+require_once  '../modals/sendSms_mod.php';
+require_once  '../modals/getTime_mod.php';
 require_once  '../views/header.php';
 
 
 
 $connect  = connectToDatabase($host, $dbname, $username, $password);
+$settings = get_Settings($connect);
+$timezone = $settings[0]["TimeZone"];
+$phoneCode = $settings[0]["PhoneCode"];
+date_default_timezone_set($timezone);
+$createdDate = getTime($timezone);
+$tax = 0;
+$taxSymbol = $settings[0]["CurrencySymbol"];
+
 $payment_id = $statusMsg = '';
 $status = 'error';
 //get currencyCode
@@ -39,13 +48,22 @@ $initialSymbol = $settings[0]["CurrencySymbol"];
 //get client details
 $clientID = $_SESSION['clientID'];
 $clientData = getClientDataById($connect, $clientID);
+$invoiceNumber = generateInvoiceNumber();
 $invoiceProducts = [];
 $PaidPlanID = $_GET["p"];
-$changing = $_GET["c"];
-$changingNow = $_GET["cn"];
+$PlanID = $clientData['PlanID'];
+$changing = ($_GET["c"] === '1') ? true : false;
+$changingNow = ($_GET["cn"] === '1') ? true : false;
 $paidMonths = intval($_SESSION["selectedMonths"]);
-$planData = getPlanDataByID($connect, $PaidPlanID);
-$invoiceNumber = "INV0000TEST";
+
+if (isset($_POST['planID']) && !empty($_POST['planID'])) {
+    $paidplanid = $_POST['planID'];
+} else {
+    $paidplanid = $_GET["p"];
+}
+$planData = getPlanDataByID($connect, $paidplanid);
+
+
 $subtotal = $paidMonths * $clientData['PlanPrice'];
 // get plan data
 if (isset($_GET["p"])) {
@@ -59,26 +77,37 @@ if (isset($_GET["p"])) {
 
 
 
-$initialExpireDate = strtotime($clientData['ExpireDate']); // Convert string to Unix timestamp
+$initialExpireDate = strtotime($clientData['ExpireDate']);
 $daysRemaining = calculateLeftDays($clientData["ExpireDate"]);
 
 $selectedMonths = intval($_SESSION["selectedMonths"]);
 
 
 if (!$changing) {
-    $expireDate = calculateExpireDate($initialExpireDate, $selectedMonths);
+    $expireDate = calculateExpireDate($initialExpireDate, $selectedMonths, $timezone);
 } elseif ($changing && $changingNow) {
-    $createdDate = date('Y-m-d H:i:s');
     $initialcreatedDate = strtotime($createdDate);
-    $expireDate = calculateExpireDate($initialcreatedDate, $selectedMonths);
+    $expireDate = calculateExpireDate($initialcreatedDate, $selectedMonths, $timezone);
+} elseif ($changing && !$changingNow) {
+    // Calculate the new expire date based on the modified expire date
+    $expireDate = calculateExpireDate($expireDate, $selectedMonths, $timezone);
 }
 
-$firstDate = (string) $clientData['ExpireDate'];
-$firstDate = new DateTime($clientData['ExpireDate']);
-$firstDate = $firstDate->format('Y-m-d H:i:s');
 
-// $firsDate = $clientData['ExpireDate'];
-// $firsDate = new DateTime($firsDate);
+
+
+
+
+$initialDate = $clientData["ExpireDate"];
+
+if ($changingNow) {
+    $startDate = $createdDate;
+} else {
+    $startDate = date('Y-m-d', strtotime($initialDate . ' +1 day'));
+    $expireDate = date('Y-m-d', strtotime($expireDate . ' +1 day'));
+}
+
+
 
 // Function to calculate left days
 function calculateLeftDays($expireDate)
@@ -94,14 +123,6 @@ function calculateLeftDays($expireDate)
     }
 }
 
-// Function to calculate expire date
-function calculateExpireDate($initialExpireDate, $selectedMonths)
-{
-    // Add the selected months to the timestamp
-    $newExpireTimestamp = strtotime("+" . $selectedMonths . " months", $initialExpireDate);
-    // Convert the new timestamp back to a date
-    return date("Y-m-d", $newExpireTimestamp);
-}
 
 
 
@@ -167,7 +188,7 @@ if (!empty($_GET['session_id'])) {
 
                     if ($paidCurrency != $initialCurrency) {
                         // API endpoint for ExchangeRatesAPI
-                        $apiEndpoint = 'https://open.er-api.com/v6/latest';
+                        $apiEndpoint = ENDPOINT;
 
                         // API request to get the latest exchange rates
                         $apiUrl = "{$apiEndpoint}?base={$paidCurrency}&symbols={$initialCurrency}";
@@ -191,12 +212,8 @@ if (!empty($_GET['session_id'])) {
 
 
 
-                    $settings = get_Settings($connect);
-                    $timezone = $settings[0]["TimeZone"];
-                    date_default_timezone_set($timezone);
-                    $createdDate = date('Y-m-d H:i:s');
+                    $paymentStatus = calculatePaymentStatus($connect, $paidplanid, $paidAmount, $paidMonths);
 
-                    $PlanID = $clientData['PlanID'];
 
                     // Customer info 
                     $customer_name = $customer_email = '';
@@ -209,7 +226,6 @@ if (!empty($_GET['session_id'])) {
 
                     if (empty($result)) {
                         $activeStatus = 1;
-                        $paymentStatus = "Paid";
                         $expireDate = new DateTime($expireDate);
 
                         if ($daysRemaining > 0) {
@@ -221,9 +237,10 @@ if (!empty($_GET['session_id'])) {
                         }
 
 
-                        $planAmount = $clientData['PlanPrice'];
-                        $planVolume = $clientData['Plan'];
-                        $Clientnumber = $clientData['PrimaryNumber'];
+                        $planAmount = $planData['Price'];
+                        $planVolume = $planData['Volume'];
+                        $to = $clientData['PrimaryNumber'];
+                        $Clientnumber = $phoneCode . $to;
                         $paymentMethodID = 3;
                         $InstallationFees = 0;
 
@@ -236,61 +253,55 @@ if (!empty($_GET['session_id'])) {
                             $changing = false;
                         }
 
-                        $paymentStatus = calculatePaymentStatus($connect, $ClientID, $paidAmount);
+
 
                         // Process payment and update client data
                         if (!$changing) {
                             // process payment
-                            insertPaymentData($ClientID, $PlanID, $paidAmount, $paymentStatus, $createdDate, $paymentMethodID, $InstallationFees, $connect);
+                            insertPaymentData($ClientID, $PlanID, $invoiceNumber, $paidAmount, $paymentStatus, $createdDate, $paymentMethodID, $InstallationFees, $connect);
                             updatePlan($ClientID, $PlanID, $expireDate, $last_paymentDate, $connect);
                             changeStatus($ClientID, $activeStatus, $connect);
                             setStripeTransaction($connect, $ClientID, $customer_name, $customer_email, $paidAmount, $paidCurrency, $createdDate, $payment_id, $payment_status, $session_id);
 
-                            $invoiceNumber = generateInvoiceNumber();
+
 
                             // Call createAndSaveInvoice function with the generated invoice number
-                            createAndSaveInvoice($ClientID, $invoiceNumber, $paidAmount, $expireDate, $connect);
+                            addInvoice($connect, $ClientID, $invoiceNumber, $paidAmount, $createdDate, $startDate, $expireDate, $paymentStatus, $taxSymbol, $tax);
                             saveInvoiceProducts($connect, $invoiceNumber, $subtotal, $invoiceProducts);
                             sendSuccessMessage($ClientID, $createdDate, $connect);
                             sendTextMessage($Clientnumber, $planVolume, $expireDate);
                         } else {
 
                             if ($changingNow) {
-                                $initialcreatedDate = strtotime($createdDate);
-                                $ExpireDate = calculateExpireDate($initialcreatedDate, $selectedMonths);
 
-
-                                updateClientDataForImmediateChange($ClientID, $PaidPlanID, $createdDate, $ExpireDate, $connect);
-
-                                $paymentStatus = calculatePaymentStatus($connect, $ClientID, $paidAmount);
-                                insertPaymentData($ClientID, $PaidPlanID, $paidAmount, $paymentStatus, $createdDate, $paymentMethodID, $InstallationFees, $connect);
+                                updateClientDataForImmediateChange($ClientID, $PaidPlanID, $createdDate, $expireDate, $connect);
+                                insertPaymentData($ClientID, $PaidPlanID, $invoiceNumber, $paidAmount, $paymentStatus, $createdDate, $paymentMethodID, $InstallationFees, $connect);
                                 changeStatus($ClientID, $activeStatus, $connect);
                                 setStripeTransaction($connect, $ClientID, $customer_name, $customer_email, $paidAmount, $paidCurrency, $createdDate, $payment_id, $payment_status, $session_id);
 
-                                $invoiceNumber = generateInvoiceNumber();
+
                                 // Call createAndSaveInvoice function with the generated invoice number
-                                createAndSaveInvoice($ClientID, $invoiceNumber, $paidAmount, $ExpireDate, $connect);
+                                addInvoice($connect, $ClientID, $invoiceNumber, $paidAmount, $createdDate, $startDate, $expireDate, $paymentStatus, $taxSymbol, $tax);
                                 saveInvoiceProducts($connect, $invoiceNumber, $subtotal, $invoiceProducts);
                                 sendSuccessMessage($ClientID, $createdDate, $connect);
                                 sendSuccessPlanChangeMessage($ClientID, $createdDate, $connect);
                                 sendTextMessage($Clientnumber, $planVolume, $expireDate);
                             } else {
-                                schedulePlanChange($ClientID, $PaidPlanID, $firstDate, $connect);
+                                $scheduled = schedulePlanChange($ClientID, $PaidPlanID, $startDate, $connect);
 
-                                $paymentStatus = calculatePaymentStatus($connect, $ClientID, $paidAmount);
-                                insertPaymentData($ClientID, $PaidPlanID, $paidAmount, $paymentStatus, $createdDate, $paymentMethodID, $InstallationFees, $connect);
-                                updatePlan($ClientID, $PlanID, $expireDate, $last_paymentDate, $connect);
-                                changeStatus($ClientID, $activeStatus, $connect);
-                                setStripeTransaction($connect, $ClientID, $customer_name, $customer_email, $paidAmount, $paidCurrency, $createdDate, $payment_id, $payment_status, $session_id);
+                                $paid = insertPaymentData($ClientID, $PaidPlanID, $invoiceNumber, $paidAmount, $paymentStatus, $createdDate, $paymentMethodID, $InstallationFees, $connect);
+                                $updated = updatePlan($ClientID, $PlanID, $expireDate, $last_paymentDate, $connect);
+                                $status = changeStatus($ClientID, $activeStatus, $connect);
+                                $stripe = setStripeTransaction($connect, $ClientID, $customer_name, $customer_email, $paidAmount, $paidCurrency, $createdDate, $payment_id, $payment_status, $session_id);
 
 
-                                $invoiceNumber = generateInvoiceNumber();
+
                                 // Call createAndSaveInvoice function with the generated invoice number
-                                createAndSaveInvoice($ClientID, $invoiceNumber, $paidAmount, $expireDate, $connect);
-                                saveInvoiceProducts($connect, $invoiceNumber, $subtotal, $invoiceProducts);
-                                sendSuccessMessage($ClientID, $createdDate, $connect);
-                                sendSuccessPlanChangeLaterMessage($ClientID, $createdDate, $firstDate, $connect);
-                                sendTextMessage($Clientnumber, $planVolume, $expireDate);
+                                $invoiceadded = addInvoice($connect, $ClientID, $invoiceNumber, $paidAmount, $createdDate, $startDate, $expireDate, $paymentStatus, $taxSymbol, $tax);
+                                $products = saveInvoiceProducts($connect, $invoiceNumber, $subtotal, $invoiceProducts);
+                                $notified = sendSuccessMessage($ClientID, $createdDate, $connect);
+                                $notifiedLater = sendSuccessPlanChangeLaterMessage($ClientID, $createdDate, $startDate, $connect);
+                                $textSent = sendTextMessage($Clientnumber, $planVolume, $expireDate);
                             }
                         }
                     }
@@ -314,17 +325,41 @@ if (!empty($_GET['session_id'])) {
 
 
 
+function calculateExpireDate($initialExpireDate, $selectedMonths, $timezone)
+{
+    // Check if $initialExpireDate is a string
+    if (is_string($initialExpireDate)) {
+        // Convert the initial expire date string to a Unix timestamp
+        $initialExpireDate = strtotime($initialExpireDate);
+    }
+
+    // Convert the Unix timestamp to a date string
+    $initialExpireDateString = date('Y-m-d', $initialExpireDate);
+
+    // Set the timezone
+    date_default_timezone_set($timezone);
+
+    // Convert the initial expire date to a DateTime object
+    $initialExpireDateTime = new DateTime($initialExpireDateString);
+
+    // Add the selected months to the initial expire date
+    $initialExpireDateTime->modify("+$selectedMonths months");
+
+    // Return the new expire date
+    return $initialExpireDateTime->format('Y-m-d');
+}
 
 
 
 
 // Functions to perform specific tasks
-function calculatePaymentStatus($connect, $clientID, $paidAmount)
+function calculatePaymentStatus($connect, $paidplanid, $paidAmount, $selectedMonths)
 {
     try {
-        $clientData = getClientDataById($connect, $clientID);
-        // Prepare SQL query to fetch the plan price for a given client ID
-        $planAmount = $clientData["PlanPrice"];
+        $planData = getPlanDataByID($connect, $paidplanid);
+        $planAmount = $planData['Price'];
+
+        $paidAmount = $paidAmount / $selectedMonths;
 
         // Check if a result was obtained
         if ($planAmount) {
@@ -363,7 +398,7 @@ function sendTextMessage($Clientnumber, $planVolume, $expireDate)
     $expireDate = $expireDate->format('j F Y');
 
     $provider = 'Infobip';
-    $message = 'You have successfully subscribed to ' . $planVolume . ' Your subscription will be renewed on ' . $expireDate . ' Thank you for choosing MajorLink';
+    $message = 'You have successfully subscribed to ' . $planVolume . '. Your subscription will be renewed on ' . $expireDate . ' Thank you for choosing MajorLink';
     sendSMS($provider, $Clientnumber, $message);
 }
 
@@ -391,18 +426,6 @@ function sendSuccessPlanChangeLaterMessage($ClientID, $createdDate, $firstDate, 
     insertMessage($connect, $SenderName, $ClientID, $MessageType2, $MessageContent2, $createdDate, 0);
 }
 
-
-function createAndSaveInvoice($ClientID, $invoiceNumber, $paidAmount, $expireDate, $connect)
-{
-    $totalAmount = $paidAmount;
-    $startDate = $_SESSION['startDate'];
-    $paymentDate = $_SESSION["paymentDate"];
-    $taxSymbol = $_SESSION["currencySymbol"];
-    $taxAmount = 0;
-    $dueDate = $expireDate;
-    $status = "Paid";
-    addInvoice($connect, $ClientID, $invoiceNumber, $totalAmount, $paymentDate, $startDate, $dueDate, $status, $taxSymbol, $taxAmount);
-}
 
 
 
@@ -531,14 +554,14 @@ function schedulePlanChange($ClientID, $paidPlanID, $initialExpireDate, $connect
 
     <?php if (!empty($payment_id)) { ?>
         <div class="container invoice mt-5">
-            <!-- <h1 class="display-4 text-success <?php echo $status; ?>"><?php echo $statusMsg; ?></h1> -->
+            <h1 class="display-5 text-success text-center mb-3 <?php echo $status; ?>"><?php echo $statusMsg; ?></h1>
 
             <div class="row">
                 <div class="col-md-4">
                     <h3><?php echo $clientData['FirstName'] . ' ' . $clientData['LastName']; ?></h3>
                     <p>Payment Date: <?php echo $createdDate; ?></p>
                     <p>Expire Date: <?php echo $expireDate; ?></p>
-                    <?php $paymentStatus = calculatePaymentStatus($connect, $ClientID, $paidAmount); ?>
+                    <?php $paymentStatus = calculatePaymentStatus($connect, $paidplanid, $paidAmount, $selectedMonths); ?>
                     <p>Status: <span class="status"> <?php echo $paymentStatus; ?></span></p>
                 </div>
                 <div class="col-md-4">

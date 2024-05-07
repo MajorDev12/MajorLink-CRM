@@ -378,3 +378,49 @@ function deleteClientInvoices($clientId, $connect)
         return false;
     }
 }
+
+
+
+function getTotalIncomeByInvoiceStatus($connect)
+{
+    try {
+        $query = "SELECT
+                    SUM(CASE WHEN Status = 'Paid' THEN TotalAmount ELSE 0 END) AS total_paid,
+                    SUM(CASE WHEN Status = 'Pending' THEN TotalAmount ELSE 0 END) AS total_pending,
+                    SUM(CASE WHEN Status = 'Cancelled' THEN TotalAmount ELSE 0 END) AS total_cancelled,
+                    SUM(CASE WHEN Status = 'Partially Paid' THEN TotalAmount ELSE 0 END) AS total_partially_paid
+                  FROM invoices";
+
+        $statement = $connect->prepare($query);
+        $statement->execute();
+
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+
+        return $result;
+    } catch (PDOException $e) {
+        echo "Error: " . $e->getMessage();
+        return false;
+    }
+}
+
+function getTotalIncomeBySalesStatus($connect)
+{
+    try {
+        $query = "SELECT
+                    SUM(CASE WHEN PaymentStatus = 'Paid' THEN Total ELSE 0 END) AS total_paid,
+                    SUM(CASE WHEN PaymentStatus = 'Pending' THEN Total ELSE 0 END) AS total_pending,
+                    SUM(CASE WHEN PaymentStatus = 'Cancelled' THEN Total ELSE 0 END) AS total_cancelled,
+                    SUM(CASE WHEN PaymentStatus = 'Partially Paid' THEN Total ELSE 0 END) AS total_partially_paid
+                  FROM sales";
+
+        $statement = $connect->prepare($query);
+        $statement->execute();
+
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+
+        return $result;
+    } catch (PDOException $e) {
+        echo "Error: " . $e->getMessage();
+        return false;
+    }
+}

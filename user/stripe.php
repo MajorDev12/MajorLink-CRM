@@ -223,8 +223,8 @@ $clientData = getClientDataById($connect, $clientID);
                     PlanAmount = document.getElementById("PlanAmount").value;
                     currencyCode = document.getElementById("currencyCode").value;
                     selectedMonths = document.getElementById("selectedMonths").value;
-                    changing = 0;
-                    changingNow = 0;
+                    changing = false;
+                    changingNow = false;
 
                     if (PlanAmount === '') {
                         displayMessage("errorMsg", "Amount Cannot Be Empty", true);

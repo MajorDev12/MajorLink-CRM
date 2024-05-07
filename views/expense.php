@@ -1,4 +1,5 @@
 <?php require_once "../controllers/session_Config.php"; ?>
+<?php require_once "style.config.php"; ?>
 <?php require_once "header.php"; ?>
 <?php
 require_once  '../database/pdo.php';
@@ -315,82 +316,6 @@ $symbol = $settings[0]["CurrencySymbol"];
 
 
 
-                // JavaScript function to dynamically populate a dropdown
-                function populateDropdown(selectElement, options) {
-                    var dropdown = document.getElementById(selectElement);
-                    options.forEach(function(option) {
-                        var optionElement = document.createElement("option");
-                        optionElement.value = option.value;
-                        optionElement.text = option.text;
-                        dropdown.appendChild(optionElement);
-                    });
-                }
-
-                // Populate the year dropdown
-                var yearOptions = [];
-                for (var year = 2010; year <= 2024; year++) {
-                    yearOptions.push({
-                        value: year,
-                        text: year.toString()
-                    });
-                }
-
-
-
-
-                // Populate the month dropdowns
-                var monthOptions = [{
-                        value: 1,
-                        text: "January"
-                    },
-                    {
-                        value: 2,
-                        text: "February"
-                    },
-                    {
-                        value: 3,
-                        text: "March"
-                    },
-                    {
-                        value: 4,
-                        text: "April"
-                    },
-                    {
-                        value: 5,
-                        text: "May"
-                    },
-                    {
-                        value: 6,
-                        text: "June"
-                    },
-                    {
-                        value: 7,
-                        text: "July"
-                    },
-                    {
-                        value: 8,
-                        text: "August"
-                    },
-                    {
-                        value: 9,
-                        text: "September"
-                    },
-                    {
-                        value: 10,
-                        text: "October"
-                    },
-                    {
-                        value: 11,
-                        text: "November"
-                    },
-                    {
-                        value: 12,
-                        text: "December"
-                    }
-                ];
-
-
-
 
 
 
@@ -427,7 +352,8 @@ $symbol = $settings[0]["CurrencySymbol"];
                                 if (productName === null) {
                                     productName = "No Data";
                                 }
-                                document.getElementById('totalProduct').innerText = totalIncome;
+                                formattedtotal = numberFormatJS(totalIncome);
+                                document.getElementById('totalProduct').innerText = formattedtotal;
 
                                 // Update the chart with the new data
                                 updateProductChart(totalIncome, productName);
@@ -458,11 +384,11 @@ $symbol = $settings[0]["CurrencySymbol"];
                     customerChart = new Chart(ctx, {
                         type: 'bar',
                         data: {
-                            labels: ['Income Summary For ' + productName],
+                            labels: [productName],
                             datasets: [{
                                 label: 'Total Income',
                                 data: [totalIncome],
-                                backgroundColor: ['rgba(75, 192, 192, 0.5)', 'rgba(255, 99, 132, 0.5)'],
+                                backgroundColor: 'rgba(255, 99, 132, 0.5)',
                                 borderWidth: 1
                             }]
                         },
@@ -505,7 +431,7 @@ $symbol = $settings[0]["CurrencySymbol"];
                 const CurrencyCode = <?= json_encode($code); ?>;
                 var combinedLabels = [];
                 for (var i = 0; i < allExpenses.length; i++) {
-                    combinedLabels.push([allExpenses[i], allTypeExpenses[i]]); // Push an array containing area name and income
+                    combinedLabels.push([allExpenses[i], numberFormatJS(allTypeExpenses[i])]); // Push an array containing area name and income
                 }
 
                 var ctx = document.getElementById('allexpensecategoryChart').getContext('2d');
@@ -523,7 +449,7 @@ $symbol = $settings[0]["CurrencySymbol"];
                                 'rgb(201, 203, 207)',
                                 'rgb(54, 162, 235)'
                             ],
-                            borderWidth: 5
+                            borderWidth: 1
                         }]
                     },
                     options: {
@@ -532,7 +458,7 @@ $symbol = $settings[0]["CurrencySymbol"];
                                 beginAtZero: true,
                                 title: {
                                     display: true,
-                                    text: 'Amount (' + CurrencyCode + ')'
+                                    text: 'Amount ( ' + CurrencyCode + ' )'
                                 }
                             },
                             x: {
@@ -590,7 +516,8 @@ $symbol = $settings[0]["CurrencySymbol"];
                                 if (expenseDate === null) {
                                     expenseDate = "No Data";
                                 }
-                                document.getElementById('totalExpenseByDate').innerText = total;
+                                formattedtotal = numberFormatJS(total);
+                                document.getElementById('totalExpenseByDate').innerText = formattedtotal;
 
                                 // Update the chart with the new data
                                 updateExpenseDateChart(total, expenseDate);
@@ -620,7 +547,7 @@ $symbol = $settings[0]["CurrencySymbol"];
                     expenseChart = new Chart(ctx, {
                         type: 'bar',
                         data: {
-                            labels: ['Income For ' + expenseDate],
+                            labels: [expenseDate],
                             datasets: [{
                                 label: 'Total Income',
                                 data: [totalIncome],
@@ -634,7 +561,7 @@ $symbol = $settings[0]["CurrencySymbol"];
                                     beginAtZero: true,
                                     title: {
                                         display: true,
-                                        text: 'Amount (' + CurrencyCode + ')'
+                                        text: 'Amount ( ' + CurrencyCode + ' )'
                                     }
                                 },
                                 x: {
@@ -691,9 +618,8 @@ $symbol = $settings[0]["CurrencySymbol"];
                                 if (year === null) {
                                     year = "No Record";
                                 }
-                                // Display the total income in the HTML element
-                                // document.getElementById('totalIncomeMonth').innerText = "Total Income: $" + total;
-                                document.getElementById('totalExpenseByMonthYear').innerText = total;
+                                formattedtotal = numberFormatJS(total);
+                                document.getElementById('totalExpenseByMonthYear').innerText = formattedtotal;
 
                                 // Update the chart with the new data
                                 updatemonthyearChart(total, month, year);
@@ -725,7 +651,7 @@ $symbol = $settings[0]["CurrencySymbol"];
                     expensemonthyearChart = new Chart(ctx, {
                         type: 'bar',
                         data: {
-                            labels: ['Income Summary For ' + month + ' ' + year],
+                            labels: [month + ' ' + year],
                             datasets: [{
                                 label: 'Total Income',
                                 data: [totalIncome],
@@ -739,7 +665,7 @@ $symbol = $settings[0]["CurrencySymbol"];
                                     beginAtZero: true,
                                     title: {
                                         display: true,
-                                        text: 'Amount (' + CurrencyCode + ')'
+                                        text: 'Amount ( ' + CurrencyCode + ' )'
                                     }
                                 },
                                 x: {
@@ -784,7 +710,8 @@ $symbol = $settings[0]["CurrencySymbol"];
                                 if (Year === null) {
                                     Year = "No Data";
                                 }
-                                document.getElementById('totalExpenseByYear').innerText = TotalExpense;
+                                formattedtotal = numberFormatJS(TotalExpense);
+                                document.getElementById('totalExpenseByYear').innerText = formattedtotal;
 
                                 // Update the chart with the new data
                                 updateYearExpenseChart(TotalExpense, Year);
@@ -815,7 +742,7 @@ $symbol = $settings[0]["CurrencySymbol"];
                     yearChart = new Chart(ctx, {
                         type: 'bar',
                         data: {
-                            labels: ['Income Summary For ' + Year],
+                            labels: [Year],
                             datasets: [{
                                 label: 'Total Income',
                                 data: [TotalExpense],
@@ -829,7 +756,7 @@ $symbol = $settings[0]["CurrencySymbol"];
                                     beginAtZero: true,
                                     title: {
                                         display: true,
-                                        text: 'Amount (' + CurrencyCode + ')'
+                                        text: 'Amount ( ' + CurrencyCode + ' )'
                                     }
                                 },
                                 x: {

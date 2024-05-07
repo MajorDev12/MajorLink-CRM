@@ -1,9 +1,9 @@
 <?php session_start(); ?>
 <?php
-
 require_once  '../modals/adminandclientsetup.php';
 require_once  '../database/pdo.php';
 require_once "../modals/setup_mod.php";
+require_once "style.config.php";
 require_once "header.php";
 
 $connect = connectToDatabase($host, $dbname, $username, $password);
@@ -22,6 +22,10 @@ $country = get_setup($connect);
         height: 100vh;
     }
 
+    #spinner {
+        display: none;
+    }
+
     .login-box {
         background-color: var(--light);
         padding: 20px;
@@ -36,7 +40,6 @@ $country = get_setup($connect);
 </style>
 
 
-<div id="loader">Loading...</div>
 <div class="login-container">
     <div class="login-box col-md-4">
         <div class="text-center mb-5">
@@ -44,17 +47,24 @@ $country = get_setup($connect);
             <h4 class="companyName mt-3">MajorLink</h4>
         </div>
         <form>
-            <div class="form-group mb-3">
+            <div class="form-group mb-3 mt-5">
                 <label for="inputEmail" class="text-start">Email address</label>
                 <input type="email" class="form-control" id="inputEmail" placeholder="example@gmail.com">
             </div>
+
+
             <div class="form-group mb-3">
-                <label for="inputPassword" class="text-start">Password</label>
-                <input type="password" class="form-control" id="inputPassword" placeholder="********">
+                <label for="inputEmail" class="text-start">Password</label>
+                <div class="input-group">
+                    <input type="password" id="inputPassword" class="form-control" aria-label="Dollar amount (with dot and two decimal places)" placeholder="********">
+                    <span class="input-group-text" id="togglePassword"><i class='bx bxs-low-vision'></i></span>
+                </div>
             </div>
+
+
             <div id="errorMsg" class="text-center"></div>
             <div class="form-group mb-3">
-                <a href="#">Forgot Password?</a>
+                <a href="forgotPassword.php">Forgot Password?</a>
             </div>
 
             <div class="form-group text-center">
@@ -69,6 +79,31 @@ $country = get_setup($connect);
 
 
 <script>
+    var togglePassword = document.getElementById("togglePassword");
+    var loader = document.getElementById("spinner");
+
+
+    togglePassword.addEventListener("click", function() {
+        showhidePswd(togglePassword);
+    });
+
+
+    function showhidePswd(element) {
+        var passwordInput = element.previousElementSibling;
+
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+        } else {
+            passwordInput.type = 'password';
+        }
+    }
+
+
+
+
+
+
+
     // Event listener for the login button
     document.getElementById('loginButton').addEventListener('click', function() {
         // Get input values
@@ -93,7 +128,6 @@ $country = get_setup($connect);
             displayMessage("errorMsg", "Password must be at least 6 characters long.", true);
             return;
         }
-
         loader.style.display = "flex";
         // Send data through Fetch API to PHP for logic
         fetch('../controllers/login_contr.php', {

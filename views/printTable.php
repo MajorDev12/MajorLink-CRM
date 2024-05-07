@@ -1,4 +1,5 @@
 <?php require_once "header.php"; ?>
+<?php require_once "style.config.php"; ?>
 <style>
     .main-content .content table {
         width: 70%;

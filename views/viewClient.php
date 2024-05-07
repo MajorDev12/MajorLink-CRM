@@ -5,6 +5,7 @@ require_once  '../modals/getClient_mod.php';
 
 $connect = connectToDatabase($host, $dbname, $username, $password);
 ?>
+<?php require_once "style.config.php"; ?>
 <?php require_once "header.php"; ?>
 <style>
     .main-content .clienttable-view .head .tableActions {

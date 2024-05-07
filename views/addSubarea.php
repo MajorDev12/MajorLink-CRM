@@ -8,7 +8,7 @@ require  '../modals/getSubarea_mod.php';
 $connect = connectToDatabase($host, $dbname, $username, $password);
 
 ?>
-
+<?php require_once "style.config.php"; ?>
 <?php require_once "header.php"; ?>
 
 <style>
@@ -18,6 +18,14 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
     }
 
     #closeModal {
+        color: var(--light-dark);
+    }
+
+    #subareasBtn {
+        border-bottom: 2px solid var(--grey);
+        border-left: 2px solid var(--grey);
+        border-bottom-left-radius: 10px;
+        background-color: var(--light);
         color: var(--light-dark);
     }
 </style>
@@ -56,7 +64,6 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
         <!-- content-container -->
         <div class="main-content">
 
-            <div id="loader">Loading...</div>
 
             <div class="content">
                 <!-- Modal -->

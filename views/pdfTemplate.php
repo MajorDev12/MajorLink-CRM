@@ -1,9 +1,11 @@
 <?php require "header.php"; ?>
+<?php require_once "style.config.php"; ?>
 <?php
 session_start();
 
 require_once  '../database/pdo.php';
 require_once  '../modals/addInvoice_mod.php';
+
 $connect = connectToDatabase($host, $dbname, $username, $password);
 
 $invoiceID = $_SESSION["invoiceID"];
@@ -11,34 +13,30 @@ $invoiceID = $_SESSION["invoiceID"];
 <style>
     .invoiceContainer {
         width: 100%;
-        height: 100vh;
         position: relative;
         background-color: #F9F9F9;
-        font-family: 'Poppins', sans-serif;
+        /* font-family: 'Poppins', sans-serif; */
+        font-family: 'Lato', sans-serif;
         z-index: 1;
-    }
-
-    .invoiceContainer .status {
-        position: absolute;
-        left: 60%;
-        top: 50%;
-        font-size: 3em;
-        transform: rotate(-10deg);
-        transform-origin: left top;
-        color: #ecfaf6;
-        z-index: -1;
     }
 
     .header {
         background-color: #3C91E6;
+        padding: 25px 15px;
+        position: relative;
+        top: -2%;
+        height: 100px;
     }
 
-    .invoiceContainer h1 {
+
+    .invoiceContainer h2 {
         color: #F9F9F9;
+        font-size: 2.5em;
         display: flex;
-        justify-content: center;
-        align-items: center;
-        font-size: 4em;
+        justify-content: space-around;
+        align-items: flex-start;
+        margin-right: 50px;
+        text-align: center;
     }
 
     .invoiceContainer .header p {
@@ -48,9 +46,57 @@ $invoiceID = $_SESSION["invoiceID"];
         line-height: 10px;
     }
 
-    .invoiceContainer .header .companyInfo {
-        padding: 2%;
+
+    .invoiceContainer .companyInfo {
+        line-height: 5px;
     }
+
+
+    .invoiceContainer .companyInfo .first {
+        position: absolute;
+        top: 20%;
+        left: 5%;
+    }
+
+    .invoiceContainer .companyInfo .second {
+        position: absolute;
+        left: 50%;
+        text-align: end;
+    }
+
+
+    .invoiceContainer .companyInfo .third {
+        position: absolute;
+        left: 75%;
+        text-align: end;
+    }
+
+    .invoiceContainer .status.paid {
+        color: #2cce89;
+        background-color: #ecfaf6;
+    }
+
+    .invoiceContainer .status.partially-paid {
+        color: #FFCE26;
+        background-color: #FFF2C6;
+    }
+
+    .invoiceContainer .status.pending {
+        color: #FD7238;
+        background-color: #FFE0D3;
+    }
+
+    .invoiceContainer .status.cancelled {
+        color: #DB504A;
+        background-color: #FFE0D3;
+    }
+
+    .invoiceContainer .header .companyInfo .second,
+    .invoiceContainer .header .companyInfo .third {
+        text-align: end;
+    }
+
+
 
     /* second container */
 
@@ -75,8 +121,7 @@ $invoiceID = $_SESSION["invoiceID"];
 
     .invoiceContainer .secondContainer .clientInfo {
         position: absolute;
-        left: 5%;
-
+        left: 10%;
     }
 
     .invoiceContainer .secondContainer .clientInfo p {
@@ -91,19 +136,33 @@ $invoiceID = $_SESSION["invoiceID"];
 
     .invoiceContainer .secondContainer .invoiceTotal {
         position: absolute;
-        left: 75%;
+        left: 70%;
     }
 
     .invoiceContainer .secondContainer .invoiceTotal .topTotal {
-        padding-top: 0;
         font-size: 2em;
         color: #3C91E6;
     }
 
+    .invoiceContainer .status {
+        font-size: 18px;
+        color: #3C91E6;
+        text-align: center;
+        border-radius: 10px;
+        padding: 10px 5px;
+    }
+
+    .invoiceContainer .secondContainer .invoiceTotal h1 {
+        margin-top: 10px;
+        padding-top: 10%;
+    }
+
+
+    /* table */
     .invoiceContainer .table {
         width: 100%;
         position: absolute;
-        top: 65%;
+        top: 45%;
     }
 
     .invoiceContainer .table thead {
@@ -138,28 +197,36 @@ $invoiceID = $_SESSION["invoiceID"];
     .invoiceContainer .table tbody tr .totalPrice {
         color: #3C91E6;
     }
+
+    .invoiceContainer .footer {
+        text-align: center;
+        position: absolute;
+        top: 80%;
+        width: 90%;
+        color: var(--dark-grey);
+    }
 </style>
 
 
 <div class="invoiceContainer">
-    <h1 class="status">{{ Status }}</h1>
+
     <!-- header -->
 
     <div class="header">
 
         <div class="companyInfo">
-            <div class="">
-                <h1>INVOICE</h1>
+            <div class="first">
+                <h2>INVOICE</h2>
             </div>
-            <div class="">
-                <p class="website">www.majorlink.com</p>
-                <p class="email">majorlink@gmail.com</p>
-                <p class="phonenumber">(254) 718 317 726</p>
+            <div class="second">
+                <p class="website">{{ CompanyWebsite }}</p>
+                <p class="email">{{ CompanyEmail }}</p>
+                <p class="phonenumber">{{ CompanyPhoneNumber }}</p>
             </div>
-            <div class="">
-                <p class="Address">Pipeline, Nakuru</p>
-                <p class="City">Nakuru City, Kenya</p>
-                <p class="zipCode">20100</p>
+            <div class="third">
+                <p class="Address">{{ CompanyAddress }}</p>
+                <p class="City">{{ CompanyCity }}, {{ CompanyCountry }}</p>
+                <p class="zipCode">{{ CompanyZipcode }}</p>
             </div>
         </div>
     </div>
@@ -170,10 +237,10 @@ $invoiceID = $_SESSION["invoiceID"];
         <div class="clientInfo">
             <label>Billed To</label>
             <p>{{ firstName }} {{ LastName }}</p>
-            <p>Nakuru, Pipeline</p>
-            <p>Nakuru City</p>
-            <p>20100</p>
-            <p>Kenya</p>
+            <p>{{ Address }}</p>
+            <p>{{ City }}</p>
+            <p>{{ Zipcode }}</p>
+            <p>{{ Country }}</p>
         </div>
         <div class="invoiceInfo">
             <label>Invoice Number</label>
@@ -187,7 +254,9 @@ $invoiceID = $_SESSION["invoiceID"];
             <label class="expireDate">Expire Date</label>
             <p>{{ expireDate }}</p>
             <label>Invoice Total</label>
-            <h4 class="topTotal"><span class="currency">{{ taxSymbol }}</span>{{ totalAmount }}</h4>
+            <h4 class="topTotal"><span class="currency">{{ Symbol }} </span>{{ totalAmount }}</h4>
+
+            <h1 class="status {{ statusClass }}">{{ Status }}</h1>
         </div>
     </div>
 
@@ -220,10 +289,17 @@ $invoiceID = $_SESSION["invoiceID"];
             <tr>
                 <td colspan="3" class="space"></td>
                 <td colspan="" class="Total">Total</td>
-                <td class="totalPrice">{{ taxSymbol }} {{ totalAmount }}</td>
+                <td class="totalPrice">{{ Symbol }} {{ totalAmount }}</td>
             </tr>
         </tbody>
     </table>
+
+
+
+    <p class="footer" style="font-style: italic;">
+        If you are not the intended recipient, no action is required.
+    </p>
+
 
 </div>
 

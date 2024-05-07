@@ -54,7 +54,7 @@
 
 <div class="page invoice">
 
-    <h4 class="pb-2 mb-5 border-bottom">Major Nganga</h4>
+    <h4 class="pb-2 pl-2 mb-5 border-bottom"><?= $clientData["FirstName"] . ' ' . $clientData["LastName"]; ?></h4>
 
     <a href="invoice.php" class="btn btn-primary pb-2 mb-5 border-bottom">New Invoice</a>
 

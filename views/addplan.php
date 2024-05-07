@@ -12,6 +12,7 @@ $settings = get_Settings($connect);
 $code = $settings[0]["CurrencyCode"];
 $symbol = $settings[0]["CurrencySymbol"];
 ?>
+<?php require_once "style.config.php"; ?>
 <?php require_once "header.php"; ?>
 
 <style>
@@ -54,7 +55,6 @@ $symbol = $settings[0]["CurrencySymbol"];
 
     <!-- content-container -->
     <div class="main-content">
-      <div id="loader">Loading...</div>
 
 
       <!-- Update modal -->
@@ -138,7 +138,7 @@ $symbol = $settings[0]["CurrencySymbol"];
                 ?>
                 <?php foreach ($plans as $key => $plan) : ?>
                   <tr>
-                    <th scope="row"><?= $key + 1 ?></th>
+                    <th class="p-3" scope="row"><?= $key + 1 ?></th>
                     <td><?= $plan['Name'] ?></td>
                     <td><?= $plan['Volume'] ?></td>
                     <td><?= $plan['Price'] ?></td>

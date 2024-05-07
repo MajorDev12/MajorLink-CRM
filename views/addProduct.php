@@ -7,6 +7,7 @@ require_once  '../modals/addProduct_mod.php';
 $connect = connectToDatabase($host, $dbname, $username, $password);
 $products = getProductData($connect);
 ?>
+<?php require_once "style.config.php"; ?>
 <?php require_once "header.php"; ?>
 
 <style>
@@ -48,7 +49,6 @@ $products = getProductData($connect);
         <!-- content-container -->
         <div class="main-content">
 
-            <div id="loader"></div>
             <div class="content">
 
 
@@ -172,7 +172,7 @@ $products = getProductData($connect);
                             ?>
                             <?php foreach ($products as $key => $product) : ?>
                                 <tr>
-                                    <th scope="row"><?= $key + 1 ?></th>
+                                    <th class="p-3" scope="row"><?= $key + 1 ?></th>
                                     <td><?= $product['ProductName'] ?></td>
                                     <td><?= $product['Price'] ?></td>
                                     <td><?= $product['Description'] ?></td>
