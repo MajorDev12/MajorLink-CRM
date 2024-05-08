@@ -56,11 +56,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 
                 $replacements = array(
-                    'Client_name' => $name,
-                    'Business_name' => 'MajorLink ISP',
-                    'Client_email' => $to,
-                    'Password' => $randomPassword,
-                    'Login_url' => 'http://localhost/majorlink/views/login.php'
+                    'client_name' => $name,
+                    'business_name' => 'MajorLink ISP',
+                    'client_email' => $to,
+                    'password' => $randomPassword,
+                    'login_url' => 'http://localhost/majorlink/views/login.php'
                 );
 
                 // Replace template words in the message
@@ -86,13 +86,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
 
                 $to = $code . $number;
-                $templateID = 10;
+                $templateID = 4;
                 $sms = getSmsTemplateById($connect, $templateID);
                 $body = $sms["Body"];
 
                 $replacements = array(
-                    'Business_name' => 'MajorLink ISP',
-                    'Password' => $randomPassword
+                    'business_name' => 'MajorLink ISP',
+                    'password' => $randomPassword
                 );
 
                 // Replace template words in the message
@@ -133,18 +133,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $from = "MajorLink";
                 $name = $admin['Fullname'];
 
-                $templateID = 4;
+                $templateID = 5;
                 $emails = getEmailTemplateById($connect, $templateID);
                 $Subject = $emails["Subject"];
                 $body = $emails["Body"];
 
 
                 $replacements = array(
-                    'Client_name' => $name,
-                    'Business_name' => 'MajorLink ISP',
-                    'Client_email' => $to,
-                    'Password' => $randomPassword,
-                    'Login_url' => 'http://localhost/majorlink/views/login.php'
+                    'client_name' => $name,
+                    'business_name' => 'MajorLink ISP',
+                    'client_email' => $to,
+                    'password' => $randomPassword,
+                    'login_url' => 'http://localhost/majorlink/views/login.php'
                 );
 
                 // Replace template words in the message
@@ -165,13 +165,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 $number = $_POST["Number"];
                 $to = $code . $number;
-                $templateID = 10;
+                $templateID = 5;
                 $sms = getSmsTemplateById($connect, $templateID);
                 $body = $sms["Body"];
 
                 $replacements = array(
-                    'Business_name' => 'MajorLink ISP',
-                    'Password' => $randomPassword
+                    'business_name' => 'MajorLink ISP',
+                    'password' => $randomPassword
                 );
 
                 // Replace template words in the message

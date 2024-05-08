@@ -4,8 +4,9 @@ require_once  '../database/pdo.php';
 require_once  '../modals/addAdmin_mod.php';
 require_once  '../modals/viewSingleUser_mod.php';
 require_once  '../modals/login_mod.php';
-require_once "header.php";
 require_once "style.config.php";
+require_once "header.php";
+
 
 $connect = connectToDatabase($host, $dbname, $username, $password);
 ?>

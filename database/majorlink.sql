@@ -138,11 +138,6 @@ CREATE TABLE companysettings (
 );
 
 
-INSERT INTO companysettings (CompanyName, Motto, Email, PhoneNumber, Country, Address, Website, Zipcode, City, TimeZone, CurrencyName, CurrencySymbol, PhoneCode, LogoURL, Address)
-VALUES (NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-
-
-
 
 CREATE TABLE sales (
     SaleID INT PRIMARY KEY AUTO_INCREMENT,
@@ -382,20 +377,6 @@ CREATE TABLE systemlogs (
 
 
 
-DELIMITER //
-
-CREATE TRIGGER before_delete_area
-BEFORE DELETE ON areas
-FOR EACH ROW
-BEGIN
-    UPDATE clients SET AreaID = NULL WHERE AreaID = OLD.AreaID;
-    UPDATE clients SET SubAreaID = NULL WHERE SubAreaID = OLD.SubAreaID;
-    -- Add more update statements for other related tables if needed
-END;
-
-//
-
-DELIMITER ;
 
 
 
@@ -403,14 +384,6 @@ ALTER TABLE `clients` DROP FOREIGN KEY `clients_ibfk_1`;
 ALTER TABLE `clients` ADD CONSTRAINT `clients_ibfk_1` FOREIGN KEY (`AreaID`) REFERENCES `areas`(`AreaID`) ON DELETE CASCADE ON UPDATE RESTRICT;
 ALTER TABLE `clients` DROP FOREIGN KEY `clients_ibfk_2`; 
 ALTER TABLE `clients` ADD CONSTRAINT `clients_ibfk_2` FOREIGN KEY (`SubAreaID`) REFERENCES `subareas`(`SubAreaID`) ON DELETE CASCADE ON UPDATE RESTRICT;
-
-
-
-ALTER TABLE advancepayments
-DROP FOREIGN KEY advancepayments_ibfk_1, 
-ADD CONSTRAINT fk_advancepayments_ClientID FOREIGN KEY (ClientID) REFERENCES clients(ClientID) ON DELETE SET NULL;
-
-
 
 
 
@@ -453,26 +426,5 @@ FOREIGN KEY (InvoiceID) REFERENCES invoices(InvoiceID)
 ON DELETE CASCADE;
 
 
--- Insert Admin
-INSERT INTO Admins (Username, PasswordHash, FullName, Email, Status, CreatedDate)
-VALUES ('admin', '12345678', 'admin', 'admin@example.com', 'Active', NOW());
-
--- Insert Client
-INSERT INTO Clients (FirstName, LastName, PrimaryEmail, PasswordHash, CreatedDate)
-VALUES ('client', 'client', 'client@example.com', '123456', NOW());
 
 
-
-INSERT INTO emailTemplate (Category, Name, Subject, Body, Status) 
-VALUES 
-    ('Promotion', 'Promotional Email', 'Special Offer Inside!', 'Dear Customer, Check out our latest offers. Don\'t miss out!', 'Active'),
-    ('Reminder', 'Payment Reminder', 'Reminder: Payment Due', 'Dear Customer, This is a friendly reminder that your payment is due soon. Please ensure timely payment. Thank you.', 'Active'),
-    ('Welcome', 'Welcome Email', 'Welcome to Our Platform', 'Dear New User, Welcome to our platform! We are thrilled to have you with us. If you have any questions, feel free to reach out.', 'Active');
-
-
-
-INSERT INTO smsTemplate (Category, Name, Body, Status) 
-VALUES 
-    ('Promotion', 'Holiday Sale', 'Get 20% off on all items this weekend! Limited time offer.', 'Active'),
-    ('Reminder', 'Payment Due', 'Friendly reminder: Your payment is due tomorrow. Please make sure to submit it on time.', 'Active'),
-    ('Welcome', 'New User Greeting', 'Welcome to our platform! Get started with our amazing features today.', 'Active');

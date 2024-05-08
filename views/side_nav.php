@@ -2,7 +2,7 @@
 <section id="sidebar">
   <a href="#" class="brand ml-2">
     <!-- <i class='bx bxs-smile'></i> -->
-    <img src="../img/<?= $companyData[0]["LogoURL"] ?>" class="logoImg" alt="" style="width: 30px; height: 30px;">
+    <img src="../img/<?= $companyData[0]["LogoURL"] ?>" class="logoImg" alt="" style="width: 50px; height: 50px;">
     <span class="text"><?= $companyData[0]["CompanyName"] ?></span>
   </a>
 

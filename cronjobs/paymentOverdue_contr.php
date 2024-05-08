@@ -44,7 +44,7 @@ function sendOverdueNoticeEmail($connect)
                 $invoiceDate = date('j F Y', strtotime($client['paymentDate']));
                 $invoiceDueDate = date('j F Y', strtotime($client['DueDate']));
 
-                $templateID = 7;
+                $templateID = 3;
                 $emails = getEmailTemplateById($connect, $templateID);
                 $Subject = $emails["Subject"];
                 $body = $emails["Body"];

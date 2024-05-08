@@ -256,7 +256,7 @@ $symbol = $settings[0]["CurrencySymbol"];
                                 if ($bestSellingPlan) {
                                     $planName = $bestSellingPlan['Name'];
                                     $planIncome = $bestSellingPlan['total_income'];
-                                    $planVolume = $bestSellingPlan['Volume'];
+                                    $planVolume = $bestSellingPlan['Volume'] ? $bestSellingPlan['Volume'] : "0mbps";
                                 } else {
                                     $planName = "Unknown";
                                     $planIncome = 0;
@@ -940,7 +940,7 @@ $symbol = $settings[0]["CurrencySymbol"];
 
                 const planName = <?= json_encode($planName); ?>;
                 const planIncome = <?= json_encode($planIncome); ?>;
-                const planVolume = <?= json_encode($planVolume); ?>;
+                const planVolume = <?= json_encode($planVolume ?? '0mbps'); ?>;
                 var ctx = document.getElementById('myChartplan').getContext('2d');
                 var myChart = new Chart(ctx, {
                     type: 'bar',

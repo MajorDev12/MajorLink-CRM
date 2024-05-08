@@ -21,8 +21,9 @@ $symbol = $settings[0]["CurrencySymbol"];
 $clientId = $clientData["ClientID"];
 $clientTotalAmount = getSingleClientTotalAmount($connect, $clientId);
 ?>
-<?php require_once "header.php"; ?>
 <?php require_once "style.config.php"; ?>
+<?php require_once "header.php"; ?>
+
 <style>
     .map {
         min-width: 200px;

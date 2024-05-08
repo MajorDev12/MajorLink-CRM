@@ -198,7 +198,7 @@ $CurrencyCode = $settings[0]["CurrencyCode"];
 							<ul class="todo-list">
 								<?php foreach ($newestClients as $client) : ?>
 									<li class="<?php echo ($client['ActiveStatus'] == 1) ? 'completed' : 'not-completed'; ?>">
-										<p><?php echo $client['FirstName'] . ' ' . $client['LastName']; ?></p>
+										<p><?php echo $client['FirstName'] . '  ' . $client['LastName']; ?></p>
 										<a href="viewSingleUser.php?id=<?php echo $client['ClientID']; ?>"><i class="bx bx-dots-vertical-rounded"></i></a>
 									</li>
 								<?php endforeach; ?>

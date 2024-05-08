@@ -1,6 +1,5 @@
 <?php require_once "../controllers/session_Config.php"; ?>
-<?php require_once "../views/header.php"; ?>
-<?php require_once "style.config.php"; ?>
+<?php require_once "header.php"; ?>
 <?php
 
 // JSON data
@@ -122,6 +121,8 @@ $countries = json_decode(file_get_contents("../assets/countryData.json"), true);
 
 </div>
 
+
+
 <script>
     let currentStep = 0;
     const totalSteps = document.querySelectorAll('.step').length;
@@ -184,6 +185,12 @@ $countries = json_decode(file_get_contents("../assets/countryData.json"), true);
                 case 3:
                     // Add selected data to the bucket list
                     bucketList.phoneCode = document.getElementById('phoneCode').value;
+                    console.log(bucketList.name)
+                    console.log(bucketList.timezone)
+                    console.log(bucketList.currency)
+                    console.log(bucketList.currencySymbol)
+                    console.log(bucketList.currencyCode)
+                    console.log(bucketList.phoneCode)
                     saveData(bucketList.name, bucketList.timezone, bucketList.currency, bucketList.currencySymbol, bucketList.currencyCode, bucketList.phoneCode);
                     break;
                 default:
@@ -289,7 +296,6 @@ $countries = json_decode(file_get_contents("../assets/countryData.json"), true);
 
     // Send selected data to PHP file
     function saveData(name, timezone, currency, symbol, code, phonecode) {
-        document.getElementById("loading").display = "flex";
         const formData = new FormData();
         formData.append('country', name);
         formData.append('timezone', timezone);
@@ -297,6 +303,8 @@ $countries = json_decode(file_get_contents("../assets/countryData.json"), true);
         formData.append('symbol', symbol);
         formData.append('code', code);
         formData.append('phonecode', phonecode);
+
+
 
 
         fetch('../controllers/setup_contr.php', {

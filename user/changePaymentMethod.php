@@ -21,9 +21,9 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
 $clientID = $_SESSION["clientID"];
 ?>
 
+<?php require_once "../views/style.config.php"; ?>
 <?php require_once "../views/header.php"; ?>
 
-<?php require_once "../views/style.config.php"; ?>
 
 <style>
     .changePaymentMethod .Choosenoption {
@@ -150,7 +150,7 @@ $clientID = $_SESSION["clientID"];
                         <?php foreach ($PaymentMethods as $PaymentMethod) : ?>
                             <?php
                             // Skip options with PaymentOptionName equal to "Cash"
-                            if ($PaymentMethod['PaymentOptionName'] === 'Cash') {
+                            if ($PaymentMethod['PaymentOptionName'] === 'cash') {
                                 continue;
                             }
 
@@ -185,6 +185,7 @@ $clientID = $_SESSION["clientID"];
 
         </div>
 
+        <?php require_once "../views/footer.php"; ?>
 
         <script>
             var divs = document.querySelectorAll(".div");
@@ -252,40 +253,4 @@ $clientID = $_SESSION["clientID"];
                     });
 
             });
-
-
-
-
-
-            function displayMessage(messageElement, message, isError) {
-                // Get the HTML element where the message should be displayed
-                var targetElement = document.getElementById(messageElement);
-
-                // Set the message text
-                targetElement.innerText = message;
-
-                // Add styling based on whether it's an error or success
-                if (isError) {
-                    targetElement.style.color = 'red';
-                } else {
-                    targetElement.style.color = 'green';
-                }
-
-                // Set a timeout to hide the message with the fade-out effect
-                setTimeout(function() {
-                    targetElement.innerText = '';
-                }, 2000);
-            }
-
-
-
-
-
-
-
-            // console.log(paymentId);
-            // if (!paymentId) {
-            //     console.log("nothing");
-            //     // return;
-            // }
         </script>

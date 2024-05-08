@@ -18,9 +18,9 @@ $clientID = $_SESSION['clientID'];
 $clientData = getClientDataById($connect, $clientID);
 $greeting = getGreeting();
 ?>
-<?php require_once "../views/header.php"; ?>
 
 <?php require_once "../views/style.config.php"; ?>
+<?php require_once "../views/header.php"; ?>
 
 <style>
     .main-content .content {
@@ -193,7 +193,6 @@ $greeting = getGreeting();
         </div>
         <!-- toast -->
 
-        <div id="loader">Loading...</div>
         <!-- content-container -->
         <div class="main-content">
             <div class="content.main">
@@ -213,21 +212,49 @@ $greeting = getGreeting();
 
                             <?php
                             $status = '';
+
                             if ($clientData["ActiveStatus"] === 0) {
                                 $status = "Inactive";
                             } elseif ($clientData["ActiveStatus"] === 1) {
                                 $status = "Active";
+                            } else {
+                                $status = "Inactive"; // If status is not 0 or 1, set status to "Inactive"
                             }
-                            $datetime = $clientData['ExpireDate'];
-                            $dateObj = DateTime::createFromFormat('Y-m-d H:i:s', $datetime);
-                            // Format the date to day, month, year
-                            $DateTime = $dateObj->format('d F Y H:i:s');
+
+                            $datetime = isset($clientData['ExpireDate']) ? $clientData['ExpireDate'] : null;
+
+                            if ($datetime !== null) {
+                                $dateObj = DateTime::createFromFormat('Y-m-d H:i:s', $datetime);
+
+                                if ($dateObj !== false) {
+                                    // Format the date to day, month, year
+                                    $formattedDateTime = $dateObj->format('d F Y H:i:s');
+                                } else {
+                                    // If the date cannot be parsed, set the formatted date to "Null"
+                                    $formattedDateTime = 'Null';
+                                }
+                            } else {
+                                // If ExpireDate is not set, set the formatted date to "Null"
+                                $formattedDateTime = 'Null';
+                            }
+
+
+
                             ?>
                             <div class="col mt-5">
-                                <div class="col mb-3">Current Plan: <span style="font-weight: 900;"><?= $clientData["Plan"]; ?></span> </div>
+                                <div class="col mb-3">Current Plan: <span style="font-weight: 900;">
+                                        <?php
+                                        if (!isset($clientData["Plan"]) || empty($clientData["Plan"])) {
+                                            echo 'not subscribed yet';
+                                        } else {
+                                            echo $clientData["Plan"];
+                                        }
+                                        ?>
+                                    </span> </div>
+
                                 <div class="col mb-3">Status: <span style="font-weight: 900;"><?= $status; ?></span> </div>
 
-                                <div class="col mb-3">Expire Date: <span style="font-weight: 900;"><?= $DateTime; ?></span></div>
+                                <div class="col mb-3">Expire Date: <span style="font-weight: 900;"><?= $formattedDateTime; ?></span></div>
                             </div>
 
                         </div>
@@ -319,51 +346,6 @@ $greeting = getGreeting();
                     </div>
                 </div>
 
-
-
-
-
-
-
-
-
-
-
-
-                <!-- <ul class="box-info">
-                    <li>
-                        <i class='bx bxs-calendar-check'></i>
-                        <span class="text">
-                            <h3>My Account</h3>
-
-                        </span>
-                    </li>
-                    <li>
-                        <i class='bx bxs-group'></i>
-                        <span class="text">
-                            <h3>Reports</h3>
-                        </span>
-                    </li>
-                    <li>
-                        <i class='bx bxs-group'></i>
-                        <span class="text">
-                            <h3>Status</h3>
-                        </span>
-                    </li>
-                    <li>
-                        <i class='bx bxs-dollar-circle'></i>
-                        <span class="text">
-                            <h3>Notifications</h3>
-                        </span>
-                    </li>
-                    <li>
-                        <i class='bx bxs-calendar-check'></i>
-                        <span class="text">
-                            <h3>Invoices</h3>
-                        </span>
-                    </li>
-                </ul> -->
             </div>
-
 
             <?php require_once "../views/footer.php"; ?>

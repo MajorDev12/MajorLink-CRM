@@ -198,7 +198,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             sendPaymentMessage($to);
 
 
-            sendEmail($to, $name, $subject, $message);
+            // sendEmail($to, $name, $subject, $message);
             $success = true;
             $message = 'Client Added Successfuly';
         } else {

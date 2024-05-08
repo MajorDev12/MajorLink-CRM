@@ -1,5 +1,71 @@
 <?php
-// $settingId = 1;
+
+function CompanySetup($CompanyName, $Email, $PhoneNumber, $Country, $Address, $Website, $Zipcode, $City, $TimeZone, $currencyName, $currencySymbol, $currencyCode, $PhoneCode, $LogoURL, $connect)
+{
+    try {
+        $query = "INSERT INTO companysettings (
+            CompanyName,
+            Email,
+            PhoneNumber,
+            Country,
+            Address,
+            Website,
+            Zipcode,
+            City,
+            TimeZone,
+            currencyName,
+            currencySymbol,
+            currencyCode,
+            PhoneCode,
+            LogoURL
+        ) VALUES (
+            :CompanyName,
+            :Email,
+            :PhoneNumber,
+            :Country,
+            :Address,
+            :Website,
+            :Zipcode,
+            :City,
+            :TimeZone,
+            :currencyName,
+            :currencySymbol,
+            :currencyCode,
+            :PhoneCode,
+            :LogoURL
+        )";
+
+        $statement = $connect->prepare($query);
+        $statement->bindParam(':CompanyName', $CompanyName);
+        $statement->bindParam(':Email', $Email);
+        $statement->bindParam(':PhoneNumber', $PhoneNumber);
+        $statement->bindParam(':Country', $Country);
+        $statement->bindParam(':Address', $Address);
+        $statement->bindParam(':Website', $Website);
+        $statement->bindParam(':Zipcode', $Zipcode);
+        $statement->bindParam(':City', $City);
+        $statement->bindParam(':TimeZone', $TimeZone);
+        $statement->bindParam(':currencyName', $currencyName);
+        $statement->bindParam(':currencySymbol', $currencySymbol);
+        $statement->bindParam(':currencyCode', $currencyCode);
+        $statement->bindParam(':PhoneCode', $PhoneCode);
+        $statement->bindParam(':LogoURL', $LogoURL);
+        $statement->execute();
+        return true;
+    } catch (PDOException $e) {
+        echo "Error: " . $e->getMessage();
+        return false;
+    }
+}
+
+
+
+
+
+
+
+
+
 
 function set_setup($countryName, $countryTimezone, $currencyName, $currencySymbol, $currencyCode, $phoneCode, $settingId, $connect)
 {

@@ -43,7 +43,7 @@ $country = get_setup($connect);
 <div class="login-container">
     <div class="login-box col-md-4">
         <div class="text-center mb-5">
-            <img src="../img/default-profile-image.png" alt="Company Logo" width="100" height="100" class="rounded-circle">
+            <img src="../img/company_logo.png" alt="Company Logo" width="100" height="100" class="rounded-circle">
             <h4 class="companyName mt-3">MajorLink</h4>
         </div>
         <form>
@@ -182,26 +182,4 @@ $country = get_setup($connect);
                 console.error('Error in sending data:', error);
             });
     });
-
-
-
-    function displayMessage(messageElement, message, isError) {
-        // Get the HTML element where the message should be displayed
-        var targetElement = document.getElementById(messageElement);
-
-        // Set the message text
-        targetElement.innerText = message;
-
-        // Add styling based on whether it's an error or success
-        if (isError) {
-            targetElement.style.color = 'red';
-        } else {
-            targetElement.style.color = 'green';
-        }
-
-        // Set a timeout to hide the message with the fade-out effect
-        setTimeout(function() {
-            targetElement.innerText = '';
-        }, 2000);
-    }
 </script>

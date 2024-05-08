@@ -1,6 +1,4 @@
 <?php
-
-require_once  '../modals/adminandclientsetup.php';
 require_once  '../database/pdo.php';
 require_once "../modals/setup_mod.php";
 require_once "style.config.php";
@@ -40,7 +38,7 @@ $country = get_setup($connect);
 </style>
 
 
-<div id="loader">Loading...</div>
+
 <div class="login-container">
     <div class="login-box col-md-4">
         <div class="text-center mb-5">
@@ -67,8 +65,8 @@ $country = get_setup($connect);
 
 <script>
     var searchButton = document.getElementById('searchButton');
-    // Regular expression to validate email format
 
+    // Regular expression to validate email format
 
 
 
@@ -96,8 +94,7 @@ $country = get_setup($connect);
 
 
 
-
-        loader.style.display = "flex";
+        document.getElementById('spinner').style.display = 'flex';
 
         var formData = new FormData();
         formData.append("searchEmail", searchEmail);
@@ -109,7 +106,7 @@ $country = get_setup($connect);
             .then(data => {
                 if (data.success) {
                     // Handle the response from the server
-
+                    loader.style.display = "flex";
                     window.location.href = `sendPassword.php`;
                 } else {
                     window.location.href = `sendPassword.php?e=none`;

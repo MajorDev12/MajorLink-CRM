@@ -183,8 +183,8 @@ function getActiveUsers($connect)
 function getInActiveUsers($connect)
 {
   try {
-    // Query to count all users
-    $query = "SELECT COUNT(*) AS inActiveClient FROM clients WHERE ActiveStatus = 0";
+    // Query to count all users where ActiveStatus is not 1 or is NULL
+    $query = "SELECT COUNT(*) AS inActiveClient FROM clients WHERE ActiveStatus <> 1 OR ActiveStatus IS NULL";
     $statement = $connect->query($query);
 
     // Fetch the count
@@ -196,6 +196,8 @@ function getInActiveUsers($connect)
     return false;
   }
 }
+
+
 
 
 

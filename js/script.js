@@ -1,4 +1,42 @@
 
+const spinner = document.querySelector('#spinner');
+//loader
+window.addEventListener("load", function(){
+	fadeOutSpinner();
+	const mode = localStorage.getItem('mode');
+    if (mode === 'dark') {
+        switchMode.checked = true;
+        document.body.classList.add('dark');
+    } else {
+        switchMode.checked = false;
+        document.body.classList.remove('dark');
+    }
+})
+
+
+// Function to fade out the spinner
+function fadeOutSpinner() {
+    let opacity = 1; // Initial opacity
+    
+    // Interval function to decrease opacity gradually
+    const fadeInterval = setInterval(() => {
+        opacity -= 0.4; // Decrease opacity by 0.1
+        
+        // Apply the new opacity
+        spinner.style.opacity = opacity;
+        
+        // Check if opacity is less than or equal to 0
+        if (opacity <= 0) {
+            clearInterval(fadeInterval); // Stop the interval
+            spinner.style.display = 'none'; // Hide the spinner
+        }
+    }, 100); // Interval duration in milliseconds (adjust as needed)
+}
+
+
+
+
+
 const allSideMenu = document.querySelectorAll('#sidebar .side-menu.top li a');
 
 allSideMenu.forEach(item=> {
@@ -60,40 +98,8 @@ menuBar.addEventListener('click', function () {
 // })
 
 
-const spinner = document.querySelector('#spinner');
-//loader
-window.addEventListener("load", function(){
-	fadeOutSpinner();
-	const mode = localStorage.getItem('mode');
-    if (mode === 'dark') {
-        switchMode.checked = true;
-        document.body.classList.add('dark');
-    } else {
-        switchMode.checked = false;
-        document.body.classList.remove('dark');
-    }
-})
 
 
-
-// Function to fade out the spinner
-function fadeOutSpinner() {
-    let opacity = 1; // Initial opacity
-    
-    // Interval function to decrease opacity gradually
-    const fadeInterval = setInterval(() => {
-        opacity -= 0.4; // Decrease opacity by 0.1
-        
-        // Apply the new opacity
-        spinner.style.opacity = opacity;
-        
-        // Check if opacity is less than or equal to 0
-        if (opacity <= 0) {
-            clearInterval(fadeInterval); // Stop the interval
-            spinner.style.display = 'none'; // Hide the spinner
-        }
-    }, 100); // Interval duration in milliseconds (adjust as needed)
-}
 
 
 

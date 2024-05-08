@@ -7,5 +7,6 @@
 <?php
 require_once  '../database/pdo.php';
 require_once  '../modals/setup_mod.php';
+$connect = connectToDatabase($host, $dbname, $username, $password);
 $companyData = get_Settings($connect);
 ?>
