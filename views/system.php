@@ -173,7 +173,7 @@ $countries = json_decode(file_get_contents("../assets/countryData.json"), true);
                                                 </select>
                                             </div>
                                             <div class="col-md-6">
-                                                <label for="primaryNumber">Currency ( <?= $companyData[0]["CurrencyName"] ?> )</label>
+                                                <label for="primaryNumber">Currency ( <?= $companyData[0]["CurrencySymbol"] ?> )</label>
                                                 <select class="form-select" id="currencySelect">
                                                     <option value="">Choose</option>
                                                 </select>

@@ -1,6 +1,6 @@
 
 <?php
-
+require_once "../controllers/session_Config.php";
 //process_data.php
 $errors = array();
 if ($_SERVER["REQUEST_METHOD"] === "POST") {

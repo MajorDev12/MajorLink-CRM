@@ -144,7 +144,25 @@ $clientData = getClientDataById($connect, $clientID);
                                 </select>
                             </div>
                         </div>
+                        <script>
+                            // Get elements
+                            var planAmountInput = document.getElementById("PlanAmount");
+                            var selectedMonthsDropdown = document.getElementById("selectedMonths");
 
+                            // Initial plan price value
+                            var initialPlanPrice = <?= $clientData['PlanPrice']; ?>;
+
+                            // Update the amount on dropdown change
+                            selectedMonthsDropdown.addEventListener("change", function() {
+                                var selectedMonths = parseInt(selectedMonthsDropdown.value);
+                                var calculatedAmount = initialPlanPrice * selectedMonths;
+
+                                // Update the PlanAmount input value
+                                planAmountInput.value = calculatedAmount.toFixed(2); // Round to 2 decimal places
+
+
+                            });
+                        </script>
 
                         <div id="errorMsg"></div>
 
@@ -162,24 +180,21 @@ $clientData = getClientDataById($connect, $clientID);
 
             <script src="https://www.paypal.com/sdk/js?client-id=<?= CLIENT_ID; ?>&currency=USD&disable-funding=credit,card"></script>
             <script>
-                var amount = $('#PlanAmount').val();
-                var startDate = $('#startDate').val();
-                var paymentDate = $('#paymentDate').val();
-                var selectedMonths = $('#selectedMonths').val();
-                const planId = $('#Plan').data('planid');
-                const changing = false;
-                const changingNow = false;
-                amount = amount * selectedMonths;
-
+                let amount, startDate, paymentDate, selectedMonths, planId, changing, changingNow;
 
                 paypal.Buttons({
                     createOrder: function(data, actions) {
-
+                        amount = $('#PlanAmount').val();
+                        startDate = $('#startDate').val();
+                        paymentDate = $('#paymentDate').val();
+                        selectedMonths = $('#selectedMonths').val();
+                        planId = $('#Plan').data('planid');
+                        changing = false;
+                        changingNow = false;
                         if (!amount) {
                             displayMessage("errorMsg", "Please enter amount to be paid before proceeding.", true);
                             return actions.reject();
                         }
-
 
                         // Parsing the input value to a floating-point number
                         const initialCurrency = '<?= $initialCurrency; ?>';
@@ -243,21 +258,19 @@ $clientData = getClientDataById($connect, $clientID);
                                 },
                                 success: function(response) {
                                     // Handle the response from the server
-                                    console.log(response);
-                                    if (response.paymentInserted && response.planUpdated && response.statusChanged && response.transactionSet && response.invoiceAdded && response.productsAdded) {
-                                        // Payment was successful, redirect or perform further actions
-                                        displayMessage("errorMsg", "Successfully paid", false);
-                                        setTimeout(() => {
-                                            window.location.href = 'paypal.php?success=paymentsuccess';
-                                        }, 1000);
+                                    console.log(response ? true : false);
 
+                                    // Check if all properties are true
+                                    if (response) {
+                                        // Payment was successful
+                                        window.location.href = 'paymentSuccess.php?success=paymentsuccess';
                                     } else {
                                         // Payment failed, handle accordingly
-                                        displayMessage("errorMsg", "Failed", true);
-                                        console.log(response);
-                                        // window.location.href = 'paypal.php?error=payment error';
+                                        displayMessage("errorMsg", "Something went wrong", true);
+                                        window.location.href = 'paypal.php?error=payment error';
                                     }
                                 },
+
                                 error: function() {
                                     // Handle errors or server-side issues
                                     // alert('Error processing payment.');

@@ -21,7 +21,8 @@ if ($postData) {
     if (!empty($email) && !empty($password)) {
 
         $settings = get_Settings($connect);
-        $CurrentTimezone = $settings[0]["TimeZone"];
+        $CurrentTimezone = !$settings[0]['TimeZone'] === null ? $settings[0]["TimeZone"] : 'Africa/Nairobi';
+
 
         $hashedPassword = $password;
         // echo $hashedPassword;

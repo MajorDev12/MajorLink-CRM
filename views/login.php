@@ -1,14 +1,10 @@
 <?php session_start(); ?>
 <?php
-require_once  '../modals/adminandclientsetup.php';
 require_once  '../database/pdo.php';
-require_once "../modals/setup_mod.php";
 require_once "style.config.php";
 require_once "header.php";
 
 $connect = connectToDatabase($host, $dbname, $username, $password);
-
-$country = get_setup($connect);
 ?>
 <style>
     body {
@@ -22,10 +18,6 @@ $country = get_setup($connect);
         height: 100vh;
     }
 
-    #spinner {
-        display: none;
-    }
-
     .login-box {
         background-color: var(--light);
         padding: 20px;
@@ -36,6 +28,10 @@ $country = get_setup($connect);
     .companyName {
         color: var(--blue);
         font-weight: 700;
+    }
+
+    #spinner {
+        z-index: 3000;
     }
 </style>
 
@@ -109,7 +105,6 @@ $country = get_setup($connect);
         // Get input values
         var email = document.getElementById('inputEmail').value;
         var password = document.getElementById('inputPassword').value;
-        var country = <?php echo json_encode($country); ?>;
 
         if (!email || !password) {
             displayMessage("errorMsg", "Please Fill in all fields.", true);
@@ -128,7 +123,17 @@ $country = get_setup($connect);
             displayMessage("errorMsg", "Password must be at least 6 characters long.", true);
             return;
         }
-        loader.style.display = "flex";
+        showSpinner();
+        fetch('../modals/adminandclientsetup.php', {
+                method: 'GET',
+                // Add other fetch options as needed
+            })
+            .then(response => {
+                // Handle the response
+            })
+            .catch(error => {
+                // Handle errors
+            });
         // Send data through Fetch API to PHP for logic
         fetch('../controllers/login_contr.php', {
                 method: 'POST',
@@ -145,35 +150,29 @@ $country = get_setup($connect);
                 if (data.success) {
                     // Handle the response from the server
                     if (data.role === 'admin') {
-                        if (!country) {
-                            displayMessage("errorMsg", `${data.message}`, false);
-                            window.location.href = 'index.php';
-                        } else {
-                            setTimeout(() => {
-                                window.location.href = 'setup.php';
-                            }, 2000);
-                        }
+                        displayMessage("errorMsg", `${data.message}`, false);
+                        window.location.href = 'index.php';
                     }
                     if (data.role === 'client') {
                         displayMessage("errorMsg", `${data.message}`, false);
                         window.location.href = '../user/index.php';
                     }
-                    if (data.role === 'test_client') {
-                        if (!country) {
-                            displayMessage("errorMsg", `${data.message}`, false);
-                            window.location.href = 'index.php';
-                        } else {
-                            setTimeout(() => {
-                                window.location.href = 'setup.php';
-                            }, 2000);
-                        }
-                    }
+                    // if (data.role === 'test_client') {
+                    //     if (!country) {
+                    //         displayMessage("errorMsg", `${data.message}`, false);
+                    //         window.location.href = 'index.php';
+                    //     } else {
+                    //         setTimeout(() => {
+                    //             window.location.href = 'setup.php';
+                    //         }, 2000);
+                    //     }
+                    // }
                     if (data.role === 'undefined') {
-                        loader.style.display = "none";
+                        hideSpinner();
                         displayMessage("errorMsg", "Invalid email or password", true);
                     }
                     if (data.role === 'error') {
-                        loader.style.display = "none";
+                        hideSpinner();
                         displayMessage("errorMsg", "something went wrong", true);
                     }
                 }

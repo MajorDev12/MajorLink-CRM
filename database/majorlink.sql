@@ -173,7 +173,7 @@ CREATE TABLE payments (
     InvoiceNumber VARCHAR(50) NULL,
     PaymentAmount DECIMAL(10, 2) NOT NULL,
     PaymentStatus VARCHAR(50),
-    PaymentDate DATE,
+    PaymentDate DATETIME,
     PaymentOptionID INT,
     InstallationFees INT,
     -- other payment-related attributes

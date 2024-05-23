@@ -76,9 +76,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
 
 
-
         // If there are no errors, insert data
         if (empty($errors)) {
+
             if ($activeStatus) {
                 $paymentSuccess = insertPaymentData($clientId, $PlanID, $invoiceNumber, $PlanAmount, $paymentStatus, $paymentDate, $paymentMethodID, $InstallationFees, $connect);
                 $updatedPlan = updatePlan($clientId, $PlanID, $expireDate, $last_paymentDate, $connect);
@@ -99,7 +99,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         }
 
 
-
+        exit();
 
         // Send a response back to the client
         $response = [

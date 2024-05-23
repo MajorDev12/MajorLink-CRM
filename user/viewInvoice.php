@@ -20,6 +20,7 @@ $initialCurrency = $settings[0]["CurrencyCode"];
 $initialSymbol = $settings[0]["CurrencySymbol"];
 ?>
 
+<?php require_once "../views/style.config.php"; ?>
 <?php require_once "../views/header.php"; ?>
 
 <style>
@@ -89,7 +90,7 @@ $initialSymbol = $settings[0]["CurrencySymbol"];
     }
 
     .invoiceContainer .header h2 {
-        color: var(--light);
+        color: #F9F9F9;
         font-size: 2.5em;
         display: flex;
         justify-content: space-around;
@@ -98,7 +99,7 @@ $initialSymbol = $settings[0]["CurrencySymbol"];
     }
 
     .invoiceContainer .header p {
-        color: var(--grey);
+        color: #eee;
         font-size: 12px;
         line-height: 7px;
     }
@@ -117,12 +118,12 @@ $initialSymbol = $settings[0]["CurrencySymbol"];
     }
 
     .invoiceContainer .secondContainer p {
-        color: var(--dark-grey);
+        color: #AAAAAA;
         font-size: 14px;
     }
 
     .invoiceContainer .secondContainer h5 {
-        color: var(--dark);
+        color: #342E37;
         font-size: 16px;
     }
 
@@ -141,9 +142,7 @@ $initialSymbol = $settings[0]["CurrencySymbol"];
         font-weight: 500;
     }
 
-    .invoiceContainer .secondContainer .topTotal {
-        color: var(--blue);
-    }
+
 
     .invoiceContainer table {
         margin-top: 10%;
@@ -165,8 +164,16 @@ $initialSymbol = $settings[0]["CurrencySymbol"];
         background-color: white;
     }
 
+    .invoiceContainer .table tbody tr td {
+        color: #342E37;
+    }
+
     .invoiceContainer .table tbody tr:hover {
         background-color: white;
+    }
+
+    .invoiceContainer .secondContainer .topTotal {
+        color: var(--blue);
     }
 
     .invoiceContainer .table tr .Subtotal,
@@ -178,7 +185,7 @@ $initialSymbol = $settings[0]["CurrencySymbol"];
         width: 80%;
     }
 
-    .invoiceContainer .table .totalPrice {
+    .invoiceContainer .table tr .totalPrice {
         color: var(--blue);
         font-weight: 600;
     }
@@ -193,6 +200,13 @@ $initialSymbol = $settings[0]["CurrencySymbol"];
     .actions a {
         margin-left: 5px;
         background-color: transparent;
+        border: 1px solid var(--grey);
+        color: var(--dark) !important;
+    }
+
+    .actions a:hover {
+        background-color: var(--blue);
+        color: white;
     }
 
     .invoiceContainer footer {

@@ -570,7 +570,10 @@ $symbol = $settings[0]["CurrencySymbol"];
                                         $allTotalSubAreas += $IncomeSubArea['totalIncome'];
                                     }
                                 }
+
+                                var_dump($allSubAreas);
                                 ?>
+
                                 <h4>Income Summary for All Sub Areas</h4>
                                 <p class="text">Total Income: <span class="number"><?= $symbol; ?> <?= number_format($allTotalSubAreas, 2); ?></span></p>
                                 <canvas id="allsubarea" class="canvasChart"></canvas>
@@ -1750,7 +1753,7 @@ $symbol = $settings[0]["CurrencySymbol"];
                 var allSubAreas = <?php echo json_encode($allSubAreas); ?>;
                 var allSubAreaIncomes = <?php echo json_encode($allSubAreaIncomes); ?>;
                 var combinedLabels = [];
-                for (var i = 0; i < allAreas.length; i++) {
+                for (var i = 0; i < allSubAreas.length; i++) {
                     combinedLabels.push([allSubAreas[i], numberFormatJS(allSubAreaIncomes[i])]); // Push an array containing area name and income
                 }
 

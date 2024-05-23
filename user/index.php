@@ -16,7 +16,6 @@ require_once  '../modals/getTime_mod.php';
 $connect = connectToDatabase($host, $dbname, $username, $password);
 $clientID = $_SESSION['clientID'];
 $clientData = getClientDataById($connect, $clientID);
-$greeting = getGreeting();
 ?>
 
 <?php require_once "../views/style.config.php"; ?>
@@ -169,7 +168,6 @@ $greeting = getGreeting();
         <div class="head-title">
             <div class="left">
                 <h1><?= $greeting ?>, <?= $_SESSION['FirstName']; ?></h1>
-                <!-- <p style="color: var(--dark);">You are running Low!!!</p> -->
                 <ul class="breadcrumb">
                     <li>
                         <a href="viewClient.php">Dashboard</a>

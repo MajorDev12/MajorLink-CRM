@@ -107,10 +107,12 @@ if (isset($_POST["ClientId"])) {
             sendSuccessMessage($clientId, $time, $connect);
             sendTextMessage($Clientnumber, $PlanVolume, $expireDate);
         } else {
+            $expireDate = null;
+            $last_paymentDate = null;
             $paymentSuccess = insertPaymentData($clientId, $PlanID, $invoiceNumber, $PlanAmount, $paymentStatus, $paymentDate, $paymentMethodID, $InstallationFees, $connect);
             $updatedPlan = updatePlan($clientId, $PlanID, $expireDate, $last_paymentDate, $connect);
-            $statusChanged = changeStatus($clientId, $activeStatus, $connect);
             $success = 'Payment Added Successfuly';
+            $statusChanged = false;
         }
     } else {
         // If there are errors, construct an error message

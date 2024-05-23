@@ -43,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $details = $_POST['details'];
         $order = $_POST['paymentData'];
         $PlanID = isset($_POST['planID']) ? $_POST['planID'] : null;
-        $PaidPlanID = $_POST['paidPlanID'];
+        $PaidPlanID = isset($_POST['paidPlanID']) ? $_POST['paidPlanID'] : null;
         $paidMonths = intval($_POST['paidMonths']);
         $changing = ($_POST['changing'] === 'true') ? true : false;
         $changingNow = ($_POST['changingNow'] === 'true') ? true : false;
@@ -55,6 +55,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $tax = 0;
         $taxSymbol = $settings[0]["CurrencySymbol"];
         $subtotal = $amount * $paidMonths;
+        if ($taxSymbol === '%') {
+            // If tax is a percentage
+            $taxAmount = $subtotal * $tax;
+            $total = $subtotal + $taxAmount;
+        } else {
+            // If tax is a fixed amount
+            $total = $subtotal + $tax;
+        }
+
         $invoiceProducts = [];
 
         $clientData = getClientDataById($connect, $ClientID);
@@ -148,7 +157,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 
                 // Call createAndSaveInvoice function with the generated invoice number
-                $invoiceAdded = addInvoice($connect, $ClientID, $invoiceNumber, $subtotal, $createdDate, $startDate, $expireDate, $paymentStatus, $taxSymbol, $tax);
+                $invoiceAdded = addInvoice($connect, $ClientID, $invoiceNumber, $total, $createdDate, $startDate, $expireDate, $paymentStatus, $taxSymbol, $tax);
                 $productsAdded = saveInvoiceProducts($connect, $invoiceNumber, $subtotal, $invoiceProducts);
                 $notified = sendSuccessMessage($ClientID, $createdDate, $connect);
                 $smsSent = sendTextMessage($Clientnumber, $planVolume, $expireDate);
@@ -156,12 +165,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 if ($changingNow) {
                     $immediateChanged = updateClientDataForImmediateChange($ClientID, $PaidPlanID, $createdDate, $expireDate, $connect);
-                    $paymentInserted = insertPaymentData($ClientID, $PlanID, $invoiceNumber, $amount, $paymentStatus, $createdDate, $paymentMethodID, $InstallationFees, $connect);
+                    $paymentInserted = insertPaymentData($ClientID, $PaidPlanID, $invoiceNumber, $amount, $paymentStatus, $createdDate, $paymentMethodID, $InstallationFees, $connect);
                     $statusChanged = changeStatus($ClientID, $activeStatus, $connect);
                     $transactionSet = setPaypalTransaction($connect, $ClientID, $customer_name, $customer_email, $amount, $paidCurrency, $createdDate, $payment_id, $payment_status, $order_id);
 
                     // Call createAndSaveInvoice function with the generated invoice number
-                    $invoiceAdded = addInvoice($connect, $ClientID, $invoiceNumber, $subtotal, $createdDate, $startDate, $expireDate, $paymentStatus, $taxSymbol, $tax);
+                    $invoiceAdded = addInvoice($connect, $ClientID, $invoiceNumber, $total, $createdDate, $startDate, $expireDate, $paymentStatus, $taxSymbol, $tax);
                     $productsAdded = saveInvoiceProducts($connect, $invoiceNumber, $subtotal, $invoiceProducts);
                     $notified = sendSuccessMessage($ClientID, $createdDate, $connect);
                     $changedNow = sendSuccessPlanChangeMessage($ClientID, $createdDate, $connect);
@@ -176,7 +185,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 
                     // Call createAndSaveInvoice function with the generated invoice number
-                    $invoiceAdded = addInvoice($connect, $ClientID, $invoiceNumber, $subtotal, $createdDate, $startDate, $expireDate, $paymentStatus, $taxSymbol, $tax);
+                    $invoiceAdded = addInvoice($connect, $ClientID, $invoiceNumber, $total, $createdDate, $startDate, $expireDate, $paymentStatus, $taxSymbol, $tax);
                     $productsAdded = saveInvoiceProducts($connect, $invoiceNumber, $subtotal, $invoiceProducts);
                     $notified = sendSuccessMessage($ClientID, $createdDate, $connect);
                     $changedLater = sendSuccessPlanChangeLaterMessage($ClientID, $createdDate, $startDate, $connect);
@@ -194,8 +203,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'transactionSet' => $transactionSet ? true : false,
                 'invoiceAdded' => $invoiceAdded ? true : false,
                 'productsAdded' => $productsAdded ? true : false,
-                'notified' => $notified ? true : false,
-                'smsSent' => $smsSent ? true : false
             ];
 
             echo json_encode($response);

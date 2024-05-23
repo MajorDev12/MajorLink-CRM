@@ -1,7 +1,7 @@
 <section id="sidebar">
     <a href="#" class="brand">
-        <i class='bx bxs-smile'></i>
-        <span class="text">MajorLink</span>
+        <img src="../img/<?= $companyData[0]["LogoURL"] ?>" class="logoImg" alt="" style="width: 50px; height: 50px;">
+        <span class="text"><?= $companyData[0]["CompanyName"] ?></span>
     </a>
 
 

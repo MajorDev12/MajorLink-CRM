@@ -147,7 +147,7 @@ For security reason, Please change your password after login.
 $CompanyName = 'MajorLink';
 $Email = 'majorlink@gmail.com';
 $PhoneNumber = '( 254 718-317-726)';
-$Country = null;
+$Country = 'Kenya';
 $Address = 'Nakuru, Pipeline';
 $Website = 'www.MajorLink.com';
 $Zipcode = '20100';
@@ -155,7 +155,7 @@ $City = 'Nakuru City';
 $TimeZone = 'Africa/Nairobi';
 $currencyName = 'Kenyan Shillings';
 $currencySymbol = 'Sh';
-$currencyCode = 'KSH';
+$currencyCode = 'KES';
 $PhoneCode = '+254';
 $LogoURL = 'company_logo.png';
 
@@ -209,6 +209,19 @@ if (!file_exists($flagFilePath)) {
     insertPlanData($planName1, $planVolume1, $planPrice1, $connect);
     insertPlanData($planName2, $planVolume2, $planPrice2, $connect);
     insertPlanData($planName3, $planVolume3, $planPrice3, $connect);
+
+    insertArea("Pipeline", $connect);
+    insertSubarea("Sawa", "1", $connect);
+    insertSubarea("Barnabas", "1", $connect);
+    insertSubarea("Pipes", "1", $connect);
+    insertArea("Free Area", $connect);
+    insertSubarea("Market", "2", $connect);
+    insertSubarea("Oloika Country", "2", $connect);
+    insertSubarea("Shinners", "2", $connect);
+    insertArea("Sita", $connect);
+    insertSubarea("Kabatini Road", "3", $connect);
+    insertSubarea("Mawanga", "3", $connect);
+    insertSubarea("Gingalili Village", "3", $connect);
     // Create the flag file to indicate that the script has been executed
     file_put_contents($flagFilePath, '');
 
@@ -425,4 +438,38 @@ function insertPlanData($planName, $planVolume, $planPrice, $connect)
         echo "Error: " . $e->getMessage();
         return false;
     }
+}
+
+
+function insertArea($areaname, $connect)
+{
+    try {
+        $query = "INSERT INTO areas (AreaName) VALUES (:areaname)";
+        $statement = $connect->prepare($query);
+        $statement->bindParam(':areaname', $areaname, PDO::PARAM_STR);
+        $statement->execute();
+        return true;
+    } catch (PDOException $e) {
+        // Handle any exceptions or errors that occur during the query execution
+        // For example, log the error, display an error message, or redirect to an error page
+        echo "Error: " . $e->getMessage();
+        return false;
+    }
+}
+
+
+
+function insertSubarea($subArea, $areaId, $connect)
+{
+    $data = array(
+        ':subArea' => $subArea,
+        ':areaId' => $areaId
+    );
+
+    $query = "INSERT INTO subareas (SubAreaName, AreaID) VALUES (:subArea, :areaId)";
+
+    $statement = $connect->prepare($query);
+
+    // Execute the prepared statement with the provided data
+    $statement->execute($data);
 }

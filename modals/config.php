@@ -32,8 +32,8 @@ define('AUTH_TOKEN', 'd807d84c6e0a0a6da6c73a321919d381');
 
 
 // INFOBIP DETAILS
-define('INFOBIP_BASE_URL', 'https://1v3r9d.api.infobip.com');
-define('INFOBIP_API_KEY', 'c9a5fbb722cd3ccb6bfed037c0450e5c-b81eecc9-29d3-4c1e-8568-d4ccdf986f67');
+define('INFOBIP_BASE_URL', 'https://8g634r.api.infobip.com');
+define('INFOBIP_API_KEY', 'e839e1060a8d9d4ab1bcd496a1507a5e-2d1e0c7c-ff7d-4c06-94eb-242a637cff8b');
 
 
 // NEXMO DETAILS

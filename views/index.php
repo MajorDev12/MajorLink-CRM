@@ -69,10 +69,8 @@ $CurrencyCode = $settings[0]["CurrencyCode"];
 	<!-- MAIN -->
 	<main>
 		<div class="head-title">
-
 			<div class="left">
-				<h1>Welcome, <?php echo $_SESSION['Username']; ?></h1>
-
+				<h1><?= $greeting; ?>, <?= $_SESSION['Username']; ?></h1>
 				<ul class="breadcrumb">
 					<li>
 						<a href="#">Dashboard</a>
@@ -83,11 +81,6 @@ $CurrencyCode = $settings[0]["CurrencyCode"];
 					</li>
 				</ul>
 			</div>
-
-			<a href="#" class="btn-download">
-				<i class='bx bxs-cloud-download'></i>
-				<span class="text">Download PDF</span>
-			</a>
 		</div>
 
 		<!-- content-container -->

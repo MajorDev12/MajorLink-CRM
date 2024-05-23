@@ -106,3 +106,39 @@ function getAllPayments($connect)
         return array("error" => "Error: " . $e->getMessage()); // Return an array with an error message
     }
 }
+
+
+
+
+
+
+
+function getLastPayment($connect, $clientId)
+{
+    try {
+        $sql = "SELECT 
+            payments.PaymentAmount,
+            payments.PaymentStatus,
+            payments.InvoiceNumber,
+            payments.PaymentDate,
+            paymentoptions.PaymentOptionName,
+            plans.Name,
+            plans.Volume,
+            plans.Price 
+        FROM payments
+        LEFT JOIN paymentoptions ON payments.PaymentOptionID = paymentoptions.PaymentOptionID
+        LEFT JOIN plans ON payments.PlanID = plans.PlanID 
+        WHERE payments.ClientID = :clientId
+        ORDER BY payments.PaymentDate DESC
+        LIMIT 1";
+
+        $statement = $connect->prepare($sql);
+        $statement->bindParam(":clientId", $clientId, PDO::PARAM_INT);
+        $statement->execute();
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+
+        return $result;
+    } catch (Exception $e) {
+        return "Error: " . $e->getMessage();
+    }
+}

@@ -24,7 +24,7 @@
     <li>
       <div class="iocn-link">
         <a href="#">
-          <i class='bx bx-collection'></i>
+          <i class='bx bx-user-plus'></i>
           <span class="link_name">Customer</span>
         </a>
         <i class='bx bxs-chevron-down arrow'></i>
@@ -39,7 +39,7 @@
     <li>
       <div class="iocn-link">
         <a href="#">
-          <i class='bx bx-book-alt'></i>
+          <i class='bx bx-edit'></i>
           <span class="link_name">Setup</span>
         </a>
         <i class='bx bxs-chevron-down arrow'></i>
@@ -59,7 +59,7 @@
     <li>
       <div class="iocn-link">
         <a href="#Billing">
-          <i class='bx bx-pie-chart-alt-2'></i>
+          <i class='bx bx-credit-card-front'></i>
           <span class="link_name">Billing</span>
         </a>
         <i class='bx bxs-chevron-down arrow'></i>
@@ -77,7 +77,7 @@
     <li>
       <div class="iocn-link">
         <a href="#">
-          <i class='bx bx-plug'></i>
+          <i class='bx bxs-report'></i>
           <span class="link_name">Reports</span>
         </a>
         <i class='bx bxs-chevron-down arrow'></i>
@@ -93,7 +93,7 @@
     <li>
       <div class="iocn-link">
         <a href="#">
-          <i class='bx bx-plug'></i>
+          <i class='bx bx-bell'></i>
           <span class="link_name">Notifications</span>
         </a>
         <i class='bx bxs-chevron-down arrow'></i>
@@ -110,7 +110,7 @@
     <li>
       <div class="iocn-link">
         <a href="#">
-          <i class='bx bx-plug'></i>
+          <i class='bx bx-cog'></i>
           <span class="link_name">Management</span>
         </a>
         <i class='bx bxs-chevron-down arrow'></i>
@@ -119,7 +119,6 @@
         <li><a class="link_name" href="#">Management</a></li>
         <li><a href="Settings.php" data-target="Settings">Settings</a></li>
         <li><a href="profile.php" data-target="systemlogs">Profile</a></li>
-        <li><a href="plugins.php" data-target="email">Plugins</a></li>
       </ul>
     </li>
 

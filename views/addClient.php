@@ -1,8 +1,8 @@
-<?php require_once "../controllers/session_Config.php";
+<?php //require_once "../controllers/session_Config.php"; 
 ?>
 <?php
 require_once  '../database/pdo.php';
-require_once  '../controllers/addarea_contr.php';
+require_once  '../controllers/addArea_contr.php';
 require_once  '../controllers/addPlan_contr.php';
 require_once  '../controllers/addProduct_contr.php';
 require_once  '../modals/addProduct_mod.php';
@@ -66,10 +66,6 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
         </ul>
       </div>
 
-      <a href="#" class="btn-download">
-        <i class='bx bxs-cloud-download'></i>
-        <span class="text">Download PDF</span>
-      </a>
     </div>
 
 
@@ -345,7 +341,7 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
           var PaymentOptionID = document.getElementById('PaymentOptionID').value;
           var JoinedDate = document.getElementById('JoinedDate').value;
           var paymentError = document.getElementById('paymentError');
-          var loader = document.getElementById('loader');
+          var loader = document.getElementById('spinner');
           let error = false;
 
 
@@ -537,7 +533,7 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
 
           if (!error) {
 
-            loader.style.display = 'flex';
+            showSpinner();
 
             var formData = new FormData();
             formData.append("Fname", Fname);
@@ -572,20 +568,20 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
               .then(response => response.json())
               .then(data => {
                 if (data.success) {
-                  loader.style.display = 'none';
+                  hideSpinner();
                   displayMessage("message", data.message, false);
                   localStorage.setItem('AddNewClientToast', 'true');
                   setTimeout(() => {
                     location.reload();
                   }, 3000);
                 } else {
-                  loader.style.display = 'none';
+                  hideSpinner();
                   displayMessage("message", data.message, true);
                 }
               })
               .catch(error => {
                 console.error('Error:', error);
-                loader.style.display = 'none';
+                hideSpinner();
                 displayMessage("message", "Network Error", true);
               });
 
@@ -612,7 +608,6 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
 
         document.getElementById('area').addEventListener('change', function() {
           var areaId = this.value;
-          console.log(areaId)
           var subAreaSelect = document.getElementById('subArea');
 
           // Clear existing options
@@ -630,10 +625,8 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
               .then(response => response.json())
               .then(data => {
                 if (data.subareas) {
-                  console.log("it returns")
                   // Populate the sub-area dropdown with fetched data
                   data.subareas.forEach(subarea => {
-                    console.log("it returns")
                     var option = document.createElement('option');
                     option.value = subarea.SubAreaID;
                     option.textContent = subarea.SubAreaName;

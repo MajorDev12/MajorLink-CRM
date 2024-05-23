@@ -222,7 +222,7 @@ $payments = getAllPayments($connect);
                                 <?php endforeach; ?>
                             <?php else : ?>
                                 <tr>
-                                    <td>Something went wrong</td>
+                                    <td>No Data Yet</td>
                                 </tr>
                             <?php endif; ?>
                         </tbody>

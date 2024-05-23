@@ -5,7 +5,7 @@ Purpose of the Document
 The primary purpose of this document is to provide a detailed reference guide for users and administrators of the ISP Accounting and Billing System. It outlines the system's architecture, user roles, features, and functionalities, offering clear instructions on its usage and administration. Whether you are a client seeking information on billing procedures or an administrator responsible for managing subscriptions and client interactions, this document aims to empower you with the knowledge needed to navigate and make the most of the system.
 
 Overview of the ISP Accounting and Billing System
-The ISP Accounting and Billing System is designed to streamline and automate the operational aspects of Internet Service Providers. Tailored for both desktop and mobile platforms, it offers a user-friendly interface that simplifies billing processes, enhances client management, and provides administrators with powerful tools for overseeing the entire ISP ecosystem.
+The ISP Accounting and Billing System is designed to streamline and automate the operational aspects of Internet Service Providers. It offers a user-friendly interface that simplifies billing processes, enhances client management, and provides administrators with powerful tools for overseeing the entire ISP ecosystem.
 
 Key Features:
 

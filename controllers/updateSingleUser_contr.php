@@ -29,6 +29,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["clientId"])) {
     $errors = array();
 
 
+
+
     // Assuming the variables are already defined
 
     if (!preg_match('/^[a-zA-Z0-9 ]+$/', $firstName)) {
@@ -77,7 +79,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["clientId"])) {
 
 
 
-    if (trim($latitude) !== "") {
+    if (trim($latitude) !== 'null') {
         // Regular expression for validating latitude
         $latitudeRegex = '/^-?\d+(\.\d+)?$/';
         if (!preg_match($latitudeRegex, $latitude)) {
@@ -85,11 +87,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["clientId"])) {
         }
     }
 
-    if (trim($longitude) !== "") {
+    if (trim($longitude) !== 'null') {
         // Regular expression for validating latitude
         $longitudeRegex = '/^-?\d+(\.\d+)?$/';
         if (!preg_match($longitudeRegex, $longitude)) {
-            $errors[] = "Invalid latitude format";
+            $errors[] = "Invalid Longitude format";
         }
     }
 

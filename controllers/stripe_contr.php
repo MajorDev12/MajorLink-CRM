@@ -34,6 +34,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $PlanID = inputValidation($request->PlanID);
     $startDate = inputValidation($request->startDate);
     $selectedMonths = inputValidation($request->selectedMonths);
+    $tax = 0;
+
+
+    if ($currencySymbol === '%') {
+        // If tax is a percentage
+        $taxAmount = $PlanAmount * $tax;
+        $total = $PlanAmount + $taxAmount;
+    } else {
+        // If tax is a fixed amount
+        $total = $PlanAmount + $tax;
+    }
+
+
+
 
     // Set the value in the session
     $_SESSION["selectedMonths"] = $selectedMonths;
@@ -41,7 +55,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $_SESSION["paymentDate"] = $paymentDate;
     $_SESSION["currencySymbol"] = $currencySymbol;
 
-    if (empty($PlanAmount)) {
+
+
+    if (empty($total)) {
         $response = array(
             'error' => 'Amount Cannot Be Empty'
         );
@@ -72,23 +88,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Check if the response is valid
             if (isset($exchangeRates['rates']['USD'])) {
                 // Convert the amount to USD
-                $amountInUSD = $PlanAmount * $exchangeRates['rates']['USD'];
+                $amountInUSD = $total * $exchangeRates['rates']['USD'];
 
                 // Set the currency to USD
                 $currency = 'usd';
             } else {
                 // Handle invalid response
                 // Log an error or set a default conversion
-                $amountInUSD = $PlanAmount;
+                $amountInUSD = $total;
             }
         } else {
             // Handle API request error
             // Log an error or set a default conversion
-            $amountInUSD = $PlanAmount;
+            $amountInUSD = $total;
         }
     } else {
         // If the currency is in the list, keep the amount and currency as is
-        $amountInUSD = $PlanAmount;
+        $amountInUSD = $total;
     }
 
 
@@ -100,7 +116,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 
     // Include the Stripe PHP library 
-    require_once '../apis/stripe-php/init.php';
+    require_once '../includes/stripe-php/init.php';
 
     // Set API key 
     $stripe = new \Stripe\StripeClient(STRIPE_API_KEY);

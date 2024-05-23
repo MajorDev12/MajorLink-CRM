@@ -384,19 +384,15 @@ $PaymentMethods = getPaymentMethods($connect);
                                 },
                                 success: function(response) {
                                     // Handle the response from the server
-                                    console.log(response);
-                                    if (response.paymentInserted && response.planUpdated && response.statusChanged && response.transactionSet && response.invoiceAdded && response.productsAdded) {
-                                        // Payment was successful, redirect or perform further actions
-                                        displayMessage("errorMsg", "Successfully paid", false);
-                                        setTimeout(() => {
-                                            window.location.href = 'paypal.php?success=paymentsuccess';
-                                        }, 1000);
-
+                                    if (response) {
+                                        // Payment was successful
+                                        displayMessage("errorMsg", "Success!!! your payment went through", false);
+                                        window.location.href = 'paymentSuccess.php';
+                                        window.location.href = `viewInvoice.php?i=${invoiceId}&c=${clientId}`;
                                     } else {
                                         // Payment failed, handle accordingly
                                         displayMessage("errorMsg", "Failed", true);
-                                        console.log(response);
-                                        // window.location.href = 'paypal.php?error=payment error';
+                                        window.location.href = 'paypal.php?error=payment error';
                                     }
                                 },
                                 error: function() {
@@ -588,7 +584,6 @@ $PaymentMethods = getPaymentMethods($connect);
                     currency = document.querySelector("#currencySymbol").value;
                     PlanAmount = document.getElementById("Amount").value;
                     selectedMonths = document.getElementById("selectedMonths").value;
-                    changing = true;
                     changingNow = true;
 
 
@@ -633,7 +628,6 @@ $PaymentMethods = getPaymentMethods($connect);
                     currency = document.querySelector("#currencySymbol").value;
                     PlanAmount = document.getElementById("Amount").value;
                     selectedMonths = document.getElementById("selectedMonths").value;
-                    changing = true;
                     changingNow = false;
 
 

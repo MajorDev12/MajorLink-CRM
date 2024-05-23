@@ -2,7 +2,7 @@
 
 <?php
 require_once  '../database/pdo.php';
-require_once  '../controllers/addarea_contr.php';
+require_once  '../controllers/addArea_contr.php';
 require_once  '../modals/addArea_mod.php';
 
 $connect = connectToDatabase($host, $dbname, $username, $password);

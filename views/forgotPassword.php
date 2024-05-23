@@ -1,12 +1,10 @@
 <?php
 require_once  '../database/pdo.php';
-require_once "../modals/setup_mod.php";
 require_once "style.config.php";
 require_once "header.php";
 
 $connect = connectToDatabase($host, $dbname, $username, $password);
 
-$country = get_setup($connect);
 ?>
 <style>
     body {
@@ -94,7 +92,7 @@ $country = get_setup($connect);
 
 
 
-        document.getElementById('spinner').style.display = 'flex';
+        showSpinner();
 
         var formData = new FormData();
         formData.append("searchEmail", searchEmail);
@@ -106,7 +104,7 @@ $country = get_setup($connect);
             .then(data => {
                 if (data.success) {
                     // Handle the response from the server
-                    loader.style.display = "flex";
+                    showSpinner();
                     window.location.href = `sendPassword.php`;
                 } else {
                     window.location.href = `sendPassword.php?e=none`;

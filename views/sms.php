@@ -8,7 +8,8 @@ require_once  '../modals/getSms_mod.php';
 require_once  '../modals/getClientsNames_mod.php';
 $connect = connectToDatabase($host, $dbname, $username, $password);
 ?>
-
+<?php require_once "style.config.php"; ?>
+<?php require_once "header.php"; ?>
 <style>
     #text-input {
         margin-top: 10px;
@@ -34,8 +35,8 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
         display: none;
     }
 </style>
-<?php require_once "style.config.php"; ?>
-<?php require_once "header.php"; ?>
+
+
 
 <!-- SIDEBAR -->
 <?php require_once "side_nav.php"; ?>
@@ -87,9 +88,6 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
                             </select>
                         </div>
                     </div>
-
-
-
                 </div>
 
 
@@ -143,16 +141,12 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
             <div class="content">
                 <h3 class="mb-5">Single User</h3>
                 <div class="row">
-
                     <div class="col-md-4">
                         <label for="customer">Customer</label>
                         <select id="customer" class="form-select">
                             <option value="" selected hidden>--Search--</option>
                         </select>
                     </div>
-
-
-
 
                 </div>
                 <!-- Textarea -->
@@ -168,6 +162,10 @@ $connect = connectToDatabase($host, $dbname, $username, $password);
             </div>
 
             <?php require_once "footer.php"; ?>
+
+
+
+
 
             <script>
                 var recipientSelect = document.querySelector("#recipientSelect");

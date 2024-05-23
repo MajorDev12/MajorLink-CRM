@@ -90,9 +90,8 @@ if (!$changing) {
     $expireDate = calculateExpireDate($initialcreatedDate, $selectedMonths, $timezone);
 } elseif ($changing && !$changingNow) {
     // Calculate the new expire date based on the modified expire date
-    $expireDate = calculateExpireDate($expireDate, $selectedMonths, $timezone);
+    $expireDate = calculateExpireDate($initialExpireDate, $selectedMonths, $timezone);
 }
-
 
 
 
@@ -153,7 +152,7 @@ if (!empty($_GET['session_id'])) {
         $statusMsg = 'Your Payment has been Successful!';
     } else {
         // Include the Stripe PHP library 
-        require_once '../apis/stripe-php/init.php';
+        require_once '../includes/stripe-php/init.php';
 
         // Set API key 
         $stripe = new \Stripe\StripeClient(STRIPE_API_KEY);
@@ -485,167 +484,15 @@ function schedulePlanChange($ClientID, $paidPlanID, $initialExpireDate, $connect
 
 ?>
 
+<?php
+
+// unset($_SESSION['selectedMonths']);
+// unset($_SESSION['startDate']);
+// unset($_SESSION['paymentDate']);
+// unset($_SESSION['currencySymbol']);
+
+var_dump($_SESSION['currencySymbol']);
 
 
-
-
-
-
-
-
-
-<style>
-    .invoice {
-        width: 100%;
-        height: 100%;
-        margin-top: 5%;
-        background-color: var(--light);
-        padding: 20px;
-    }
-
-    .invoice .row {
-        display: flex;
-        justify-content: center;
-        text-align: start;
-    }
-
-    .invoice .row div {
-        margin-left: 10%;
-    }
-
-    .invoice .table thead th,
-    .invoice .table tbody tr,
-    .invoice .table tbody td {
-        background-color: var(--light);
-    }
-
-    .invoice .table tbody .Subtotal,
-    .invoice .table tbody .Tax,
-    .invoice .table tbody .Total {
-        font-weight: 700;
-        color: var(--dark-grey);
-    }
-
-    .invoice .table tbody .Total {
-        color: var(--dark);
-    }
-
-    .invoice .table tbody .totalPrice {
-        font-weight: 700;
-        font-size: 1.3em;
-    }
-
-    .space {
-        border: none;
-    }
-
-    .status {
-        background-color: var(--green);
-        color: var(--light-green);
-        padding: 2px 20px;
-        border-radius: 10px;
-    }
-</style>
-
-
-
-
-<?php if (isset($clientData)) : ?>
-
-    <?php if (!empty($payment_id)) { ?>
-        <div class="container invoice mt-5">
-            <h1 class="display-5 text-success text-center mb-3 <?php echo $status; ?>"><?php echo $statusMsg; ?></h1>
-
-            <div class="row">
-                <div class="col-md-4">
-                    <h3><?php echo $clientData['FirstName'] . ' ' . $clientData['LastName']; ?></h3>
-                    <p>Payment Date: <?php echo $createdDate; ?></p>
-                    <p>Expire Date: <?php echo $expireDate; ?></p>
-                    <?php $paymentStatus = calculatePaymentStatus($connect, $paidplanid, $paidAmount, $selectedMonths); ?>
-                    <p>Status: <span class="status"> <?php echo $paymentStatus; ?></span></p>
-                </div>
-                <div class="col-md-4">
-                    <h3>MajorLink.Co</h3>
-                    <p>Nakuru City</p>
-                    <p>Nakuru, Pipeline</p>
-                    <p>987654321</p>
-                </div>
-            </div>
-
-
-            <table class="table mt-5">
-                <thead class="thead-light">
-                    <tr>
-                        <th scope="col">Product</th>
-                        <th scope="col">Volume</th>
-                        <th scope="col">Qty</th>
-                        <th scope="col">Price</th>
-                        <th scope="col">Amount</th>
-                    </tr>
-                </thead>
-                <?php
-                $planData = getPlanDataByID($connect, $PaidPlanID);
-                ?>
-                <tbody class="table-group-divider">
-                    <tr>
-                        <td><?= $planData['Name']; ?></td>
-                        <td><?= $planData['Volume']; ?></td>
-                        <td><?php echo $_SESSION["selectedMonths"]; ?></td>
-                        <td><?php echo $planData['Price']; ?></td>
-                        <td><?php
-                            // Calculate the amount
-                            $planAmount = $planData['Price'] * $selectedMonths;
-                            echo $planAmount . ' ' . $initialSymbol;
-                            ?></td>
-                    </tr>
-
-                    <tr>
-                        <td colspan="3" class="border-none space"></td>
-                        <td colspan="" class="text-start Subtotal">Subtotal</td>
-                        <td class="">
-                            <?= $planAmount; ?>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td colspan="3" class="border-none space"></td>
-                        <td colspan="" class="text-start Tax">Tax(0%)</td>
-                        <td class="">
-                            <?php $tax = 0; ?>
-                            <?= $tax; ?>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td colspan="3" class="border-none space"></td>
-                        <td colspan="" class="text-start Total">Total</td>
-                        <td class="text-primary totalPrice">
-                            <?= number_format($planAmount, 0) . ' ' . $initialCurrency; ?>
-                        </td>
-                    </tr>
-
-                </tbody>
-            </table>
-
-        </div>
-
-        <div class="mt-4">
-            <a href="index.php" class="btn btn-warning Print">Print</a>
-            <a href="../controllers/generatepdf_contr.php" class="btn btn-success Download" target="_blank">Download pdf</a>
-            <a href="index.php" class="btn btn-secondary">View Transactions</a>
-            <a href="index.php" class="btn btn-primary">Done</a>
-        </div>
-
-    <?php } else { ?>
-        <div class="container mt-5">
-            <h1 class="display-4 error">Your Payment has failed!</h1>
-            <p class="lead error"><?php echo $statusMsg; ?></p>
-        </div>
-    <?php } ?>
-
-<?php else : ?>
-    <div class="alert alert-warning" role="alert">
-        No data found
-        <?php header("Location: viewClient.php"); ?>
-    </div>
-<?php endif; ?>
+?>
+<?php header('Location: paymentSuccess.php'); ?>

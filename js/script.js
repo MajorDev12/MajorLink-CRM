@@ -34,6 +34,43 @@ function fadeOutSpinner() {
 }
 
 
+function showSpinner() {
+	var loader = document.getElementById('loader');
+	if (loader) {
+		loader.style.display = "flex";
+		loader.style.opacity = 1;
+	}
+}
+
+function hideSpinner() {
+	var loader = document.getElementById('loader');
+	if (loader) {
+		loader.style.display = "none";
+		loader.style.opacity = 0;
+	}
+}
+
+
+
+const http = require('http');
+
+// Create an HTTP server
+const server = http.createServer((req, res) => {
+  // Redirect all requests to port 3000
+  const redirectUrl = `http://localhost:3000${req.url}`;
+  
+  // Send a 301 (Moved Permanently) redirect response
+  res.writeHead(301, { 'Location': redirectUrl });
+  res.end();
+});
+
+// Listen on port 80 for incoming HTTP requests
+const port = 80;
+server.listen(port, () => {
+  console.log(`Server running on port ${port}`);
+});
+
+
 
 
 
