@@ -274,7 +274,7 @@ CREATE TABLE invoices (
 
 
 
-CREATE TABLE invoiceProducts (
+CREATE TABLE invoiceproducts (
     ProductID INT PRIMARY KEY AUTO_INCREMENT,
     InvoiceID INT,
     Name VARCHAR(255),
@@ -315,7 +315,7 @@ CREATE TABLE emails (
 
 
 
-CREATE TABLE emailTemplate (
+CREATE TABLE emailtemplate (
     TemplateID INT PRIMARY KEY AUTO_INCREMENT,
     Category VARCHAR(50) NOT NULL,
     Name VARCHAR(255) NOT NULL,
@@ -336,7 +336,7 @@ CREATE TABLE sent_email_reminders (
 
 
 
-CREATE TABLE smsTemplate (
+CREATE TABLE smstemplate (
     TemplateID INT AUTO_INCREMENT PRIMARY KEY,
     Category VARCHAR(255) NOT NULL,
     Name VARCHAR(255) NOT NULL,
