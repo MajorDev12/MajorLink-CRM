@@ -263,7 +263,7 @@ $clientData = getClientDataById($connect, $clientID);
                                     // Check if all properties are true
                                     if (response) {
                                         // Payment was successful
-                                        window.location.href = 'paymentSuccess.php?success=paymentsuccess';
+                                        window.location.href = 'paymentSuccess.php?error=payment success';
                                     } else {
                                         // Payment failed, handle accordingly
                                         displayMessage("errorMsg", "Something went wrong", true);

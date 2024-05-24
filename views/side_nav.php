@@ -66,7 +66,7 @@
       </div>
       <ul class="sub-menu">
         <li><a class="link_name" href="#">Billing</a></li>
-        <li><a href="makePayment.php">Make Payment</a></li>
+        <li><a href="makePayment.php">First Payment</a></li>
         <li><a href="advancePayment.php">Advance Payment</a></li>
         <li><a href="viewTransaction.php">View Transactions</a></li>
         <li><a href="addExpense.php">Add Expense</a></li>
@@ -117,7 +117,7 @@
       </div>
       <ul class="sub-menu">
         <li><a class="link_name" href="#">Management</a></li>
-        <li><a href="Settings.php" data-target="Settings">Settings</a></li>
+        <li><a href="settings.php" data-target="settings">Settings</a></li>
         <li><a href="profile.php" data-target="systemlogs">Profile</a></li>
       </ul>
     </li>

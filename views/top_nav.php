@@ -1,47 +1,55 @@
 <nav class="top-nav">
-    <i class='bx bx-menu'></i>
+    <div class="navDiv">
+        <i class='bx bx-menu'></i>
 
-    <div class="date">
-        <?php
-        require_once  '../database/pdo.php';
-        require_once "../modals/setup_mod.php";
-        require_once "../modals/getTime_mod.php";
-        require_once  '../modals/addAdmin_mod.php';
+        <div class="centerdiv">
+            <div class="date">
+                <?php
+                require_once  '../database/pdo.php';
+                require_once "../modals/setup_mod.php";
+                require_once "../modals/getTime_mod.php";
+                require_once  '../modals/addAdmin_mod.php';
 
-        $connect = connectToDatabase($host, $dbname, $username, $password);
+                $connect = connectToDatabase($host, $dbname, $username, $password);
 
-        $adminID = $_SESSION['adminID'];
-        $adminData = getAdminDataById($connect, $adminID);
-
-
-        $settings = get_Settings($connect);
-        $timezone = $settings[0]["TimeZone"];
-        $time = getTime($timezone);
-        $timeAsDate = date('Y-m-d H:i:s', strtotime($time));
-        $timeFormatted = date('F j, Y -- h:i:s A', strtotime($timeAsDate));
-
-        // Display the formatted date
-        echo "<p id='date' class='text-center'></p>";
-        ?>
-    </div>
+                $adminID = $_SESSION['adminID'];
+                $adminData = getAdminDataById($connect, $adminID);
 
 
-    <div class="nav-items">
+                $settings = get_Settings($connect);
+                $timezone = $settings[0]["TimeZone"];
+                $time = getTime($timezone);
+                $timeAsDate = date('Y-m-d H:i:s', strtotime($time));
+                $timeFormatted = date('F j, Y -- h:i:s A', strtotime($timeAsDate));
+
+                // Display the formatted date
+                echo "<p id='date' class='text-center'></p>";
+                ?>
+            </div>
+
+            <!-- notification -->
+
+        </div>
 
 
-        <input type="checkbox" id="switch-mode" hidden>
-        <label for="switch-mode" class="switch-mode"></label>
-        <a href="#" class="profile  dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-            <img src="../img/<?= $adminData['ProfilePictureURL']; ?>">
-        </a>
-        <ul class="dropdown-menu border mt-3">
-            <li><a class="dropdown-item" href="#">Profile</a></li>
-            <li><a class="dropdown-item" href="#">Settings</a></li>
-            <li>
-                <hr class="dropdown-divider">
-            </li>
-            <li><a class="dropdown-item" href="../controllers/logout_contr.php">Logout</a></li>
-        </ul>
+
+
+
+        <div class="nav-items">
+            <input type="checkbox" id="switch-mode" hidden>
+            <label for="switch-mode" class="switch-mode"></label>
+            <a href="#" class="profile  dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                <img src="../img/<?= $adminData['ProfilePictureURL']; ?>">
+            </a>
+            <ul class="dropdown-menu border mt-3">
+                <li><a class="dropdown-item" href="#">Profile</a></li>
+                <li><a class="dropdown-item" href="#">Settings</a></li>
+                <li>
+                    <hr class="dropdown-divider">
+                </li>
+                <li><a class="dropdown-item" href="../controllers/logout_contr.php">Logout</a></li>
+            </ul>
+        </div>
     </div>
 </nav>
 
@@ -81,36 +89,6 @@
 
     // Call updateTime function every second
     setInterval(updateTime, 1000);
-
-
-
-
-
-
-
-
-
-    // function updateTime() {
-    //     // Get the current date and time
-    //     var now = new Date();
-
-    //     // Format the date and time
-    //     var formattedDate = now.toLocaleDateString('en-US', {
-    //         day: 'numeric',
-    //         month: 'long',
-    //         year: 'numeric'
-    //     });
-    //     var formattedTime = now.toLocaleTimeString();
-
-    //     // Display the formatted date and time
-    //     document.getElementById('date').textContent = formattedDate + ' - ' + formattedTime;
-    // }
-
-    // // Update the time initially
-    // updateTime();
-
-    // // Update the time every second
-    // setInterval(updateTime, 1000);
 </script>
 
 

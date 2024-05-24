@@ -490,18 +490,6 @@ label {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 /* CONTENT */
 #content {
 	position: relative;
@@ -533,6 +521,7 @@ label {
 	font-family: var(--poppins);
 	max-height: calc(100vh - 56px);
 	overflow-y: auto;
+	z-index: 200;
 }
 #content main .main-content .content{
 	margin-top: 2%;
@@ -764,52 +753,31 @@ label {
 
 
 @media screen and (max-width: 768px) {
-	#sidebar {
-		width: 60px;
-	}
-
 	#content {
 		width: calc(100% - 60px);
 		left: 60px;
 	}
-	#sidebar.hide ~ #content {
+	/* #sidebar.hide ~ #content {
 		width: calc(100% - 260px);
 		left: 260px;
-	}
+	} */
 
-	#content nav .nav-link {
-		display: none;
-	}
 }
 
 
 
 
-
 @media screen and (max-width: 576px) {
-	#content nav form .form-input input {
-		display: none;
+	#content {
+		width: calc(100% - 0px);
+		left: 0px;
+	}
+	#sidebar.hide ~ #content {
+		width: calc(100% - 60px);
+		left: 60px;
 	}
 
-	#content nav form .form-input button {
-		width: auto;
-		height: auto;
-		background: transparent;
-		border-radius: none;
-		color: var(--dark);
-	}
 
-	#content nav form.show .form-input input {
-		display: block;
-		width: 100%;
-	}
-	#content nav form.show .form-input button {
-		width: 36px;
-		height: 100%;
-		border-radius: 0 36px 36px 0;
-		color: var(--light);
-		background: var(--red);
-	}
 
 	#content nav form.show ~ .notification,
 	#content nav form.show ~ .profile {

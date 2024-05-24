@@ -6,77 +6,89 @@ $clientData = getClientDataById($connect, $clientID);
 ?>
 
 <nav class="top-nav">
-    <i class='bx bx-menu'></i>
+    <div class="navDiv">
+        <i class='bx bx-menu'></i>
 
 
-    <!-- TIME -->
-    <div class="date">
-        <?php
-        require_once  '../modals/setup_mod.php';
-        require_once  '../modals/getTime_mod.php';
-        $settings = get_Settings($connect);
-        $timezone = $settings[0]["TimeZone"];
-        $datetime = getTime($timezone);
-        // Create a DateTime object from the formatted date
-        $dateObj = DateTime::createFromFormat('Y-m-d H:i:s', $datetime);
-        // Format the date to day, month, year
-        $DateTime = $dateObj->format('d F Y H:i:s'); // Example: 01 January 2023
-        // Display the formatted date
-        echo "<p id='date' class='text-center'>" . $DateTime . "</p>";
-        ?>
-    </div>
+        <div class="centerdiv">
+            <!-- TIME -->
+            <div class="date">
+                <?php
+                require_once  '../database/pdo.php';
+                require_once "../modals/setup_mod.php";
+                require_once "../modals/getTime_mod.php";
+                require_once  '../modals/addAdmin_mod.php';
 
-    <!-- NOTIFICATION MODAL -->
-    <?php
-    require_once '../modals/notification_mod.php';
-    $clientID = $_SESSION["clientID"];
-    $unreadMsgs = getUnreadMessages($connect, $clientID);
-    $numUnreadMsgs = count($unreadMsgs);
-    ?>
+                $connect = connectToDatabase($host, $dbname, $username, $password);
 
-    <a href="#" class="notification dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-        <i class='bx bxs-bell notificationIcon'></i>
-        <span class="num"><?= $numUnreadMsgs ?></span>
-    </a>
+                $settings = get_Settings($connect);
+                $timezone = $settings[0]["TimeZone"];
+                $time = getTime($timezone);
+                $timeAsDate = date('Y-m-d H:i:s', strtotime($time));
+                $timeFormatted = date('F j, Y -- h:i:s A', strtotime($timeAsDate));
 
-    <ul id="notificationDropdown" class="dropdown-menu border mt-4 custom-dropdown">
-        <?php if ($numUnreadMsgs > 0) : ?>
-            <?php foreach ($unreadMsgs as $unRead) : ?>
-                <li class="not">
-                    <p class="dropdown-item"><?= $unRead["MessageContent"]; ?></p>
-                    <span class="messageTime"><span class="msgType"><?= $unRead["SenderName"]; ?></span><?= $unRead["Timestamp"]; ?></span>
+                // Display the formatted date
+                echo "<p id='date' class='text-center'></p>";
+                ?>
+            </div>
+
+            <!-- NOTIFICATION MODAL -->
+            <?php
+            require_once '../modals/notification_mod.php';
+            $clientID = $_SESSION["clientID"];
+            $unreadMsgs = getUnreadMessages($connect, $clientID);
+            $numUnreadMsgs = count($unreadMsgs);
+            ?>
+
+
+            <div id="notification">
+                <a href="#" class="notification dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class='bx bxs-bell notificationIcon'></i>
+                    <span class="num"><?= $numUnreadMsgs ?></span>
+                </a>
+
+                <ul id="notificationDropdown" class="dropdown-menu border mt-4 custom-dropdown">
+                    <?php if ($numUnreadMsgs > 0) : ?>
+                        <?php foreach ($unreadMsgs as $unRead) : ?>
+                            <li class="not">
+                                <p class="dropdown-item"><?= $unRead["MessageContent"]; ?></p>
+                                <span class="messageTime"><span class="msgType"><?= $unRead["SenderName"]; ?></span><?= $unRead["Timestamp"]; ?></span>
+                            </li>
+                        <?php endforeach; ?>
+                    <?php else : ?>
+                        <li class="not">
+                            <p class="dropdown-item text-center">No new messages</p>
+                        </li>
+                    <?php endif; ?>
+
+                    <a href="notification.php" class="allnotificationBtn mt-4">See All Notifications</a>
+                </ul>
+            </div>
+
+
+        </div>
+
+
+
+
+        <!-- TOGGLE AND PROFILE LOGO -->
+        <div class="nav-items">
+            <input type="checkbox" id="switch-mode" hidden>
+            <label for="switch-mode" class="switch-mode"></label>
+
+            <a href="#" class="profile dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                <img src="../img/<?= $clientData['ProfilePictureURL']; ?>">
+            </a>
+            <ul class="dropdown-menu border mt-3">
+                <li><a class="dropdown-item" href="profile.php">Profile</a></li>
+                <li><a class="dropdown-item" href="settings.php">Settings</a></li>
+                <li>
+                    <hr class="dropdown-divider">
                 </li>
-            <?php endforeach; ?>
-        <?php else : ?>
-            <li class="not">
-                <p class="dropdown-item text-center">No new messages</p>
-            </li>
-        <?php endif; ?>
+                <li><a class="dropdown-item" href="../controllers/logout_contr.php">Logout</a></li>
+            </ul>
 
-        <a href="notification.php" class="allnotificationBtn mt-4">See All Notifications</a>
-    </ul>
-
-
-
-
-
-    <!-- TOGGLE AND PROFILE LOGO -->
-    <div class="nav-items">
-        <input type="checkbox" id="switch-mode" hidden>
-        <label for="switch-mode" class="switch-mode"></label>
-
-        <a href="#" class="profile dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-            <img src="../img/<?= $clientData['ProfilePictureURL']; ?>">
-        </a>
-        <ul class="dropdown-menu border mt-3">
-            <li><a class="dropdown-item" href="profile.php">Profile</a></li>
-            <li><a class="dropdown-item" href="settings.php">Settings</a></li>
-            <li>
-                <hr class="dropdown-divider">
-            </li>
-            <li><a class="dropdown-item" href="../controllers/logout_contr.php">Logout</a></li>
-        </ul>
-
+        </div>
     </div>
 </nav>
 
@@ -85,26 +97,36 @@ $clientData = getClientDataById($connect, $clientID);
 
 
 <script>
+    var currentTime = <?= json_encode($timeAsDate); ?>;
+
     function updateTime() {
-        // Get the current date and time
-        var now = new Date();
+        // Create a new Date object to get the current time
 
-        // Format the date and time
-        var formattedDate = now.toLocaleDateString('en-US', {
-            day: 'numeric',
+        var Time = new Date(currentTime);
+        // Format the time as desired
+        var formattedTime = Time.toLocaleString('en-US', {
+            weekday: 'long',
+            year: 'numeric',
             month: 'long',
-            year: 'numeric'
+            day: 'numeric',
+            hour: 'numeric',
+            minute: 'numeric',
+            second: 'numeric',
+            hour12: true
         });
-        var formattedTime = now.toLocaleTimeString();
 
-        // Display the formatted date and time
-        document.getElementById('date').textContent = formattedDate + ' - ' + formattedTime;
+        // Update the content of the element with id 'date'
+        document.getElementById('date').textContent = formattedTime;
+
+        // Update the current time for the next interval
+        Time.setSeconds(Time.getSeconds() + 1);
+        currentTime = Time;
     }
 
-    // Update the time initially
+    // Call updateTime function immediately to set the initial time
     updateTime();
 
-    // Update the time every second
+    // Call updateTime function every second
     setInterval(updateTime, 1000);
 </script>
 

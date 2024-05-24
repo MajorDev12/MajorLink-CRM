@@ -571,7 +571,6 @@ $symbol = $settings[0]["CurrencySymbol"];
                                     }
                                 }
 
-                                var_dump($allSubAreas);
                                 ?>
 
                                 <h4>Income Summary for All Sub Areas</h4>

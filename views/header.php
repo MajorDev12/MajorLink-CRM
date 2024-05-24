@@ -5,6 +5,15 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+	<title>MajorLink</title>
+	<!-- Primary favicon link -->
+	<link rel="icon" href="../img/favicon.png">
+	<!-- Alternative favicon links for different browsers -->
+	<link rel="shortcut icon" href="../img/favicon.png" type="image/x-icon">
+	<link rel="apple-touch-icon" sizes="180x180" href="../img/favicon.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="../img/favicon.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="../img/favicon.png">
+
 	<!-- bootstrap -->
 	<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
 
@@ -22,11 +31,9 @@
 	<link rel="stylesheet" href="../styles/viewClient.css">
 	<link rel="stylesheet" href="../styles/addArea.css">
 	<link rel="stylesheet" href="../styles/table.css">
-	<!-- <link rel="stylesheet" href="../styles/addSubarea.css">
-	<link rel="stylesheet" href="../styles/addplan.css"> -->
 
 
-	<title>MajorLink</title>
+
 	<!-- SCRIPTS -->
 
 
