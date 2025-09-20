@@ -1,4 +1,11 @@
 <?php
+
+// PLEASE DONT CHANGE ANYTHING IN THIS SECTION, SPECIFICALLY THE ARRANGEMENT OF THE FUNCTIONS
+
+
+
+
+
 require_once '../database/pdo.php';
 $connect = connectToDatabase($host, $dbname, $username, $password);
 
@@ -184,7 +191,6 @@ $flagFilePath = __DIR__ . '/script_executed.flag';
 
 if (!file_exists($flagFilePath)) {
     // The script hasn't been executed yet
-    // dont change the arrangement of the insertSms and Email functions
     insertDefaultAdmin($connect);
     insertDefaultClients($connect, $numUsers);
     // Insert Stripe details

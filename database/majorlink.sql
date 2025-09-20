@@ -5,7 +5,7 @@
 CREATE TABLE admins (
     AdminID INT PRIMARY KEY AUTO_INCREMENT,
     Username VARCHAR(50) NOT NULL,
-    PasswordHash VARCHAR(255) NOT NULL, -- Store hashed passwords securely
+    PasswordHash VARCHAR(255) NOT NULL, 
     FullName VARCHAR(255) NOT NULL,
     Email VARCHAR(255),
     Phone VARCHAR(20),
@@ -13,8 +13,7 @@ CREATE TABLE admins (
     LastLogin DATETIME,
     CreatedDate DATETIME,
     UpdatedDate DATETIME,
-    ProfilePictureURL VARCHAR(255) -- Assuming a link to the profile picture
-    -- other admin-related attributes
+    ProfilePictureURL VARCHAR(255) 
 );
 
 
@@ -46,7 +45,6 @@ CREATE TABLE plans (
     Name VARCHAR(255) NOT NULL,
     Volume VARCHAR(255) NOT NULL,
     Price INT(255) NOT NULL
-    -- other plan-related attributes
 );
 
 
@@ -67,7 +65,7 @@ CREATE TABLE clients (
     Zipcode INT(255),
     PrimaryNumber VARCHAR(20),
     SecondaryNumber VARCHAR(20),
-    PasswordHash VARCHAR(255), -- Store hashed passwords securely
+    PasswordHash VARCHAR(255), 
     AreaID INT,
     SubAreaID INT,
     PlanID INT,
@@ -80,7 +78,6 @@ CREATE TABLE clients (
     ProfilePictureURL VARCHAR(255), 
     ActiveStatus TINYINT(1), 
     ExpireDate DATETIME,
-    -- other client-related attributes
     FOREIGN KEY (AreaID) REFERENCES areas(AreaID),
     FOREIGN KEY (SubAreaID) REFERENCES subareas(SubAreaID),
     FOREIGN KEY (PlanID) REFERENCES plans(PlanID)
@@ -92,7 +89,6 @@ CREATE TABLE paymentoptions (
     PaymentOptionImg VARCHAR(50) NOT NULL,
     PaymentOptionName VARCHAR(50) NOT NULL,
     PaymentOptionQuote VARCHAR(50) NOT NULL
-    -- other payment option-related attributes
 );
 
 
@@ -102,7 +98,6 @@ CREATE TABLE products (
     ProductName VARCHAR(255) NOT NULL,
     Price DECIMAL(10, 2) NOT NULL,
     Description TEXT
-    -- other product-related attributes
 );
 
 
@@ -112,7 +107,6 @@ CREATE TABLE expensetypes (
     ExpenseTypeID INT PRIMARY KEY AUTO_INCREMENT,
     ExpenseTypeName VARCHAR(50) NOT NULL,
     Description TEXT
-    -- other expense type-related attributes
 );
 
 
@@ -134,7 +128,6 @@ CREATE TABLE companysettings (
     CurrencyCode VARCHAR(100),
     PhoneCode VARCHAR(100),
     LogoURL VARCHAR(255)
-    -- other company-related attributes
 );
 
 
@@ -154,7 +147,6 @@ CREATE TABLE sales (
     TaxSymbol VARCHAR(50) NOT NULL,
     PaymentStatus VARCHAR(50),
     UpdatedDate DATETIME,
-    -- other sale-related attributes
     FOREIGN KEY (AdminID) REFERENCES admins(AdminID),
     FOREIGN KEY (ClientID) REFERENCES clients(ClientID),
     FOREIGN KEY (ProductID) REFERENCES products(ProductID),
@@ -176,7 +168,6 @@ CREATE TABLE payments (
     PaymentDate DATETIME,
     PaymentOptionID INT,
     InstallationFees INT,
-    -- other payment-related attributes
     FOREIGN KEY (ClientID) REFERENCES Clients(ClientID),
     FOREIGN KEY (PlanID) REFERENCES plans(PlanID),
     FOREIGN KEY (PaymentOptionID) REFERENCES paymentoptions(PaymentOptionID)
@@ -195,7 +186,6 @@ CREATE TABLE advancepayments (
     AmountPaid DECIMAL(10, 2) NOT NULL,
     CreatedDate DATETIME,
     UpdatedDate DATETIME,
-    -- other advance payment-related attributes
     FOREIGN KEY (ClientID) REFERENCES Clients(ClientID),
     FOREIGN KEY (PaymentOptionID) REFERENCES paymentoptions(PaymentOptionID),
     FOREIGN KEY (PlanID) REFERENCES plans(PlanID)
@@ -215,7 +205,6 @@ CREATE TABLE stripepayments (
     Customer_email VARCHAR(255) NULL,
     CreatedDate VARCHAR(255) NULL,
     UpdatedDate VARCHAR(255) NULL,
-    -- other advance payment-related attributes
     FOREIGN KEY (ClientID) REFERENCES clients(ClientID),
     FOREIGN KEY (PlanID) REFERENCES plans(PlanID)
 );
@@ -235,7 +224,6 @@ CREATE TABLE paypalpayments (
     Customer_email VARCHAR(255) NULL,
     CreatedDate VARCHAR(255) NULL,
     UpdatedDate VARCHAR(255) NULL,
-    -- other advance payment-related attributes
     FOREIGN KEY (ClientID) REFERENCES clients(ClientID),
     FOREIGN KEY (PlanID) REFERENCES plans(PlanID)
 );
@@ -251,7 +239,6 @@ CREATE TABLE messages (
     MessageContent TEXT NOT NULL,
     Timestamp DATETIME NOT NULL,
     Status VARCHAR(50) NOT NULL,
-    -- other message-related attributes
     FOREIGN KEY (RecipientID) REFERENCES clients(ClientID)
 );
 
@@ -268,7 +255,6 @@ CREATE TABLE invoices (
     Status VARCHAR(50),
     TaxSymbol VARCHAR(50),
     Taxamount INT,
-    -- other invoice-related attributes
     FOREIGN KEY (ClientID) REFERENCES clients(ClientID)
 );
 
@@ -283,7 +269,6 @@ CREATE TABLE invoiceproducts (
     Price DECIMAL(10, 2) NULL,
     Amount DECIMAL(10, 2) NULL,
     subTotal DECIMAL(10, 2) NULL,
-    -- other product-related attributes
     FOREIGN KEY (InvoiceID) REFERENCES invoices(InvoiceID)
 );
 
@@ -307,7 +292,6 @@ CREATE TABLE emails (
     Subject VARCHAR(255),
     EmailContent TEXT,
     Timestamp DATETIME,
-    -- other email-related attributes
     FOREIGN KEY (SenderID) REFERENCES clients(ClientID),
     FOREIGN KEY (RecipientID) REFERENCES clients(ClientID)
 );
@@ -342,7 +326,6 @@ CREATE TABLE smstemplate (
     Name VARCHAR(255) NOT NULL,
     Body TEXT NOT NULL,
     Status VARCHAR(50) NOT NULL
-    -- Status ENUM('Active', 'Inactive') NOT NULL
 );
 
 
@@ -353,11 +336,10 @@ CREATE TABLE expenses (
     ExpenseTypeID INT,
     ExpenseAmount DECIMAL(10, 2) NOT NULL,
     PaymentOptionID INT,
-    PaymentReceiptURL VARCHAR(255), -- Assuming a link to the payment receipt
+    PaymentReceiptURL VARCHAR(255), 
     Description TEXT,
     CreatedDate DATETIME,
     UpdatedDate DATETIME,
-    -- other expense-related attributes
     FOREIGN KEY (ExpenseTypeID) REFERENCES expensetypes(ExpenseTypeID),
     FOREIGN KEY (PaymentOptionID) REFERENCES paymentoptions(PaymentOptionID)
 );
@@ -367,12 +349,11 @@ CREATE TABLE expenses (
 
 CREATE TABLE systemlogs (
     LogID INT PRIMARY KEY AUTO_INCREMENT,
-    UserID INT, -- Reference to the user responsible for the action (can be an admin or client)
+    UserID INT, 
     Timestamp DATETIME,
-    EventType VARCHAR(50), -- Describes the type of event or action
+    EventType VARCHAR(50), 
     EventDescription TEXT,
-    -- other log-related attributes
-    FOREIGN KEY (UserID) REFERENCES admins(AdminID) -- Reference to the Admins table
+    FOREIGN KEY (UserID) REFERENCES admins(AdminID) 
 );
 
 
