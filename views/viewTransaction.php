@@ -208,23 +208,8 @@ $payments = getAllPayments($connect);
                                 <th>Type</th>
                             </tr>
                         </thead>
-                        <tbody class="searchData">
-                            <?php if ($payments) : ?>
-                                <?php foreach ($payments as $payment) : ?>
-                                    <tr>
-                                        <td class="pl-3"><?= $payment['InvoiceNumber'] ?></td>
-                                        <td><?= $payment['PaymentDate'] ?></td>
-                                        <td><?= isset($payment['PaymentOptionName']) ? $payment['PaymentOptionName'] : '' ?></td>
-                                        <td><?= isset($payment['PaymentAmount']) ? $payment['PaymentAmount'] : $payment['Total'] ?></td>
-                                        <td><?= isset($payment['PaymentStatus']) ? $payment['PaymentStatus'] : '' ?></td>
-                                        <td><?= $payment['type'] ?></td>
-                                    </tr>
-                                <?php endforeach; ?>
-                            <?php else : ?>
-                                <tr>
-                                    <td>No Data Yet</td>
-                                </tr>
-                            <?php endif; ?>
+                        <tbody class="searchData" id="tableBody">
+                        <!-- Data will be loaded via AJAX -->
                         </tbody>
                     </table>
 
