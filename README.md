@@ -39,6 +39,7 @@ This project uses several external libraries and APIs to provide advanced functi
 - **Nexmo (Vonage)** – SMS/voice messaging  
 - **Stripe API** – Online payments  
 - **PayPal API** – Alternative online payments  
+- **Daraja API** – In development  
 - **Google Fonts** – Custom fonts for UI styling  
 
 
