@@ -29,5 +29,20 @@ The **ISP Management System** is a web-based platform designed to streamline the
 
 
 
+## 📦 Dependencies & Integrations
+
+This project uses several external libraries and APIs to provide advanced functionality:
+
+- **DOMPDF** – PDF generation for invoices and reports  
+- **PHPMailer** – Email sending via SMTP  
+- **InfoBip** – SMS notifications  
+- **Nexmo (Vonage)** – SMS/voice messaging  
+- **Stripe API** – Online payments  
+- **PayPal API** – Alternative online payments  
+- **Google Fonts** – Custom fonts for UI styling  
+
+
+
+
 ## Desktop
 <img width="1366" height="684" alt="1" src="https://github.com/user-attachments/assets/ff0a25ee-3e4d-4c26-bf24-2215c801e10b" />
